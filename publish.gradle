@@ -1,0 +1,49 @@
+//apply plugin: 'maven'
+//apply plugin: 'signing'
+apply plugin: 'com.jfrog.bintray'
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+
+//Load data from environment if present to support Travis
+['bintrayUser', 'bintrayApiKey'].each{
+    if (System.env[it])
+        project[it] = System.env[it]
+}
+
+//This is only needed if bintrayUpload is done as part of releasing
+task updateBintrayVersion << {
+    bintray.pkg.version.name = project.version
+}
+bintrayUpload.dependsOn updateBintrayVersion
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = 'grpc-spring-boot-starter'
+        userOrg = 'lognet'
+        licenses = ['Apache-2.0']
+        configurations = ['archives']
+        websiteUrl = gitHubUrl
+        vcsUrl = "${gitHubUrl}.git"
+    }
+}
+
+bintrayUpload.onlyIf {
+    !(version ==~ /.*SNAPSHOT/)
+}

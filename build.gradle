@@ -6,25 +6,37 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
-    }
+      }
     dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.7.3'
         classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
         classpath group: 'com.netflix.nebula', name: 'nebula-project-plugin', version: '2.2.1'
         classpath group: 'com.netflix.nebula', name: 'nebula-interactive', version: '2.0.+'
     }
+
+
+
+
+
 }
 
 
 
 subprojects {
+
     apply plugin: 'idea'
     apply plugin: 'java'
+
+    apply from: "${rootDir}/publish.gradle"
     apply plugin: 'nebula-interactive'
     apply plugin: 'propdeps'
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
+
+
+
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -32,14 +44,10 @@ subprojects {
     repositories {
         mavenCentral()
         maven { url "https://repo.spring.io/milestone" }
-
-
     }
+
     dependencies{
         provided('org.projectlombok:lombok:1.16.6')
-
-
     }
 
 }
-
