@@ -1,0 +1,66 @@
+apply plugin: 'com.google.protobuf'
+apply plugin: 'spring-boot'
+
+dependencies {
+    compile 'io.grpc:grpc-stub:0.12.0'
+    compile 'io.grpc:grpc-protobuf:0.12.0'
+    compile 'io.grpc:grpc-netty:0.12.0'
+    compile project(':grpc-spring-boot-starter')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'junit:junit:4.11'
+}
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/protoGen'
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.0.0-alpha-3'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:0.12.0'
+        }
+    }
+
+    generateProtoTasks {
+        ofSourceSet('main').each { task ->
+            task.builtins {
+                java{
+                    outputSubDir = 'protoGen'
+                }
+            }
+            task.plugins {
+                grpc {
+                    outputSubDir = 'protoGen'
+                }
+            }
+        }
+    }
+    generatedFilesBaseDir = "$projectDir/src/"
+}
+
+task cleanProtoGen{
+    doFirst{
+           delete("$projectDir/src/main/protoGen")
+    }
+}
+clean.dependsOn cleanProtoGen
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-starter-parent:Brixton.M4"
+    }
+}
+
+
+
+
+
+
+
