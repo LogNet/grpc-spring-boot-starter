@@ -8,4 +8,4 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 after_success:
-- ./gradle bintrayUpload
+- gradle bintrayUpload
