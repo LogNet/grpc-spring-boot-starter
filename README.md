@@ -5,14 +5,16 @@
 Auto-configures and run the embedded gRPC server with discovered gRPC services. 
 
 ## Setup
-TBD
-<!---
+
 ```gradle
+repositories {  
+   jcenter()  
+}
 dependencies {
-    compile 'org.lognet:grpc-spring-boot-starter:0.0.1'
+    compile('org.lognet:grpc-spring-boot-starter:0.0.1')
 }
 ```
--->
+
 ## Usage
 * Start by [generating](https://github.com/google/protobuf-gradle-plugin) stub and server interface(s) from your `.proto` file(s).
 * Annotate your server interface implementation(s) with `@org.lognet.springboot.grpc.GRpcService`
