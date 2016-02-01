@@ -22,6 +22,17 @@ artifacts {
         project[it] = System.env[it]
 }
 
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            parent {
+                groupId 'org.springframework.boot'
+                artifactId 'spring-boot-starter-parent'
+                version "${project.springBootVersion}"
+            }
+        }
+    }
+}
 //This is only needed if bintrayUpload is done as part of releasing
 task updateBintrayVersion << {
     bintray.pkg.version.name = project.version
