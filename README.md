@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master)](https://travis-ci.org/LogNet/grpc-spring-boot-starter)
 ## Features
 
-Auto-configures and run the embedded gRPC server with discovered gRPC services. 
+Auto-configures and run the embedded gRPC server with @GRpcService-enabled beans. 
 
 ## Setup
 
@@ -11,7 +11,7 @@ repositories {
    jcenter()  
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:0.0.1')
+    compile('org.lognet:grpc-spring-boot-starter:0.0.2')
 }
 ```
 
@@ -24,7 +24,34 @@ dependencies {
  grpc:
     port : 6565
 ```
- 
+## Show case
+In the 'grpc-spring-boot-starter-demo' project you can find fully functional example with integration test.
+The service definition from `.proto` file looks like this :
+```proto
+service Greeter {
+    rpc SayHello ( HelloRequest) returns (  HelloReply) {}
+}
+```
+Note the generated `io.grpc.examples.GreeterGrpc` class with static function `bindService`.(The generated classes were intentionally  committed for demo purposes).
+
+All you need to do is to annotate your service implementation with `@org.lognet.springboot.grpc.GRpcService`
+
+```java
+@GRpcService(grpcServiceOuterClass = GreeterGrpc.class)
+    public static class GreeterService implements GreeterGrpc.Greeter{
+        @Override
+        public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+            final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());
+            responseObserver.onNext(replyBuilder.build());
+            responseObserver.onCompleted();
+        }
+    }
+```
+
+## On the roadmap
+* Customized gRPC server builder with compression/decompression registry, custom `Executor` service   and transport security.
+* `ServerInterceptor` support.
+
 
 ## License
 Apache 2.0

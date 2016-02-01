@@ -16,12 +16,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GreeterApp {
 
-    @GRpcService(grpcClass = GreeterGrpc.class)
+    @GRpcService(grpcServiceOuterClass = GreeterGrpc.class)
     public static class GreeterService implements GreeterGrpc.Greeter{
         @Override
         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
-            System.out.println("Got request");
-            responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello "+request.getName()).build());
+            final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());
+            responseObserver.onNext(replyBuilder.build());
             responseObserver.onCompleted();
         }
     }

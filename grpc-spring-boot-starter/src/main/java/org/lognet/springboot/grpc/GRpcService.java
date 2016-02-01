@@ -1,16 +1,24 @@
 package org.lognet.springboot.grpc;
 
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.lang.annotation.*;
 
 /**
- * Created by alexf on 25-Jan-16.
+ *
+ * Marks the annotated class to be registered as grpc-service bean;
+ * @author  Furer Alexander
+ * @since 0.0.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Component
+@Service
 public @interface GRpcService {
-    Class<?> grpcClass();
+    /**
+     *
+     * @return protoc-generated class that creates {@link io.grpc.ServerServiceDefinition} via static <code>bindService<code/> function.
+     */
+    Class<?> grpcServiceOuterClass();
 }

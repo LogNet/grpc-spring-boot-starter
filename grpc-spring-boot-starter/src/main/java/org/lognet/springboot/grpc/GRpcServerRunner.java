@@ -17,10 +17,16 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
- * Created by alexf on 25-Jan-16.
+ *  Hosts embedded gRPC server.
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
+
+    /**
+     * Name of static function of gRPC service-outer class that creates {@link io.grpc.ServerServiceDefinition}.
+     */
+    final private  static String bindServiceMethodName = "bindService";
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -34,22 +40,26 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
         log.info("Starting gRPC Server ...");
 
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
-        for(Object grpcService : applicationContext.getBeansWithAnnotation(GRpcService.class).values()) {
-            final Class<?> grpcClass = AnnotationUtils.findAnnotation(grpcService.getClass(), GRpcService.class).grpcClass();
 
-            final String bindServiceMethodName = "bindService";
-            final Optional<Method> bindServiceMethod = Arrays.asList(ReflectionUtils.getAllDeclaredMethods(grpcClass)).stream().filter(
+        // find and register all GRpcService-enabled beans
+        for(Object grpcService : applicationContext.getBeansWithAnnotation(GRpcService.class).values()) {
+            final Class<?> grpcServiceOuterClass = AnnotationUtils.findAnnotation(grpcService.getClass(), GRpcService.class).grpcServiceOuterClass();
+
+            // find 'bindService' method on outer class.
+            final Optional<Method> bindServiceMethod = Arrays.asList(ReflectionUtils.getAllDeclaredMethods(grpcServiceOuterClass)).stream().filter(
                     method ->  bindServiceMethodName.equals(method.getName()) && 1 == method.getParameterCount() && method.getParameterTypes()[0].isAssignableFrom(grpcService.getClass())
             ).findFirst();
+
+            // register service
             if (bindServiceMethod.isPresent()) {
                 ServerServiceDefinition serviceDefinition = (ServerServiceDefinition) bindServiceMethod.get().invoke(null, grpcService);
                 serverBuilder.addService(serviceDefinition);
                 log.info("'{}' service has been registered.", serviceDefinition.getName());
             } else {
                 throw new IllegalArgumentException(String.format("Failed to find '%s' method on class %s.\r\n" +
-                                "Please make sure you've provided correct 'grpcClass' attribute for %s annotation.\r\n" +
-                                "It should be the gRPC generated outer class of your service."
-                        , grpcClass.getName(), bindServiceMethodName,GRpcService.class.getName()));
+                                "Please make sure you've provided correct 'grpcServiceOuterClass' attribute for '%s' annotation.\r\n" +
+                                "It should be the protoc-generated outer class of your service."
+                        , bindServiceMethodName,grpcServiceOuterClass.getName(), GRpcService.class.getName()));
             }
         }
 
@@ -66,7 +76,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
                 try {
                     GRpcServerRunner.this.server.awaitTermination();
                 } catch (InterruptedException e) {
-                    log.error("GRpc server stopped.",e);
+                    log.error("gRPC server stopped.",e);
                 }
             }
 
@@ -77,7 +87,6 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
     @Override
     public void destroy() throws Exception {
         log.info("Shutting down gRPC server ...");
-
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
     }
