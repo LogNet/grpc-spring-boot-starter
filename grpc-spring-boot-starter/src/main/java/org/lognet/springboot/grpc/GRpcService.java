@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 public @interface GRpcService {
     /**
      *
-     * @return protoc-generated class that creates {@link io.grpc.ServerServiceDefinition} via static <code>bindService<code/> function.
+     * @return protoc-generated class that creates {@link io.grpc.ServerServiceDefinition} via static <code>bindService</code> function.
      */
     Class<?> grpcServiceOuterClass();
 }
