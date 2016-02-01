@@ -1,4 +1,4 @@
-
+apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile 'io.grpc:grpc-netty:0.12.0'
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
