@@ -1,5 +1,6 @@
 #Spring boot starter for [Google RPC.](http://www.grpc.io/)
 [![Build Status](https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master)](https://travis-ci.org/LogNet/grpc-spring-boot-starter)
+[ ![Download](https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg) ](https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion)
 ## Features
 
 Auto-configures and run the embedded gRPC server with @GRpcService-enabled beans. 
