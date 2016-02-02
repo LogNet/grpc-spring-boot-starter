@@ -3,7 +3,7 @@
 [ ![Download](https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg) ](https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion)
 ## Features
 
-Auto-configures and run the embedded gRPC server with @GRpcService-enabled beans. 
+Auto-configures and run the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application.
 
 ## Setup
 
