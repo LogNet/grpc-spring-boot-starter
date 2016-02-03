@@ -10,6 +10,8 @@ Auto-configures and run the embedded gRPC server with @GRpcService-enabled beans
 ```gradle
 repositories {  
    jcenter()  
+   // maven { url "http://oss.jfrog.org/oss-snapshot-local" } //for snashot builds
+   
 }
 dependencies {
     compile('org.lognet:grpc-spring-boot-starter:0.0.2')
