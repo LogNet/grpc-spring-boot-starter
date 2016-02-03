@@ -77,9 +77,16 @@ artifactory {
 }
 
 publishing {
+
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            artifact (javadocJar) {
+                classifier = 'javadoc'
+            }
+            artifact (sourcesJar) {
+                classifier = 'sources'
+            }
         }
     }
 }
