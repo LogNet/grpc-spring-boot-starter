@@ -6,7 +6,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
-
+        maven { url "https://plugins.gradle.org/m2/"}
 
       }
     dependencies {
@@ -16,8 +16,15 @@ buildscript {
         classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
         classpath group: 'com.netflix.nebula', name: 'nebula-project-plugin', version: '2.2.1'
         classpath group: 'com.netflix.nebula', name: 'nebula-interactive', version: '2.0.+'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
     }
 }
+
+
+
+
+
+
 
 
 subprojects {

@@ -1,5 +1,6 @@
 apply plugin: 'maven'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: "com.jfrog.artifactory"
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -53,7 +54,34 @@ bintray {
         vcsUrl = "${gitHubUrl}.git"
     }
 }
-
+def isRelease  = !(version ==~ /.*SNAPSHOT/)
 bintrayUpload.onlyIf {
-    !(version ==~ /.*SNAPSHOT/)
+    isRelease
+}
+
+artifactory {
+    contextUrl = "http://oss.jfrog.org/artifactory/"
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local' //libs-snapshot
+            username = bintrayUser
+            password = bintrayApiKey
+            maven = true
+
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+artifactoryPublish.onlyIf {
+    !isRelease
 }
