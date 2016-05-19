@@ -1,4 +1,4 @@
-#Spring boot starter for [Google RPC.](http://www.grpc.io/)
+#Spring boot starter for [gRPC framework.](http://www.grpc.io/)
 [![Build Status](https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master)](https://travis-ci.org/LogNet/grpc-spring-boot-starter)
 [ ![Download](https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg) ](https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion)
 ## Features
