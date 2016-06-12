@@ -3,8 +3,7 @@ dependencies {
     compile 'io.grpc:grpc-netty:0.12.0'
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
     dependencies {
-        optional  'org.springframework.boot:spring-boot-configuration-processor:1.2.3.RELEASE'
-
+        compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
     }
 }
 compileJava.dependsOn(processResources)
