@@ -1,9 +1,10 @@
 package org.lognet.springboot.grpc;
 
-import com.google.common.base.Supplier;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
-import io.grpc.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,10 +12,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.concurrent.Callable;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.ServerServiceDefinition;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *  Hosts embedded gRPC server.
@@ -25,7 +26,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
     /**
      * Name of static function of gRPC service-outer class that creates {@link io.grpc.ServerServiceDefinition}.
      */
-    final private  static String bindServiceMethodName = "bindService";
+    private static final String bindServiceMethodName = "bindService";
 
     @Autowired
     private ApplicationContext applicationContext;
