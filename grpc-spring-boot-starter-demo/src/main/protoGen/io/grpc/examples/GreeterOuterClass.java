@@ -23,18 +23,18 @@ public final class GreeterOuterClass {
         getNameBytes();
   }
   /**
-   * Protobuf type {@code HelloRequest}
-   *
    * <pre>
    * The request message containing the user's name.
    * </pre>
+   *
+   * Protobuf type {@code HelloRequest}
    */
   public  static final class HelloRequest extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:HelloRequest)
       HelloRequestOrBuilder {
     // Use HelloRequest.newBuilder() to construct.
-    private HelloRequest(com.google.protobuf.GeneratedMessage.Builder builder) {
+    private HelloRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
     private HelloRequest() {
@@ -48,7 +48,8 @@ public final class GreeterOuterClass {
     }
     private HelloRequest(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       int mutable_bitField0_ = 0;
       try {
@@ -66,19 +67,18 @@ public final class GreeterOuterClass {
               break;
             }
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              java.lang.String s = input.readStringRequireUtf8();
 
-              name_ = bs;
+              name_ = s;
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
         makeExtensionsImmutable();
       }
@@ -108,9 +108,7 @@ public final class GreeterOuterClass {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          name_ = s;
-        }
+        name_ = s;
         return s;
       }
     }
@@ -144,21 +142,19 @@ public final class GreeterOuterClass {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
-        output.writeBytes(1, getNameBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, name_);
       }
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSerializedSize;
+      int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getNameBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, name_);
       }
-      memoizedSerializedSize = size;
+      memoizedSize = size;
       return size;
     }
 
@@ -186,34 +182,40 @@ public final class GreeterOuterClass {
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     public Builder newBuilderForType() { return newBuilder(); }
@@ -235,11 +237,11 @@ public final class GreeterOuterClass {
       return builder;
     }
     /**
-     * Protobuf type {@code HelloRequest}
-     *
      * <pre>
      * The request message containing the user's name.
      * </pre>
+     *
+     * Protobuf type {@code HelloRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
@@ -334,7 +336,7 @@ public final class GreeterOuterClass {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (io.grpc.examples.GreeterOuterClass.HelloRequest) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -353,9 +355,7 @@ public final class GreeterOuterClass {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            name_ = s;
-          }
+          name_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -407,7 +407,8 @@ public final class GreeterOuterClass {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  checkByteStringIsUtf8(value);
+        
         name_ = value;
         onChanged();
         return this;
@@ -436,24 +437,19 @@ public final class GreeterOuterClass {
       return DEFAULT_INSTANCE;
     }
 
-    public static final com.google.protobuf.Parser<HelloRequest> PARSER =
-        new com.google.protobuf.AbstractParser<HelloRequest>() {
+    private static final com.google.protobuf.Parser<HelloRequest>
+        PARSER = new com.google.protobuf.AbstractParser<HelloRequest>() {
       public HelloRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
           return new HelloRequest(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
       }
     };
+
+    public static com.google.protobuf.Parser<HelloRequest> parser() {
+      return PARSER;
+    }
 
     @java.lang.Override
     public com.google.protobuf.Parser<HelloRequest> getParserForType() {
@@ -481,18 +477,18 @@ public final class GreeterOuterClass {
         getMessageBytes();
   }
   /**
-   * Protobuf type {@code HelloReply}
-   *
    * <pre>
    * The response message containing the greetings
    * </pre>
+   *
+   * Protobuf type {@code HelloReply}
    */
   public  static final class HelloReply extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:HelloReply)
       HelloReplyOrBuilder {
     // Use HelloReply.newBuilder() to construct.
-    private HelloReply(com.google.protobuf.GeneratedMessage.Builder builder) {
+    private HelloReply(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
     }
     private HelloReply() {
@@ -506,7 +502,8 @@ public final class GreeterOuterClass {
     }
     private HelloReply(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       int mutable_bitField0_ = 0;
       try {
@@ -524,19 +521,18 @@ public final class GreeterOuterClass {
               break;
             }
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              java.lang.String s = input.readStringRequireUtf8();
 
-              message_ = bs;
+              message_ = s;
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
       } finally {
         makeExtensionsImmutable();
       }
@@ -566,9 +562,7 @@ public final class GreeterOuterClass {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          message_ = s;
-        }
+        message_ = s;
         return s;
       }
     }
@@ -602,21 +596,19 @@ public final class GreeterOuterClass {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (!getMessageBytes().isEmpty()) {
-        output.writeBytes(1, getMessageBytes());
+        com.google.protobuf.GeneratedMessage.writeString(output, 1, message_);
       }
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSerializedSize;
+      int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
       if (!getMessageBytes().isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getMessageBytes());
+        size += com.google.protobuf.GeneratedMessage.computeStringSize(1, message_);
       }
-      memoizedSerializedSize = size;
+      memoizedSize = size;
       return size;
     }
 
@@ -644,34 +636,40 @@ public final class GreeterOuterClass {
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input);
     }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessage
+          .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     public Builder newBuilderForType() { return newBuilder(); }
@@ -693,11 +691,11 @@ public final class GreeterOuterClass {
       return builder;
     }
     /**
-     * Protobuf type {@code HelloReply}
-     *
      * <pre>
      * The response message containing the greetings
      * </pre>
+     *
+     * Protobuf type {@code HelloReply}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
@@ -792,7 +790,7 @@ public final class GreeterOuterClass {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (io.grpc.examples.GreeterOuterClass.HelloReply) e.getUnfinishedMessage();
-          throw e;
+          throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
@@ -811,9 +809,7 @@ public final class GreeterOuterClass {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            message_ = s;
-          }
+          message_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -865,7 +861,8 @@ public final class GreeterOuterClass {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  checkByteStringIsUtf8(value);
+        
         message_ = value;
         onChanged();
         return this;
@@ -894,24 +891,19 @@ public final class GreeterOuterClass {
       return DEFAULT_INSTANCE;
     }
 
-    public static final com.google.protobuf.Parser<HelloReply> PARSER =
-        new com.google.protobuf.AbstractParser<HelloReply>() {
+    private static final com.google.protobuf.Parser<HelloReply>
+        PARSER = new com.google.protobuf.AbstractParser<HelloReply>() {
       public HelloReply parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
           return new HelloReply(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
       }
     };
+
+    public static com.google.protobuf.Parser<HelloReply> parser() {
+      return PARSER;
+    }
 
     @java.lang.Override
     public com.google.protobuf.Parser<HelloReply> getParserForType() {
@@ -924,14 +916,14 @@ public final class GreeterOuterClass {
 
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_HelloRequest_descriptor;
-  private static
+  private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_HelloRequest_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_HelloReply_descriptor;
-  private static
+  private static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_HelloReply_fieldAccessorTable;
 
@@ -939,7 +931,7 @@ public final class GreeterOuterClass {
       getDescriptor() {
     return descriptor;
   }
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
     java.lang.String[] descriptorData = {
