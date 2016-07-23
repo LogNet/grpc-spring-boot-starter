@@ -55,7 +55,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
             if (bindServiceMethod.isPresent()) {
                 ServerServiceDefinition serviceDefinition = (ServerServiceDefinition) bindServiceMethod.get().invoke(null, grpcService);
                 serverBuilder.addService(serviceDefinition);
-                log.info("'{}' service has been registered.", serviceDefinition.getName());
+                log.info("'{}' service has been registered.", serviceDefinition.getServiceDescriptor().getName());
             } else {
                 throw new IllegalArgumentException(String.format("Failed to find '%s' method on class %s.\r\n" +
                                 "Please make sure you've provided correct 'grpcServiceOuterClass' attribute for '%s' annotation.\r\n" +
