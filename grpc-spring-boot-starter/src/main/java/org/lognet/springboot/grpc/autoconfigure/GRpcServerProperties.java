@@ -8,6 +8,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("grpc")
 public class GRpcServerProperties {
     /**
+     * enable/disable
+     */
+    private boolean enable = true;
+    /**
      * gRPC server port
      */
     private int port = 6565;
@@ -18,5 +22,13 @@ public class GRpcServerProperties {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }

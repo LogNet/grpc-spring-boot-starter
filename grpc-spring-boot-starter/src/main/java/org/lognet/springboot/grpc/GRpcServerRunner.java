@@ -38,6 +38,10 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
 
     @Override
     public void run(String... args) throws Exception {
+        if (!gRpcServerProperties.isEnable() {
+            log.info("gRPC Server is disabled.");
+            return;
+        }
         log.info("Starting gRPC Server ...");
 
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
@@ -87,6 +91,9 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
     }
     @Override
     public void destroy() throws Exception {
+        if (!gRpcServerProperties.isEnable() {
+            return;
+        }
         log.info("Shutting down gRPC server ...");
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
