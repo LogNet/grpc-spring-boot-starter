@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
+import io.grpc.BindableService;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
 
-    /**
-     * Name of static function of gRPC service-outer class that creates {@link io.grpc.ServerServiceDefinition}.
-     */
-    private static final String bindServiceMethodName = "bindService";
+
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -44,23 +42,15 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
 
         // find and register all GRpcService-enabled beans
         for(Object grpcService : applicationContext.getBeansWithAnnotation(GRpcService.class).values()) {
-            final Class<?> grpcServiceOuterClass = AnnotationUtils.findAnnotation(grpcService.getClass(), GRpcService.class).grpcServiceOuterClass();
-
-            // find 'bindService' method on outer class.
-            final Optional<Method> bindServiceMethod = Arrays.asList(ReflectionUtils.getAllDeclaredMethods(grpcServiceOuterClass)).stream().filter(
-                    method ->  bindServiceMethodName.equals(method.getName()) && 1 == method.getParameterCount() && method.getParameterTypes()[0].isAssignableFrom(grpcService.getClass())
-            ).findFirst();
 
             // register service
-            if (bindServiceMethod.isPresent()) {
-                ServerServiceDefinition serviceDefinition = (ServerServiceDefinition) bindServiceMethod.get().invoke(null, grpcService);
-                serverBuilder.addService(serviceDefinition);
-                log.info("'{}' service has been registered.", serviceDefinition.getServiceDescriptor().getName());
+            if (BindableService.class.isAssignableFrom(grpcService.getClass())) {
+
+                BindableService bindableService = BindableService.class.cast(grpcService);
+                serverBuilder.addService(bindableService);
+                log.info("'{}' service has been registered.", bindableService.getClass().getName());
             } else {
-                throw new IllegalArgumentException(String.format("Failed to find '%s' method on class %s.\r\n" +
-                                "Please make sure you've provided correct 'grpcServiceOuterClass' attribute for '%s' annotation.\r\n" +
-                                "It should be the protoc-generated outer class of your service."
-                        , bindServiceMethodName,grpcServiceOuterClass.getName(), GRpcService.class.getName()));
+                throw new IllegalArgumentException(String.format("%s should be of type %s" ,grpcService.getClass().getName(), BindableService.class.getName()));
             }
         }
 

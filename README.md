@@ -14,9 +14,11 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:0.0.3')
+    compile('org.lognet:grpc-spring-boot-starter:0.0.4')
 }
 ```
+If you are using protobuf version lower than `3.0.0`, please use `org.lognet:grpc-spring-boot-starter:0.0.3` 
+
 
 ## Usage
 * Start by [generating](https://github.com/google/protobuf-gradle-plugin) stub and server interface(s) from your `.proto` file(s).
@@ -35,12 +37,12 @@ service Greeter {
     rpc SayHello ( HelloRequest) returns (  HelloReply) {}
 }
 ```
-Note the generated `io.grpc.examples.GreeterGrpc` class with static function `bindService`.(The generated classes were intentionally  committed for demo purposes).
+Note the generated `io.grpc.examples.GreeterGrpc.GreeterImplBase` class that implements `io.grpc.BindableService`.(The generated classes were intentionally  committed for demo purposes).
 
 All you need to do is to annotate your service implementation with `@org.lognet.springboot.grpc.GRpcService`
 
 ```java
-@GRpcService(grpcServiceOuterClass = GreeterGrpc.class)
+@GRpcService
     public static class GreeterService implements GreeterGrpc.Greeter{
         @Override
         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {

@@ -19,9 +19,5 @@ import org.springframework.stereotype.Service;
 @Documented
 @Service
 public @interface GRpcService {
-    /**
-     *
-     * @return protoc-generated class that creates {@link io.grpc.ServerServiceDefinition} via static <code>bindService</code> function.
-     */
-    Class<?> grpcServiceOuterClass();
+
 }

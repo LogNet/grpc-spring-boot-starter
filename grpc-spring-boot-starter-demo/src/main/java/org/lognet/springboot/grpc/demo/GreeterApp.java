@@ -16,8 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GreeterApp {
 
-    @GRpcService(grpcServiceOuterClass = GreeterGrpc.class)
-    public static class GreeterService implements GreeterGrpc.Greeter{
+    @GRpcService
+    public static class GreeterService extends GreeterGrpc.GreeterImplBase {
         @Override
         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
             final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());

@@ -2,11 +2,11 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'spring-boot'
 
 dependencies {
-    compile 'io.grpc:grpc-stub:0.15.0'
-    compile 'io.grpc:grpc-protobuf:0.15.0'
-    compile 'io.grpc:grpc-netty:0.15.0'
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile('org.springframework.boot:spring-boot-starter-web')
+    compile "io.grpc:grpc-stub:${grpcVersion}"
+    compile "io.grpc:grpc-protobuf:${grpcVersion}"
+    compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile 'org.springframework.boot:spring-boot-starter-web'
     compile project(':grpc-spring-boot-starter')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -21,11 +21,11 @@ sourceSets {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.0.0-beta-3'
+        artifact = 'com.google.protobuf:protoc:3.0.0'
     }
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:0.15.0'
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
     }
 
