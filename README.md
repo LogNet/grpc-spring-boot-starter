@@ -43,7 +43,7 @@ All you need to do is to annotate your service implementation with `@org.lognet.
 
 ```java
 @GRpcService
-    public static class GreeterService implements GreeterGrpc.Greeter{
+    public static class GreeterService extends  GreeterGrpc.GreeterImplBase{
         @Override
         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
             final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());
