@@ -37,7 +37,7 @@ service Greeter {
     rpc SayHello ( HelloRequest) returns (  HelloReply) {}
 }
 ```
-Note the generated `io.grpc.examples.GreeterGrpc.GreeterImplBase` class that implements `io.grpc.BindableService`.(The generated classes were intentionally  committed for demo purposes).
+Note the generated `io.grpc.examples.GreeterGrpc.GreeterImplBase` class that extends `io.grpc.BindableService`.(The generated classes were intentionally  committed for demo purposes).
 
 All you need to do is to annotate your service implementation with `@org.lognet.springboot.grpc.GRpcService`
 
