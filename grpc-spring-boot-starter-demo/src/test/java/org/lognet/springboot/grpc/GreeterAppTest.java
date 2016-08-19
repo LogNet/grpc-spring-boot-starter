@@ -1,20 +1,20 @@
 package org.lognet.springboot.grpc;
 
 import static org.junit.Assert.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+
+import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.GreeterApp;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.concurrent.ExecutionException;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -24,10 +24,8 @@ import io.grpc.examples.GreeterOuterClass;
 /**
  * Created by alexf on 28-Jan-16.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(GreeterApp.class)
-@WebIntegrationTest
-
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = GreeterApp.class, webEnvironment = DEFINED_PORT)
 public class GreeterAppTest {
 
     private ManagedChannel channel;
@@ -37,7 +35,6 @@ public class GreeterAppTest {
         channel = ManagedChannelBuilder.forAddress("localhost", 6565)
             .usePlaintext(true)
             .build();
-
     }
 
     @After
