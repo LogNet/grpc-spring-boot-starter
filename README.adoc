@@ -1,8 +1,11 @@
 = Spring boot starter for http://www.grpc.io/[gRPC framework.]
 
-image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
-https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion[ image:https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg[Download] ]
-https://bintray.com/lognet/maven/grpc-spring-boot-starter?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[]]
+[cols="3*.^",grid="none",frame="none",width="40%"]
+|===
+| image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
+| https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion[ image:https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg[Download]]
+| https://bintray.com/lognet/maven/grpc-spring-boot-starter?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[]]
+|===
 
 == Features
 
