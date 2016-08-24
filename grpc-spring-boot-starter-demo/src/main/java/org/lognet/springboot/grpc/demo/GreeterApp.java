@@ -1,12 +1,13 @@
 package org.lognet.springboot.grpc.demo;
 
 
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterOuterClass;
-import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import io.grpc.examples.GreeterGrpc;
+import io.grpc.examples.GreeterOuterClass;
+import io.grpc.stub.StreamObserver;
 
 /**
  * Created by alexf on 28-Jan-16.
@@ -29,5 +30,6 @@ public class GreeterApp {
     public static void main(String[] args) {
         SpringApplication.run(GreeterApp.class,args);
     }
+
 }
 
