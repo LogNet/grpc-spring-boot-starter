@@ -2,8 +2,7 @@ apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
-    dependencies {
-        compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
-    }
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion)
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
 }
 compileJava.dependsOn(processResources)
