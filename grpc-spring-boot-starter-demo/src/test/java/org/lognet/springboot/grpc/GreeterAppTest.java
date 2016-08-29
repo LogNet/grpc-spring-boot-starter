@@ -49,8 +49,8 @@ public class GreeterAppTest {
         final GreeterOuterClass.HelloRequest
             helloRequest =
             GreeterOuterClass.HelloRequest.newBuilder().setName("John").build();
-        final String replay = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        System.out.println(replay);
+        final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
+        assertEquals("Hello John", reply);
     }
 
     @Test

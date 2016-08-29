@@ -1,21 +1,16 @@
 package org.lognet.springboot.grpc;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Optional;
 
-import io.grpc.BindableService;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.ReflectionUtils;
 
+import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.ServerServiceDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -23,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
-
-
 
     @Autowired
     private ApplicationContext applicationContext;
