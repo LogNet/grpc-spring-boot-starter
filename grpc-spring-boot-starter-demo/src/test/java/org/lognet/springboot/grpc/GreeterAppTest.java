@@ -1,6 +1,6 @@
 package org.lognet.springboot.grpc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 import java.util.concurrent.ExecutionException;
@@ -44,13 +44,12 @@ public class GreeterAppTest {
 
     @Test
     public void simpleGreeting() throws ExecutionException, InterruptedException {
-
+        String name = "John";
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
-        final GreeterOuterClass.HelloRequest
-            helloRequest =
-            GreeterOuterClass.HelloRequest.newBuilder().setName("John").build();
+        final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertEquals("Hello John", reply);
+        assertNotNull(reply);
+        assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
     }
 
     @Test
