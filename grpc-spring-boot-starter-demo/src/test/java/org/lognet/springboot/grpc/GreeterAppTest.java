@@ -46,10 +46,11 @@ public class GreeterAppTest {
     public void simpleGreeting() throws ExecutionException, InterruptedException {
         String name = "John";
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
+
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
         assertNotNull(reply);
-        assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
+        assertTrue(String.format("Reply should contain name '%s'",name),reply.contains(name));
     }
 
     @Test
