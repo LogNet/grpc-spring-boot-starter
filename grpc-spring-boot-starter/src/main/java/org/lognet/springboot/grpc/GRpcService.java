@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.grpc.ServerInterceptor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,5 +20,5 @@ import org.springframework.stereotype.Service;
 @Documented
 @Service
 public @interface GRpcService {
-
+    Class<? extends ServerInterceptor>[] interceptors() default {};
 }

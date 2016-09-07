@@ -1,7 +1,12 @@
 package org.lognet.springboot.grpc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
+import io.grpc.ServerServiceDefinition;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +45,9 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
             if (BindableService.class.isAssignableFrom(grpcService.getClass())) {
 
                 BindableService bindableService = BindableService.class.cast(grpcService);
-                serverBuilder.addService(bindableService);
+
+                ServerServiceDefinition definition = bindInterceptors(bindableService);
+                serverBuilder.addService(definition);
                 log.info("'{}' service has been registered.", bindableService.getClass().getName());
             } else {
                 throw new IllegalArgumentException(String.format("%s should be of type %s" ,grpcService.getClass().getName(), BindableService.class.getName()));
@@ -51,6 +58,31 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
         log.info("gRPC Server started, listening on port {}.", gRpcServerProperties.getPort());
         startDaemonAwaitThread();
 
+    }
+
+    private ServerServiceDefinition bindInterceptors(BindableService bindableService) {
+        Class<? extends ServerInterceptor>[] interceptorClasses = bindableService.getClass().getAnnotation(GRpcService.class).interceptors();
+
+        if(interceptorClasses.length == 0) {
+            bindableService.bindService();
+        }
+
+        List<ServerInterceptor> interceptors = buildInterceptors(interceptorClasses);
+        return ServerInterceptors.intercept(bindableService, interceptors);
+    }
+
+    private List<ServerInterceptor> buildInterceptors(Class<? extends ServerInterceptor>[] classes) {
+        List<ServerInterceptor> interceptors = new ArrayList<>();
+
+        for(Class<? extends ServerInterceptor> clazz : classes) {
+            try {
+                interceptors.add(clazz.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                // TODO
+            }
+        }
+
+        return interceptors;
     }
 
     private void startDaemonAwaitThread() {
