@@ -75,11 +75,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
         List<ServerInterceptor> interceptors = new ArrayList<>();
 
         for(Class<? extends ServerInterceptor> clazz : classes) {
-            try {
-                interceptors.add(clazz.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                log.error("Unable to instantiate ServerInterceptor from class {}", clazz, e);
-            }
+            interceptors.add(applicationContext.getBean(clazz));
         }
 
         return interceptors;
