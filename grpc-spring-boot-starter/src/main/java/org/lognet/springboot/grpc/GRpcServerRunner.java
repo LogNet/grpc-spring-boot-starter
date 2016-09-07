@@ -78,7 +78,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean {
             try {
                 interceptors.add(clazz.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
-                // TODO
+                log.error("Unable to instantiate ServerInterceptor from class {}", clazz, e);
             }
         }
 
