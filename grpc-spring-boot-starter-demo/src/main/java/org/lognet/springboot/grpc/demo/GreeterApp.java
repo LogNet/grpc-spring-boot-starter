@@ -17,7 +17,7 @@ import io.grpc.stub.StreamObserver;
 @SpringBootApplication
 public class GreeterApp {
 
-    @GRpcService
+    @GRpcService(interceptors = { DemoInterceptor.class })
     public static class GreeterService extends GreeterGrpc.GreeterImplBase {
         @Override
         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
@@ -32,4 +32,3 @@ public class GreeterApp {
     }
 
 }
-
