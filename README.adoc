@@ -16,7 +16,7 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:0.0.5')
+    compile('org.lognet:grpc-spring-boot-starter:0.0.6')
 }
 ----
 
