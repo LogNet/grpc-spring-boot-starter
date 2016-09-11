@@ -37,6 +37,8 @@ If you are using protobuf version lower than `3.0.0`, please use `org.lognet:grp
 == Show case
 
 In the 'grpc-spring-boot-starter-demo' project you can find fully functional example with integration test.
+
+=== Service implementation
 The service definition from `.proto` file looks like this :
 [source,proto]
 ----
@@ -62,10 +64,51 @@ All you need to do is to annotate your service implementation with `@org.lognet.
     }
 ----
 
+=== Interceptors support
+The starter supports the registration of two kinds of interceptors:
+
+- Per service
+
+[source,java]
+----
+@GRpcService(interceptors = { LogInterceptor.class })
+public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
+    // ommited
+}
+----
+`LogInterceptor` will be instantiated via spring factory if there is bean of type `LogInterceptor`, or via no-args constructor otherwise.
+
+- Global
+
+[source,java]
+----
+@GRpcGlobalInterceptor
+public  class MyInterceptor implements ServerInterceptor{
+    // ommited
+}
+----
+
+
+In both cases the interceptor has to implement `io.grpc.ServerInterceptor` interface.
+
+The particular service also has the opportunity to disable the global interceptors :
+
+[source,java]
+----
+@GRpcService(applyGlobalInterceptors = false)
+public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
+    // ommited
+}
+----
+
+
+
+
 == On the roadmap
 
-* Customized gRPC server builder with compression/decompression registry, custom `Executor` service and transport security.
-* `ServerInterceptor` support.
+* Customized gRPC server builder with compression/decompression registry .
+* Custom `Executor` service.
+* Transport security.
 
 == License
 
