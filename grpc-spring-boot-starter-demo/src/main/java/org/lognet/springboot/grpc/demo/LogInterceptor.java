@@ -5,19 +5,21 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.lognet.springboot.grpc.GRpcInterceptor;
+import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by jamessmith on 9/7/16.
  */
 @Slf4j
-@GRpcInterceptor
-public class DemoInterceptor implements ServerInterceptor {
+@Component
+public class LogInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
                                                                  ServerCallHandler<ReqT, RespT> next) {
-        log.info("Demo interceptor invoked!");
+        System.out.println(call.getMethodDescriptor().getFullMethodName());
+        log.info(call.getMethodDescriptor().getFullMethodName());
         return next.startCall(call, headers);
     }
 }
