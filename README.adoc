@@ -65,7 +65,8 @@ All you need to do is to annotate your service implementation with `@org.lognet.
 ----
 
 === Interceptors support
-The starter supports the registration of two kinds of interceptors:
+The starter supports the registration of two kinds of interceptors: _Global_  and _Per Service_. +
+In both cases the interceptor has to implement `io.grpc.ServerInterceptor` interface.
 
 - Per service
 
@@ -88,8 +89,25 @@ public  class MyInterceptor implements ServerInterceptor{
 }
 ----
 
+The annotation on java config factory method is also supported :
 
-In both cases the interceptor has to implement `io.grpc.ServerInterceptor` interface.
+[source,java]
+----
+ @Configuration
+ public class MyConfig{
+     @Bean
+     @GRpcGlobalInterceptor
+     public  ServerInterceptor globalInterceptor(){
+         new ServerInterceptor(){
+             @Override
+             public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+                // your logic here
+                 return next.startCall(call, headers);
+             }
+         };
+     }
+ }
+----
 
 The particular service also has the opportunity to disable the global interceptors :
 
