@@ -98,7 +98,7 @@ The annotation on java config factory method is also supported :
      @Bean
      @GRpcGlobalInterceptor
      public  ServerInterceptor globalInterceptor(){
-         new ServerInterceptor(){
+         return new ServerInterceptor(){
              @Override
              public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
                 // your logic here
