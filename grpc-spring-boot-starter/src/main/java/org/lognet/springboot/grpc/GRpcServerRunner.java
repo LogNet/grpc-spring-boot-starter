@@ -1,25 +1,26 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.*;
+import io.grpc.BindableService;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
+import io.grpc.ServerServiceDefinition;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.type.StandardMethodMetadata;
-import org.springframework.util.StreamUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,13 +46,19 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
 
         // find and register all GRpcService-enabled beans
-        for(BindableService bindableService : getTypedBeansWithAnnotation(GRpcService.class,BindableService.class)) {
+        for (BindableService bindableService : getTypedBeansWithAnnotation(GRpcService.class, BindableService.class)) {
 
-                ServerServiceDefinition serviceDefinition = bindableService.bindService();
-                GRpcService gRpcServiceAnn = bindableService.getClass().getAnnotation(GRpcService.class);
-                serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
-                serverBuilder.addService(serviceDefinition);
-                log.info("'{}' service has been registered.", bindableService.getClass().getName());
+            ServerServiceDefinition serviceDefinition = bindableService.bindService();
+            GRpcService gRpcServiceAnn;
+            // if the service is a proxy, use its target class instead.
+            if (AopUtils.isAopProxy(bindableService)) {
+                gRpcServiceAnn = AopUtils.getTargetClass(bindableService).getAnnotation(GRpcService.class);
+            } else {
+                gRpcServiceAnn = bindableService.getClass().getAnnotation(GRpcService.class);
+            }
+            serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
+            serverBuilder.addService(serviceDefinition);
+            log.info("'{}' service has been registered.", bindableService.getClass().getName());
 
         }
 
