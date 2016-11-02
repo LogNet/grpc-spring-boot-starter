@@ -7,8 +7,11 @@ dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile 'org.springframework.boot:spring-boot-starter-web'
+
+
     compile project(':grpc-spring-boot-starter')
 
+    testCompile 'org.springframework.boot:spring-boot-starter-aop'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 sourceSets {

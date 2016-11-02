@@ -5,21 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.type.StandardMethodMetadata;
-import org.springframework.util.StreamUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +23,32 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
+
+    private class   NamedBeanWrapper<T>{
+        private  T bean;
+        private String beanName;
+
+        public NamedBeanWrapper( String beanName,T bean) {
+            this.bean = bean;
+            this.beanName = beanName;
+        }
+
+        public T getBean() {
+            return bean;
+        }
+
+        public void setBean(T bean) {
+            this.bean = bean;
+        }
+
+        public String getBeanName() {
+            return beanName;
+        }
+
+        public void setBeanName(String beanName) {
+            this.beanName = beanName;
+        }
+    }
 
     @Autowired
     private AbstractApplicationContext applicationContext;
@@ -41,14 +62,17 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
     public void run(String... args) throws Exception {
         log.info("Starting gRPC Server ...");
 
-        Collection<ServerInterceptor> globalInterceptors = getTypedBeansWithAnnotation(GRpcGlobalInterceptor.class,ServerInterceptor.class);
+        Collection<ServerInterceptor> globalInterceptors = getTypedBeansWithAnnotation(GRpcGlobalInterceptor.class,ServerInterceptor.class)
+                .stream()
+                .map(NamedBeanWrapper::getBean)
+                .collect(Collectors.toList());
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
 
         // find and register all GRpcService-enabled beans
-        for(BindableService bindableService : getTypedBeansWithAnnotation(GRpcService.class,BindableService.class)) {
+        for(NamedBeanWrapper<BindableService> bindableService : getTypedBeansWithAnnotation(GRpcService.class,BindableService.class)) {
 
-                ServerServiceDefinition serviceDefinition = bindableService.bindService();
-                GRpcService gRpcServiceAnn = bindableService.getClass().getAnnotation(GRpcService.class);
+                ServerServiceDefinition serviceDefinition = bindableService.getBean().bindService();
+                GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(bindableService.getBeanName(),GRpcService.class);
                 serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
                 serverBuilder.addService(serviceDefinition);
                 log.info("'{}' service has been registered.", bindableService.getClass().getName());
@@ -107,7 +131,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
         log.info("gRPC server stopped.");
     }
 
-    private <T> Collection<T> getTypedBeansWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
+    private <T> Collection<NamedBeanWrapper<T>> getTypedBeansWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
 
 
        return Stream.of(applicationContext.getBeanNamesForType(beanType))
@@ -119,7 +143,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                     }
                     return null!= applicationContext.getBeanFactory().findAnnotationOnBean(name,annotationType);
                 })
-               .map(name -> applicationContext.getBeanFactory().getBean(name,beanType))
+               .map(name -> new NamedBeanWrapper<T>(name,applicationContext.getBeanFactory().getBean(name,beanType)) )
                .collect(Collectors.toList());
 
     }
