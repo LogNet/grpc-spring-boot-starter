@@ -12,14 +12,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 /**
  * Created by alexf on 28-Jan-16.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DemoApp.class },webEnvironment = DEFINED_PORT
-        ,properties = {"spring.aop.proxy-target-class=true"}
+@SpringBootTest(classes = {DemoApp.class },webEnvironment = NONE
+        ,properties = {"spring.aop.proxy-target-class=true","grpc.port=6666"}
 )
 @ActiveProfiles(profiles = {"aopTest"})
 public class DemoAppTestAop {
