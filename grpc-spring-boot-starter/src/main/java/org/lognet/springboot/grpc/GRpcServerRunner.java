@@ -24,31 +24,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
-    private class   NamedBeanWrapper<T>{
-        private  T bean;
-        private String beanName;
 
-        public NamedBeanWrapper( String beanName,T bean) {
-            this.bean = bean;
-            this.beanName = beanName;
-        }
-
-        public T getBean() {
-            return bean;
-        }
-
-        public void setBean(T bean) {
-            this.bean = bean;
-        }
-
-        public String getBeanName() {
-            return beanName;
-        }
-
-        public void setBeanName(String beanName) {
-            this.beanName = beanName;
-        }
-    }
 
     @Autowired
     private AbstractApplicationContext applicationContext;
@@ -62,22 +38,24 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
     public void run(String... args) throws Exception {
         log.info("Starting gRPC Server ...");
 
-        Collection<ServerInterceptor> globalInterceptors = getTypedBeansWithAnnotation(GRpcGlobalInterceptor.class,ServerInterceptor.class)
-                .stream()
-                .map(NamedBeanWrapper::getBean)
+        Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class,ServerInterceptor.class)
+                .map(name -> applicationContext.getBeanFactory().getBean(name,ServerInterceptor.class))
                 .collect(Collectors.toList());
+
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
 
         // find and register all GRpcService-enabled beans
-        for(NamedBeanWrapper<BindableService> bindableService : getTypedBeansWithAnnotation(GRpcService.class,BindableService.class)) {
+        getBeanNamesByTypeWithAnnotation(GRpcService.class,BindableService.class)
+                .forEach(name->{
+                    BindableService srv = applicationContext.getBeanFactory().getBean(name, BindableService.class);
+                    ServerServiceDefinition serviceDefinition = srv.bindService();
+                    GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name,GRpcService.class);
+                    serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
+                    serverBuilder.addService(serviceDefinition);
+                    log.info("'{}' service has been registered.", srv.getClass().getName());
 
-                ServerServiceDefinition serviceDefinition = bindableService.getBean().bindService();
-                GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(bindableService.getBeanName(),GRpcService.class);
-                serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
-                serverBuilder.addService(serviceDefinition);
-                log.info("'{}' service has been registered.", bindableService.getClass().getName());
+                });
 
-        }
 
         server = serverBuilder.build().start();
         log.info("gRPC Server started, listening on port {}.", gRpcServerProperties.getPort());
@@ -131,7 +109,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
         log.info("gRPC server stopped.");
     }
 
-    private <T> Collection<NamedBeanWrapper<T>> getTypedBeansWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
+    private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
 
 
        return Stream.of(applicationContext.getBeanNamesForType(beanType))
@@ -142,10 +120,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                         return metadata.isAnnotated(annotationType.getName());
                     }
                     return null!= applicationContext.getBeanFactory().findAnnotationOnBean(name,annotationType);
-                })
-               .map(name -> new NamedBeanWrapper<T>(name,applicationContext.getBeanFactory().getBean(name,beanType)) )
-               .collect(Collectors.toList());
-
+                });
     }
 
 

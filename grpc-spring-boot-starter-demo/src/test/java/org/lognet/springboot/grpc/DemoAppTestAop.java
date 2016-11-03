@@ -34,7 +34,7 @@ public class DemoAppTestAop {
 
 
     @Test
-    public void simpleGreeting() throws ExecutionException, InterruptedException {
+    public void simpleAopTest() throws ExecutionException, InterruptedException {
 
         assertTrue(AopUtils.isAopProxy(greeterService));
         assertTrue(AopUtils.isAopProxy(calculatorService));
