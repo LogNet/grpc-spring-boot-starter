@@ -1,10 +1,11 @@
 apply plugin: 'idea'
 buildscript {
     ext {
-        springBootVersion = '1.4.0.RELEASE'
-        grpcVersion = '1.0.0'
+        springBootVersion = '1.4.1.RELEASE'
+        grpcVersion = '1.0.1'
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
         maven { url "https://plugins.gradle.org/m2/"}

@@ -2,6 +2,8 @@ package org.lognet.springboot.grpc.autoconfigure;
 
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.register.RpcConsulRegisterImpl;
+import org.lognet.springboot.grpc.register.RpcRegister;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +17,13 @@ import org.springframework.context.annotation.Configuration;
 public class GRpcAutoConfiguration {
     @Bean
     @ConditionalOnBean(annotation = GRpcService.class)
-    public GRpcServerRunner grpcServerRunner(){
+    public GRpcServerRunner grpcServerRunner() {
         return new GRpcServerRunner();
+    }
+
+    @Bean
+    @ConditionalOnBean(annotation = GRpcService.class)
+    public RpcRegister rpcRegister() {
+        return new RpcConsulRegisterImpl();
     }
 }
