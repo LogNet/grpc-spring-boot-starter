@@ -2,3 +2,6 @@ grpc:
     port: 9988
     consulHost: 192.168.2.222:8500
     localIp: 192.168.2.138
+    healthUrl: http://127.0.0.1:8080/health
+server:
+  port: 8001

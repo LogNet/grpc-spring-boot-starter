@@ -22,6 +22,11 @@ public class GRpcServerProperties {
      */
     private String localIp;
 
+    /**
+     * Health check Url
+     */
+    private String healthUrl;
+
     public int getPort() {
         return port;
     }
@@ -44,5 +49,13 @@ public class GRpcServerProperties {
 
     public void setLocalIp(String localIp) {
         this.localIp = localIp;
+    }
+
+    public String getHealthUrl() {
+        return healthUrl;
+    }
+
+    public void setHealthUrl(String healthUrl) {
+        this.healthUrl = healthUrl;
     }
 }

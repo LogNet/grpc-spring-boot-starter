@@ -27,7 +27,7 @@ public class RpcConsulRegisterImpl implements RpcRegister {
         Consul consul = Consul.builder().withHostAndPort(HostAndPort.fromString(gRpcServerProperties.getConsulHost())).build();
         AgentClient agentClient = consul.agentClient();
         String serviceId = gRpcServerProperties.getLocalIp() + ":" + gRpcServerProperties.getPort();
-        String healthUrl = String.format("http://%s:8080/health", gRpcServerProperties.getLocalIp());
+        String healthUrl = gRpcServerProperties.getHealthUrl();   //String.format("http://%s:8080/health", gRpcServerProperties.getLocalIp());
         Registration registration = ImmutableRegistration.builder().address(gRpcServerProperties.getLocalIp()).port(gRpcServerProperties.getPort())
                 .id(serviceId).name(serviceInfo.getName()).addTags(serviceInfo.getVersion())
                 .check(Registration.RegCheck.http(healthUrl, 5)).build();
