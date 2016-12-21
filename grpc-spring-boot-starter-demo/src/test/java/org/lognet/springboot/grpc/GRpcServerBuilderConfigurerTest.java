@@ -64,7 +64,7 @@ public class GRpcServerBuilderConfigurerTest {
                 .get().getResult();
         Assert.assertEquals(2.0,result,0.0);
 
-        // log interceptor should be invoked only on GreeterService and not CalculatorService
+        // expect invocation via custom executor
         outputCapture.expect(CoreMatchers.containsString(CUSTOM_EXECUTOR_MESSAGE));
     }
 }
