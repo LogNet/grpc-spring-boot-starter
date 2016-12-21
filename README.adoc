@@ -131,7 +131,7 @@ In your implementation of `configure` method, you can continue with passed insta
 [source,java]
 ----
 @Component
-public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
         @Override
         public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
             return serverBuilder
@@ -150,7 +150,7 @@ or return completely new instance of `ServerBuilder` :
 [source,java]
 ----
 @Component
-public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
         @Override
         public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
             return ServerBuilder.forPort(YOUR PORT)
