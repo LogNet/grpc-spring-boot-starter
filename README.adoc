@@ -130,7 +130,7 @@ In your implementation of `configure` method, you can continue with passed insta
 
 [source,java]
 ----
-@Bean
+@Component
 public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
         @Override
         public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
@@ -149,7 +149,7 @@ or return completely new instance of `ServerBuilder` :
 
 [source,java]
 ----
-@Bean
+@Component
 public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
         @Override
         public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
