@@ -16,7 +16,7 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:0.0.7')
+    compile('org.lognet:grpc-spring-boot-starter:1.0.0')
 }
 ----
 
@@ -122,11 +122,49 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 
 
 
-== On the roadmap
+=== Custom gRPC Server Configuration
 
-* Customized gRPC server builder with compression/decompression registry .
-* Custom `Executor` service.
-* Transport security.
+To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context  and override the `configure` method. +
+By the time of invocation of `configure` method, all discovered services, including theirs interceptors, had been added to the passed builder. +
+In your implementation of `configure` method, you can continue with passed instance of `ServerBuilder` by addition your configuration:
+
+[source,java]
+----
+@Bean
+public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+        @Override
+        public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
+            return serverBuilder
+                .executor(YOUR EXECUTOR INSTANCE)
+                .compressorRegistry(YOUR COMPRESSION REGISTRY)
+                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
+                .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
+
+        }
+    };
+}
+----
+
+or return completely new instance of `ServerBuilder` :
+
+[source,java]
+----
+@Bean
+public MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+        @Override
+        public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
+            return ServerBuilder.forPort(YOUR PORT)
+                .executor(YOUR EXECUTOR INSTANCE)
+                .compressorRegistry(YOUR COMPRESSION REGISTRY)
+                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
+                .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
+
+        }
+    };
+}
+----
+[NOTE]
+In this case you should also take care about adding the services to the fresh instance of `ServerBuilder`
 
 == License
 
