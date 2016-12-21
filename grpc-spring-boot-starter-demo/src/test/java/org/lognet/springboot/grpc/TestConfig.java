@@ -37,7 +37,7 @@ public class TestConfig {
 
     @Bean
     @Profile("customServerBuilder")
-    public GRpcServerBuilderConfigurer grpcServerWithPredefinedPortConfigurer(){
+    public GRpcServerBuilderConfigurer customGrpcServerBuilderConfigurer(){
         return  new GRpcServerBuilderConfigurer(){
             @Override
             public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
