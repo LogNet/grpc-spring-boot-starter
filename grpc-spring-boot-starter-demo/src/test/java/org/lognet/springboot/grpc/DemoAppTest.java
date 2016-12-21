@@ -1,18 +1,14 @@
 package org.lognet.springboot.grpc;
 
-import static org.junit.Assert.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-
-import java.util.concurrent.ExecutionException;
-
-import io.grpc.*;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.ServerInterceptor;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
+import io.grpc.examples.GreeterGrpc;
+import io.grpc.examples.GreeterOuterClass;
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
@@ -21,12 +17,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterOuterClass;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
  * Created by alexf on 28-Jan-16.
@@ -44,6 +43,8 @@ public class DemoAppTest {
     @Qualifier("globalInterceptor")
     private  ServerInterceptor globalInterceptor;
 
+    @Autowired
+    private ApplicationContext context;
 
 
     @Before
@@ -98,6 +99,14 @@ public class DemoAppTest {
 
         ResponseEntity<String> response = template.getForEntity("http://localhost:8080/env", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+
+    @Test
+    public void testDefaultConfigurer(){
+        Assert.assertEquals("Default configurer should be picked up",
+                context.getBean(GRpcServerBuilderConfigurer.class).getClass(),
+                GRpcServerBuilderConfigurer.class);
     }
 
 
