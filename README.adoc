@@ -126,7 +126,7 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 
 To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context  and override the `configure` method. +
 By the time of invocation of `configure` method, all discovered services, including theirs interceptors, had been added to the passed builder. +
-In your implementation of `configure` method, you can continue with passed instance of `ServerBuilder` by addition your configuration:
+In your implementation of `configure` method, you can continue with passed instance of `ServerBuilder` by adding your configuration:
 
 [source,java]
 ----
