@@ -32,7 +32,14 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
+
+    private GRpcServerBuilderConfigurer configurer;
+
     private Server server;
+
+    public GRpcServerRunner(GRpcServerBuilderConfigurer configurer) {
+        this.configurer = configurer;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -55,6 +62,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                     log.info("'{}' service has been registered.", srv.getClass().getName());
 
                 });
+
 
 
         server = serverBuilder.build().start();
