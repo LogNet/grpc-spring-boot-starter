@@ -63,8 +63,8 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
                 });
 
-
-        server = configurer.configure(serverBuilder).build().start();
+        configurer.configure(serverBuilder);
+        server = serverBuilder.build().start();
         log.info("gRPC Server started, listening on port {}.", gRpcServerProperties.getPort());
         startDaemonAwaitThread();
 

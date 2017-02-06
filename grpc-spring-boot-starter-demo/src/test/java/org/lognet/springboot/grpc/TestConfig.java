@@ -40,8 +40,8 @@ public class TestConfig {
     public GRpcServerBuilderConfigurer customGrpcServerBuilderConfigurer(){
         return  new GRpcServerBuilderConfigurer(){
             @Override
-            public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
-                return serverBuilder.executor(command -> {
+            public void configure(ServerBuilder<?> serverBuilder){
+                 serverBuilder.executor(command -> {
                             System.out.println(CUSTOM_EXECUTOR_MESSAGE);
                             command.run();
                         }

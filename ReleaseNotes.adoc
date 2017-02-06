@@ -1,0 +1,7 @@
+== Version 2.0.0
+- gRPC version upgraded to 1.1.1
+- Spring Boot version upgraded to  1.4.4
+- *Breaking API change*: +
+    `void GRpcServerBuilderConfigurer::configure(ServerBuilder<?> serverBuilder)` methods now returns void and overriding of `ServerBuilder` is not supported +
+     to prevent potential confusion.
+

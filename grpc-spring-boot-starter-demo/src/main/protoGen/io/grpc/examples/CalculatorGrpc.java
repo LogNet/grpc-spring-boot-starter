@@ -8,7 +8,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.0.2)",
+    value = "by gRPC proto compiler (version 1.1.1)",
     comments = "Source: calculator.proto")
 public class CalculatorGrpc {
 
@@ -61,7 +61,7 @@ public class CalculatorGrpc {
       asyncUnimplementedUnaryCall(METHOD_CALCULATE, responseObserver);
     }
 
-    @java.lang.Override public io.grpc.ServerServiceDefinition bindService() {
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             METHOD_CALCULATE,
@@ -193,9 +193,28 @@ public class CalculatorGrpc {
     }
   }
 
-  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
-    return new io.grpc.ServiceDescriptor(SERVICE_NAME,
-        METHOD_CALCULATE);
+  private static final class CalculatorDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
+      return io.grpc.examples.CalculatorOuterClass.getDescriptor();
+    }
   }
 
+  private static volatile io.grpc.ServiceDescriptor serviceDescriptor;
+
+  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
+    io.grpc.ServiceDescriptor result = serviceDescriptor;
+    if (result == null) {
+      synchronized (CalculatorGrpc.class) {
+        result = serviceDescriptor;
+        if (result == null) {
+          serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
+              .setSchemaDescriptor(new CalculatorDescriptorSupplier())
+              .addMethod(METHOD_CALCULATE)
+              .build();
+        }
+      }
+    }
+    return result;
+  }
 }

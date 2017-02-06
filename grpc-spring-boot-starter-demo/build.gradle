@@ -1,5 +1,5 @@
 apply plugin: 'com.google.protobuf'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 dependencies {
     compile "io.grpc:grpc-stub:${grpcVersion}"
