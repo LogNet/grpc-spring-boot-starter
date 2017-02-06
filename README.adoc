@@ -133,8 +133,8 @@ In your implementation of `configure` method, you can add your custom configurat
 @Component
 public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
         @Override
-        public ServerBuilder<?> configure(ServerBuilder<?> serverBuilder){
-            return serverBuilder
+        public void configure(ServerBuilder<?> serverBuilder){
+            serverBuilder
                 .executor(YOUR EXECUTOR INSTANCE)
                 .compressorRegistry(YOUR COMPRESSION REGISTRY)
                 .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
