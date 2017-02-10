@@ -10,7 +10,7 @@ cache:
 after_success:
  - ./gradlew bintrayUpload artifactoryPublish
  - bash <(curl -s https://codecov.io/bash)
-scripts:
+script:
  - ./gradlew check
  - ./gradlew codeCoverageReport
 
