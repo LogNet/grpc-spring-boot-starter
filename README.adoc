@@ -156,7 +156,7 @@ Below are the essential parts of configurations for both server and client proje
 
 ===  gRPC Server Project
 
-* Add eureka starter as dependency of your server project together with generated class from `proto` files:
+* Add eureka starter as dependency of your server project together with generated classes from `proto` files:
 
 [source, gradle]
 .build.gradle
@@ -222,7 +222,7 @@ eureka:
 
 ===  gRPC Client Project
 
-* Add eureka starter as dependency of your client project together with generated class from `proto` files:
+* Add eureka starter as dependency of your client project together with generated classes from `proto` files:
 
 [source, gradle]
 .build.gradle
