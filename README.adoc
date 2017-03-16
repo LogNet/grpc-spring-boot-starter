@@ -158,7 +158,7 @@ Below are the essential parts of configurations for both server and client proje
 
 * Add eureka starter as dependency of your server project together with generated class from `proto` files:
 
-[source,gradle]
+[source, gradle]
 .build.gradle
 ----
  dependencies {
@@ -171,7 +171,7 @@ Below are the essential parts of configurations for both server and client proje
 * Configure gRPC server to register itself with Eureka.
 
 
-[source,yaml]
+[source, yaml]
 .bootstrap.yaml
 ----
 spring:
@@ -192,16 +192,14 @@ eureka:
         serviceUrl:
             defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/ <3>
 ----
-
 <1> Specify the port number the gRPC is listening on.
 <2> Register the eureka service port to be the same as `grpc.port` so client will know where to send the requests to.
 <3> Specify the  registry URL, so the service will register itself with. 
 
-  d
- * Expose the gRPC service as part of Spring Boot Application.
 
+* Expose the gRPC service as part of Spring Boot Application.
 
-[source,java]
+[source, java]
 .EurekaGrpcServiceApp.java
 ----
  @SpringBootApplication
@@ -219,7 +217,6 @@ eureka:
      public static void main(String[] args) {
          SpringApplication.run(DemoApp.class,args);
      }
-
  }
 ----
 
@@ -227,7 +224,7 @@ eureka:
 
 * Add eureka starter as dependency of your client project together with generated class from `proto` files:
 
-[source,gradle]
+[source, gradle]
 .build.gradle
 ----
  dependencies {
@@ -247,25 +244,23 @@ eureka:
     service-url:
       defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/ <2>
 ----
-
 <1> `false` if this project is not meant to act as  a service to another client.
 <2>  Specify the  registry URL, so this client  will know where to look up the required service.
 
-* Use EurekaClient to get the coordinates of gRPC service instance from Eureka.
 
 [source,java]
 .GreeterServiceConsumerApplication.java
 ----
- @EnableEurekaClient
- @SpringBootApplication
- public class GreeterServiceConsumerApplication {
-     public static void main(String[] args) {
-       SpringApplication.run(GreeterServiceConsumerApplication.class, args);
-     }
+@EnableEurekaClient
+@SpringBootApplication
+public class GreeterServiceConsumerApplication {
+ public static void main(String[] args) {
+   SpringApplication.run(GreeterServiceConsumerApplication.class, args);
  }
+}
 ----
 
-
+* Use EurekaClient to get the coordinates of gRPC service instance from Eureka and consume the service :
 
 [source,java]
 .GreeterServiceConsumer.java
@@ -282,7 +277,7 @@ public class GreeterServiceConsumer {
                 .usePlaintext(true)
                 .build(); <2>
         final GreeterServiceGrpc.GreeterServiceFutureStub stub = GreeterServiceGrpc.newFutureStub(channel); <3>
-        stub.greet(name);
+        stub.greet(name); <4>
 
     }
 }
@@ -290,6 +285,7 @@ public class GreeterServiceConsumer {
 <1> Get the information about the `my-service-name` instance.
 <2> Build `channel` accordingly.
 <3> Create stub using the `channel`.
+<4> Invoke the service.
 
 
 
