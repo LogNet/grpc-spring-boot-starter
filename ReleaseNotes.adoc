@@ -1,3 +1,7 @@
+== Version 2.0.2
+- Fixing issue to identify beans with annotation: see PR #38
+- Spring Boot version upgraded to  1.5.2
+
 == Version 2.0.1
 - gRPC version upgraded to 1.2.0
 - Spring Boot version upgraded to  1.4.5
