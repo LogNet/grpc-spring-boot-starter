@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 buildscript {
     ext {
-        springBootVersion = '1.4.5.RELEASE'
+        springBootVersion = '1.5.2.RELEASE'
         grpcVersion = '1.2.0'
     }
     repositories {
