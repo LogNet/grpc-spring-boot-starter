@@ -3,6 +3,7 @@ package org.lognet.springboot.grpc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.demo.GreeterService;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +27,7 @@ public class DemoAppTestAop {
 
 
     @Autowired
-    private DemoApp.GreeterService greeterService;
+    private GreeterService greeterService;
 
     @Autowired
     private DemoApp.CalculatorService calculatorService;

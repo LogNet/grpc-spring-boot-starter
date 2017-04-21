@@ -14,6 +14,7 @@ import org.springframework.core.type.StandardMethodMetadata;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -118,15 +119,19 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
     private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
 
-
        return Stream.of(applicationContext.getBeanNamesForType(beanType))
                 .filter(name->{
-                    BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
-                    if( beanDefinition.getSource() instanceof StandardMethodMetadata) {
+                    final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
+                    final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
+
+                    if ( !beansWithAnnotation.isEmpty() ) {
+                        return beansWithAnnotation.containsKey(name);
+                    } else if( beanDefinition.getSource() instanceof StandardMethodMetadata) {
                         StandardMethodMetadata metadata = (StandardMethodMetadata) beanDefinition.getSource();
                         return metadata.isAnnotated(annotationType.getName());
                     }
-                    return null!= applicationContext.getBeanFactory().findAnnotationOnBean(name,annotationType);
+
+                    return false;
                 });
     }
 
