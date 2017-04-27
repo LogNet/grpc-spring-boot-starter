@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class },webEnvironment = NONE
-        ,properties = {"spring.aop.proxy-target-class=true","grpc.port=6666"}
+        ,properties = {"spring.aop.proxy-target-class=true","grpc.port=6666","grpc.inProcessServerName=aopTest"}
 )
 @ActiveProfiles(profiles = {"aopTest"})
 public class DemoAppTestAop {

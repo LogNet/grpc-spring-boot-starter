@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc;
 
 import io.grpc.*;
+import io.grpc.inprocess.InProcessServerBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.BeanCreationException;
@@ -36,7 +37,9 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
     private GRpcServerBuilderConfigurer configurer;
 
-    private Server server;
+    private Server rpcServer;
+
+    private Server inProcessServer;
 
     public GRpcServerRunner(GRpcServerBuilderConfigurer configurer) {
         this.configurer = configurer;
@@ -51,22 +54,37 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                 .collect(Collectors.toList());
 
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
+        final InProcessServerBuilder inProcessServerBuilder = InProcessServerBuilder.forName(gRpcServerProperties.getInProcessServerName());
 
         // find and register all GRpcService-enabled beans
         getBeanNamesByTypeWithAnnotation(GRpcService.class,BindableService.class)
                 .forEach(name->{
+                    GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name,GRpcService.class);
                     BindableService srv = applicationContext.getBeanFactory().getBean(name, BindableService.class);
                     ServerServiceDefinition serviceDefinition = srv.bindService();
-                    GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name,GRpcService.class);
-                    serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
-                    serverBuilder.addService(serviceDefinition);
-                    log.info("'{}' service has been registered.", srv.getClass().getName());
+                    serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
+
+                    if ( gRpcServiceAnn.exposeRPC() ) {
+                        serverBuilder.addService(serviceDefinition);
+                        log.info("'{}' service has been registered for RPC.", srv.getClass().getName());
+                    }
+
+                    if ( gRpcServiceAnn.exposeInProcess() ) {
+                        inProcessServerBuilder.addService(serviceDefinition);
+
+                        log.info("'{}' service has been registered for in-process.", srv.getClass().getName());
+                    }
 
                 });
 
         configurer.configure(serverBuilder);
-        server = serverBuilder.build().start();
+        rpcServer = serverBuilder.build().start();
         log.info("gRPC Server started, listening on port {}.", gRpcServerProperties.getPort());
+
+        configurer.configureInProcessServerBuilder(inProcessServerBuilder);
+        inProcessServer = inProcessServerBuilder.build().start();
+        log.info("gRPC In-Process Server started, name {}.", gRpcServerProperties.getInProcessServerName());
+
         startDaemonAwaitThread();
 
     }
@@ -96,25 +114,44 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
 
     private void startDaemonAwaitThread() {
-        Thread awaitThread = new Thread() {
+        Thread awaitThreadRpc = new Thread() {
             @Override
             public void run() {
                 try {
-                    GRpcServerRunner.this.server.awaitTermination();
+                    GRpcServerRunner.this.rpcServer.awaitTermination();
                 } catch (InterruptedException e) {
-                    log.error("gRPC server stopped.",e);
+                    log.error("gRPC rpcServer stopped.",e);
                 }
             }
 
         };
-        awaitThread.setDaemon(false);
-        awaitThread.start();
+        awaitThreadRpc.setDaemon(false);
+        awaitThreadRpc.start();
+
+        Thread awaitThreadInProcess = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    GRpcServerRunner.this.inProcessServer.awaitTermination();
+                } catch (InterruptedException e) {
+                    log.error("gRPC inProcessServer stopped.",e);
+                }
+            }
+
+        };
+        awaitThreadInProcess.setDaemon(false);
+        awaitThreadInProcess.start();
     }
+
     @Override
     public void destroy() throws Exception {
-        log.info("Shutting down gRPC server ...");
-        Optional.ofNullable(server).ifPresent(Server::shutdown);
-        log.info("gRPC server stopped.");
+        log.info("Shutting down gRPC rpcServer ...");
+        Optional.ofNullable(rpcServer).ifPresent(Server::shutdown);
+        log.info("gRPC rpcServer stopped.");
+
+        log.info("Shutting down gRPC inProcessServer ...");
+        Optional.ofNullable(inProcessServer).ifPresent(Server::shutdown);
+        log.info("gRPC inProcessServer stopped.");
     }
 
     private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{

@@ -10,7 +10,7 @@ import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import io.grpc.stub.StreamObserver;
 
-@GRpcService(interceptors = { LogInterceptor.class })
+@GRpcService(interceptors = { LogInterceptor.class }, exposeInProcess = true)
 public class GreeterService extends GreeterGrpc.GreeterImplBase {
     @Override
     public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {

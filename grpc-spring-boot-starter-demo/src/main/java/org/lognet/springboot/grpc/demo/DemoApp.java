@@ -25,7 +25,7 @@ public class DemoApp {
 		return new GreeterService();
 	}
 
-    @GRpcService
+    @GRpcService(exposeInProcess = true)
     public static class CalculatorService extends CalculatorGrpc.CalculatorImplBase{
         @Override
         public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {

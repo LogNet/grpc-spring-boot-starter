@@ -25,7 +25,7 @@ import static org.lognet.springboot.grpc.TestConfig.CUSTOM_EXECUTOR_MESSAGE;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class,TestConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.NONE
-        ,properties = "grpc.port=7777")
+        ,properties = {"grpc.port=7777", "grpc.inProcessServerName=customConfigurerTest"})
 @ActiveProfiles(profiles = {"customServerBuilder"})
 public class GRpcServerBuilderConfigurerTest {
 
