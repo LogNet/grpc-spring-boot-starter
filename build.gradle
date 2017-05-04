@@ -50,9 +50,11 @@ subprojects {
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
-    subprojects.each {
-        sourceSets project('grpc-spring-boot-starter').sourceSets.main
-    }
+    sourceSets project('grpc-spring-boot-starter').sourceSets.main
+
+    //subprojects.each {
+        //sourceSets it.sourceSets.main
+    //}
 
     reports {
         xml.enabled true
