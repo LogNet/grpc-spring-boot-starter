@@ -287,7 +287,17 @@ public class GreeterServiceConsumer {
 <3> Create stub using the `channel`.
 <4> Invoke the service.
 
+== In-Process Server
+Optionally expose gRPC server implementations for in-process access.  Individual services can be exposed for RPC and/or
+in-process access.  By default, services annotated with `@org.lognet.springboot.grpc.GRpcService` are exposed for RPC only.
 
+[source,java]
+----
+@GRpcService(exposeInProcess = true, exposeRPC = false)
+public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
+    // ommited
+}
+----
 
 == License
 

@@ -22,4 +22,6 @@ import org.springframework.stereotype.Service;
 public @interface GRpcService {
     Class<? extends ServerInterceptor>[] interceptors() default {};
     boolean applyGlobalInterceptors() default true;
+    boolean exposeInProcess() default false;
+    boolean exposeRPC() default true;
 }
