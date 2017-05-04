@@ -6,3 +6,5 @@ gradle-app.setting
 .idea
 *.iml
 bin/
+!/.gitignore
+!/.travis.yml

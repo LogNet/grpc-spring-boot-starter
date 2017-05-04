@@ -1,4 +1,4 @@
-apply plugin: 'idea'
+
 buildscript {
     ext {
         springBootVersion = '1.5.2.RELEASE'
@@ -14,28 +14,32 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
-        classpath group: 'com.netflix.nebula', name: 'nebula-project-plugin', version: '2.2.1'
-        classpath group: 'com.netflix.nebula', name: 'nebula-interactive', version: '2.0.+'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+        classpath 'com.palantir:jacoco-coverage:0.4.0'
+    }
+}
+apply plugin: 'idea'
+apply plugin: 'com.palantir.jacoco-full-report'
+apply plugin: 'jacoco'
+
+allprojects{
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://repo.spring.io/milestone" }
     }
 }
 
-
-
 subprojects {
 
-    apply plugin: 'idea'
     apply plugin: 'java'
     apply plugin: 'jacoco'
-    apply plugin: 'nebula-interactive'
+
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    repositories {
-        mavenCentral()
-        maven { url "https://repo.spring.io/milestone" }
-    }
+
 
     dependencies{
         compileOnly('org.projectlombok:lombok:1.16.6')
