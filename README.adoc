@@ -16,12 +16,9 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:2.0.3')
+    compile('org.lognet:grpc-spring-boot-starter:2.0.4')
 }
 ----
-
-[NOTE]
-If you are using protobuf version lower than `3.0.0`, please use `org.lognet:grpc-spring-boot-starter:0.0.3`
 
 == Usage
 
