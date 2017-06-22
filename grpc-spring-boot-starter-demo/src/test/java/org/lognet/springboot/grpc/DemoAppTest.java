@@ -40,12 +40,11 @@ public class DemoAppTest {
     public OutputCapture outputCapture = new OutputCapture();
 
     @Autowired
-    @Qualifier("globalInterceptor")
+    @Qualifier("mockGlobalInterceptor")
     private  ServerInterceptor globalInterceptor;
 
     @Autowired
     private ApplicationContext context;
-
 
     @Before
     public void setup() {
@@ -62,14 +61,12 @@ public class DemoAppTest {
     @Test
     public void simpleGreeting() throws ExecutionException, InterruptedException {
 
-
         String name ="John";
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
         assertNotNull(reply);
         assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
-
     }
 
     @Test
@@ -84,16 +81,19 @@ public class DemoAppTest {
                 .get().getResult();
 
         // global interceptor should be invoked once on each service
-        Mockito.verify(globalInterceptor,Mockito.times(2)).interceptCall(Mockito.any(),Mockito.any(),Mockito.any());
-
+        Mockito.verify(globalInterceptor,Mockito.times(2)).interceptCall(Mockito.any(), Mockito.any(), Mockito.any());
 
         // log interceptor should be invoked only on GreeterService and not CalculatorService
-        outputCapture.expect(CoreMatchers.containsString(GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
-        outputCapture.expect(CoreMatchers.not(CoreMatchers.containsString(CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
+        outputCapture.expect(CoreMatchers.containsString("staticGlobalLogger: " + GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
+        outputCapture.expect(CoreMatchers.containsString("staticServiceLogger: " + GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
+        outputCapture.expect(CoreMatchers.containsString("dynamicServiceLogger: " + GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
 
+        outputCapture.expect(CoreMatchers.containsString("staticGlobalLogger: " + CalculatorGrpc.METHOD_CALCULATE.getFullMethodName()));
+        outputCapture.expect(CoreMatchers.not(CoreMatchers.containsString("staticServiceLogger: " + CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
+        outputCapture.expect(CoreMatchers.not(CoreMatchers.containsString("dynamicServiceLogger: " + CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
     }
 
-        @Test
+    @Test
     public void actuatorTest() throws ExecutionException, InterruptedException {
         final TestRestTemplate template = new TestRestTemplate();
 
@@ -101,13 +101,10 @@ public class DemoAppTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-
     @Test
     public void testDefaultConfigurer(){
         Assert.assertEquals("Default configurer should be picked up",
-                context.getBean(GRpcServerBuilderConfigurer.class).getClass(),
-                GRpcServerBuilderConfigurer.class);
+                GRpcServerBuilderConfigurer.class,
+                context.getBean(GRpcServerBuilderConfigurer.class).getClass());
     }
-
-
 }
