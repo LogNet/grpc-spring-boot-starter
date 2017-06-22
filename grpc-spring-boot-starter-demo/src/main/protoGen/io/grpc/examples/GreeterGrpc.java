@@ -21,7 +21,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.3.0)",
+    value = "by gRPC proto compiler (version 1.4.0)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 
@@ -33,12 +33,15 @@ public final class GreeterGrpc {
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
       io.grpc.examples.GreeterOuterClass.HelloReply> METHOD_SAY_HELLO =
-      io.grpc.MethodDescriptor.create(
-          io.grpc.MethodDescriptor.MethodType.UNARY,
-          generateFullMethodName(
-              "Greeter", "SayHello"),
-          io.grpc.protobuf.ProtoUtils.marshaller(io.grpc.examples.GreeterOuterClass.HelloRequest.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()));
+      io.grpc.MethodDescriptor.<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply>newBuilder()
+          .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName(generateFullMethodName(
+              "Greeter", "SayHello"))
+          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              io.grpc.examples.GreeterOuterClass.HelloRequest.getDefaultInstance()))
+          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
+          .build();
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -56,7 +59,7 @@ public final class GreeterGrpc {
   }
 
   /**
-   * Creates a new ListenableFuture-style stub that supports unary and streaming output calls on the service
+   * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
   public static GreeterFutureStub newFutureStub(
       io.grpc.Channel channel) {

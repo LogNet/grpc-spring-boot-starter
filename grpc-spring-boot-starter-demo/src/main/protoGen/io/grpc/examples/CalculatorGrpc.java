@@ -18,7 +18,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.3.0)",
+    value = "by gRPC proto compiler (version 1.4.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -30,12 +30,15 @@ public final class CalculatorGrpc {
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse> METHOD_CALCULATE =
-      io.grpc.MethodDescriptor.create(
-          io.grpc.MethodDescriptor.MethodType.UNARY,
-          generateFullMethodName(
-              "Calculator", "Calculate"),
-          io.grpc.protobuf.ProtoUtils.marshaller(io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()));
+      io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
+          .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+          .setFullMethodName(generateFullMethodName(
+              "Calculator", "Calculate"))
+          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
+          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
+          .build();
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -53,7 +56,7 @@ public final class CalculatorGrpc {
   }
 
   /**
-   * Creates a new ListenableFuture-style stub that supports unary and streaming output calls on the service
+   * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
   public static CalculatorFutureStub newFutureStub(
       io.grpc.Channel channel) {

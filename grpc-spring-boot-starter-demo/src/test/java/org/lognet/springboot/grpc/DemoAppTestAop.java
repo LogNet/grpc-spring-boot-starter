@@ -25,24 +25,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles(profiles = {"aopTest"})
 public class DemoAppTestAop {
 
-
     @Autowired
     private GreeterService greeterService;
 
     @Autowired
     private DemoApp.CalculatorService calculatorService;
 
-
-
     @Test
     public void simpleAopTest() throws ExecutionException, InterruptedException {
-
         assertTrue(AopUtils.isAopProxy(greeterService));
         assertTrue(AopUtils.isAopProxy(calculatorService));
-
     }
-
-
-
-
 }

@@ -50,22 +50,22 @@ All you need to do is to annotate your service implementation with `@org.lognet.
 
 [source,java]
 ----
-    @GRpcService
-    public static class GreeterService extends  GreeterGrpc.GreeterImplBase{
-        @Override
-        public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
-            final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());
-            responseObserver.onNext(replyBuilder.build());
-            responseObserver.onCompleted();
-        }
+@GRpcService
+public static class GreeterService extends  GreeterGrpc.GreeterImplBase{
+    @Override
+    public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+        final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello " + request.getName());
+        responseObserver.onNext(replyBuilder.build());
+        responseObserver.onCompleted();
     }
+}
 ----
 
 === Interceptors support
 The starter supports the registration of two kinds of interceptors: _Global_  and _Per Service_. +
 In both cases the interceptor has to implement `io.grpc.ServerInterceptor` interface.
 
-- Per service
+- Per service (static)
 
 [source,java]
 ----
@@ -76,7 +76,25 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 ----
 `LogInterceptor` will be instantiated via spring factory if there is bean of type `LogInterceptor`, or via no-args constructor otherwise.
 
-- Global
+- Per service (dynamic)
+
+[source,java]
+----
+public  class GreeterService extends  GreeterGrpc.GreeterImplBase implements GRpcServiceBuilder {
+
+    @Override
+    public Collection<ServerInterceptor> getServiceInterceptors() {
+        return Arrays.asList(
+                new LogInterceptor("dynamicServiceLogger")
+        );
+    }
+
+    // ommited
+}
+----
+Implement the `GRpcServiceBuilder` interface, `LogInterceptor` will be applied to this service.
+
+- Global (using annotations)
 
 [source,java]
 ----
@@ -106,6 +124,39 @@ The annotation on java config factory method is also supported :
  }
 ----
 
+ - Global (dynamic configuration)
+
+Use the configuration approach when the order interceptors are executed is important.
+
+_Note: you can view other configuration override options below_
+
+[source,java]
+----
+@Component
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer {
+        @Override
+         public Collection<ServerInterceptor> getServerInterceptors(BindableService srv) {
+             return Arrays.asList(
+                     new LogInterceptor("dynamicServerLogger")
+             );
+         }
+    };
+}
+----
+
+==== Interceptor execution order
+
+The interceptor configurations are excecuted in the following order:
+
+ 1. Static *global* interceptors
+ 2. Dynamic  *global* interceptors
+ 3. Static *service* interceptors
+ 4. Dynamic *service* interceptors
+
+Each interceptor configuration returns an array of interceptors to execute, the interceptors will be executed in array order. That is, the first interceptor in the array will be executed first (as the outer-most interceptor).
+
+ ---
+
 The particular service also has the opportunity to disable the global interceptors :
 
 [source,java]
@@ -129,6 +180,12 @@ In your implementation of `configure` method, you can add your custom configurat
 ----
 @Component
 public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+        @Override
+        public Collection<ServerInterceptor> getServiceInterceptors() {
+            // ommitted - documentation above
+            return super.getServiceInterceptors();
+        }
+
         @Override
         public void configure(ServerBuilder<?> serverBuilder){
             serverBuilder

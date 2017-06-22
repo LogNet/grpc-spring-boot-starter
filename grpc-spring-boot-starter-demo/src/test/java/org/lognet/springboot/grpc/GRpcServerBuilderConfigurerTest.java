@@ -52,8 +52,7 @@ public class GRpcServerBuilderConfigurerTest {
     @Test
     public void customServerBuilderTest() throws ExecutionException, InterruptedException {
 
-
-        Assert.assertNotEquals("Custom configurer should be picked up", configurer.getClass(),GRpcServerBuilderConfigurer.class);
+        Assert.assertNotEquals("Custom configurer should be picked up", configurer.getClass(), GRpcServerBuilderConfigurer.class);
 
         double result = CalculatorGrpc.newFutureStub(channel)
                 .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()

@@ -3,20 +3,15 @@ package org.lognet.springboot.grpc.demo;
 
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
+import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterOuterClass;
-import io.grpc.stub.StreamObserver;
-
 /**
  * Created by alexf on 28-Jan-16.
  */
-
-
 @SpringBootApplication
 public class DemoApp {
 
@@ -46,13 +41,10 @@ public class DemoApp {
                 case UNRECOGNIZED:
                     break;
             }
+
             responseObserver.onNext(resultBuilder.build());
             responseObserver.onCompleted();
-
-
         }
-
-
     }
 
     public static void main(String[] args) {

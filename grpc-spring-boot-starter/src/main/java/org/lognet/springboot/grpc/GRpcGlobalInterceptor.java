@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by jamessmith on 9/7/16.
  */
-@Target({ElementType.TYPE,ElementType.METHOD })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
