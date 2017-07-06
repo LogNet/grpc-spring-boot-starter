@@ -1,16 +1,13 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
-import static   org.mockito.Mockito.*;
-
+import io.grpc.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
+import static org.mockito.Mockito.*;
 
 
 /**
@@ -20,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class TestConfig {
 
 
+    public  static final String CUSTOM_EXECUTOR_MESSAGE="Hello from custom executor.";
 
     @Bean(name = "globalInterceptor")
     @GRpcGlobalInterceptor
@@ -35,6 +33,22 @@ public class TestConfig {
             }
         });
         return mock;
+    }
+
+    @Bean
+    @Profile("customServerBuilder")
+    public GRpcServerBuilderConfigurer customGrpcServerBuilderConfigurer(){
+        return  new GRpcServerBuilderConfigurer(){
+            @Override
+            public void configure(ServerBuilder<?> serverBuilder){
+                 serverBuilder.executor(command -> {
+                            System.out.println(CUSTOM_EXECUTOR_MESSAGE);
+                            command.run();
+                        }
+                );
+
+            }
+        };
     }
 
 

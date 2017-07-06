@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,7 +44,14 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
+
+    private GRpcServerBuilderConfigurer configurer;
+
     private Server server;
+
+    public GRpcServerRunner(GRpcServerBuilderConfigurer configurer) {
+        this.configurer = configurer;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -72,6 +80,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                     log.info("'{}' service has been registered.", srv.getClass().getName());
                 });
 
+        configurer.configure(serverBuilder);
         server = serverBuilder.build().start();
 
         serviceInfoList.parallelStream().forEach(serviceInfo -> rpcRegister.registerRpc(serviceInfo));
@@ -128,15 +137,19 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
     private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {
 
+       return Stream.of(applicationContext.getBeanNamesForType(beanType))
+                .filter(name->{
+                    final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
+                    final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
 
-        return Stream.of(applicationContext.getBeanNamesForType(beanType))
-                .filter(name -> {
-                    BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
-                    if (beanDefinition.getSource() instanceof StandardMethodMetadata) {
+                    if ( !beansWithAnnotation.isEmpty() ) {
+                        return beansWithAnnotation.containsKey(name);
+                    } else if( beanDefinition.getSource() instanceof StandardMethodMetadata) {
                         StandardMethodMetadata metadata = (StandardMethodMetadata) beanDefinition.getSource();
                         return metadata.isAnnotated(annotationType.getName());
                     }
-                    return null != applicationContext.getBeanFactory().findAnnotationOnBean(name, annotationType);
+
+                    return false;
                 });
     }
 

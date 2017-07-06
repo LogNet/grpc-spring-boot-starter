@@ -18,9 +18,13 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 /**
  */
 @javax.annotation.Generated(
+<<<<<<< HEAD
     value = "by gRPC proto compiler (version 1.0.1)",
+=======
+    value = "by gRPC proto compiler (version 1.3.0)",
+>>>>>>> upstream/master
     comments = "Source: calculator.proto")
-public class CalculatorGrpc {
+public final class CalculatorGrpc {
 
   private CalculatorGrpc() {}
 
@@ -71,7 +75,7 @@ public class CalculatorGrpc {
       asyncUnimplementedUnaryCall(METHOD_CALCULATE, responseObserver);
     }
 
-    @java.lang.Override public io.grpc.ServerServiceDefinition bindService() {
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             METHOD_CALCULATE,
@@ -166,7 +170,7 @@ public class CalculatorGrpc {
 
   private static final int METHODID_CALCULATE = 0;
 
-  private static class MethodHandlers<Req, Resp> implements
+  private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
@@ -174,7 +178,7 @@ public class CalculatorGrpc {
     private final CalculatorImplBase serviceImpl;
     private final int methodId;
 
-    public MethodHandlers(CalculatorImplBase serviceImpl, int methodId) {
+    MethodHandlers(CalculatorImplBase serviceImpl, int methodId) {
       this.serviceImpl = serviceImpl;
       this.methodId = methodId;
     }
@@ -203,9 +207,28 @@ public class CalculatorGrpc {
     }
   }
 
-  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
-    return new io.grpc.ServiceDescriptor(SERVICE_NAME,
-        METHOD_CALCULATE);
+  private static final class CalculatorDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
+      return io.grpc.examples.CalculatorOuterClass.getDescriptor();
+    }
   }
 
+  private static volatile io.grpc.ServiceDescriptor serviceDescriptor;
+
+  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
+    io.grpc.ServiceDescriptor result = serviceDescriptor;
+    if (result == null) {
+      synchronized (CalculatorGrpc.class) {
+        result = serviceDescriptor;
+        if (result == null) {
+          serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
+              .setSchemaDescriptor(new CalculatorDescriptorSupplier())
+              .addMethod(METHOD_CALCULATE)
+              .build();
+        }
+      }
+    }
+    return result;
+  }
 }

@@ -3,6 +3,14 @@ package org.lognet.springboot.grpc.demo;
 
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
+<<<<<<< HEAD
+=======
+import org.lognet.springboot.grpc.GRpcService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+>>>>>>> upstream/master
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import io.grpc.stub.StreamObserver;
@@ -18,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DemoApp {
 
+<<<<<<< HEAD
     @GRpcService(interceptors = {LogInterceptor.class}, grpcServiceOuterClass = GreeterGrpc.class, serviceName = "GreeterService", version = "0.0.8-SNAPSHOT")
     public static class GreeterService extends GreeterGrpc.GreeterImplBase {
         @Override
@@ -27,6 +36,12 @@ public class DemoApp {
             responseObserver.onCompleted();
         }
     }
+=======
+    @Bean
+    public GreeterService greeterService() {
+		return new GreeterService();
+	}
+>>>>>>> upstream/master
 
     @GRpcService(grpcServiceOuterClass = CalculatorGrpc.class, serviceName = "CalculatorService", version = "0.0.8-SNAPSHOT")
     public static class CalculatorService extends CalculatorGrpc.CalculatorImplBase {

@@ -8,4 +8,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 after_success:
-- ./gradlew bintrayUpload artifactoryPublish
+ - ./gradlew bintrayUpload artifactoryPublish
+ - bash <(curl -s https://codecov.io/bash)
+script:
+ - ./gradlew check
+ - ./gradlew codeCoverageReport
+
+ 

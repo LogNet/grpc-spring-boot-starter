@@ -7,3 +7,5 @@ gradle-app.setting
 *.iml
 bin/
 gradle/
+!/.gitignore
+!/.travis.yml

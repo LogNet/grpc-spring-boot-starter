@@ -1,5 +1,5 @@
-= Spring boot starter for http://www.grpc.io/[gRPC framework.] https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion[ image:https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg[Download]] image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter] https://bintray.com/lognet/maven/grpc-spring-boot-starter?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[]]
-
+= Spring boot starter for http://www.grpc.io/[gRPC framework.] https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion[ image:https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg[Download]] image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter] image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"] https://bintray.com/lognet/maven/grpc-spring-boot-starter?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[]]
+:toc:
 
 
 == Features
@@ -16,12 +16,9 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:0.0.7')
+    compile('org.lognet:grpc-spring-boot-starter:2.0.4')
 }
 ----
-
-[NOTE]
-If you are using protobuf version lower than `3.0.0`, please use `org.lognet:grpc-spring-boot-starter:0.0.3`
 
 == Usage
 
@@ -122,11 +119,172 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 
 
 
-== On the roadmap
+=== Custom gRPC Server Configuration
 
-* Customized gRPC server builder with compression/decompression registry .
-* Custom `Executor` service.
-* Transport security.
+To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context  and override the `configure` method. +
+By the time of invocation of `configure` method, all discovered services, including theirs interceptors, had been added to the passed builder. +
+In your implementation of `configure` method, you can add your custom configuration:
+
+[source,java]
+----
+@Component
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+        @Override
+        public void configure(ServerBuilder<?> serverBuilder){
+            serverBuilder
+                .executor(YOUR EXECUTOR INSTANCE)
+                .compressorRegistry(YOUR COMPRESSION REGISTRY)
+                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
+                .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
+
+        }
+    };
+}
+----
+
+== Eureka Integration
+
+When building production-ready services, the advise is to have separate project for your service(s) gRPC API that holds only proto-generated classes both for server and client side usage. +
+You will then add this project as `compile` dependency to your `gRPC client` and `gRPC server` projects.
+
+To integrate `Eureka` simply follow the great https://spring.io/guides/gs/service-registration-and-discovery/[guide] from Spring.
+
+Below are the essential parts of configurations for both server and client projects.
+
+===  gRPC Server Project
+
+* Add eureka starter as dependency of your server project together with generated classes from `proto` files:
+
+[source, gradle]
+.build.gradle
+----
+ dependencies {
+     compile('org.springframework.cloud:spring-cloud-starter-eureka')
+     compile project(":yourProject-api")
+ }
+----
+
+
+* Configure gRPC server to register itself with Eureka.
+
+
+[source, yaml]
+.bootstrap.yaml
+----
+spring:
+    application:
+        name: my-service-name <1>
+----
+<1> Eureka's `ServiceId` by default is the spring application name, provide it before the service registers itself with Eureka.
+
+[source,yaml]
+.application.yaml
+----
+grpc:
+    port: 6565 <1>
+eureka:
+    instance:
+        nonSecurePort: ${grpc.port} <2>
+    client:
+        serviceUrl:
+            defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/ <3>
+----
+<1> Specify the port number the gRPC is listening on.
+<2> Register the eureka service port to be the same as `grpc.port` so client will know where to send the requests to.
+<3> Specify the  registry URL, so the service will register itself with. 
+
+
+* Expose the gRPC service as part of Spring Boot Application.
+
+[source, java]
+.EurekaGrpcServiceApp.java
+----
+ @SpringBootApplication
+ @EnableEurekaClient
+ public class EurekaGrpcServiceApp {
+
+     @GRpcService
+     public static class GreeterService extends GreeterGrpc.GreeterImplBase {
+         @Override
+         public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+
+         }
+     }
+
+     public static void main(String[] args) {
+         SpringApplication.run(DemoApp.class,args);
+     }
+ }
+----
+
+===  gRPC Client Project
+
+* Add eureka starter as dependency of your client project together with generated classes from `proto` files:
+
+[source, gradle]
+.build.gradle
+----
+ dependencies {
+     compile('org.springframework.cloud:spring-cloud-starter-eureka')
+     compile project(":yourProject-api")
+ }
+----
+
+* Configure client to find the eureka service registry:
+
+[source,yaml]
+.application.yaml
+----
+eureka:
+  client:
+    register-with-eureka: false <1>
+    service-url:
+      defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/ <2>
+----
+<1> `false` if this project is not meant to act as  a service to another client.
+<2>  Specify the  registry URL, so this client  will know where to look up the required service.
+
+
+[source,java]
+.GreeterServiceConsumerApplication.java
+----
+@EnableEurekaClient
+@SpringBootApplication
+public class GreeterServiceConsumerApplication {
+ public static void main(String[] args) {
+   SpringApplication.run(GreeterServiceConsumerApplication.class, args);
+ }
+}
+----
+
+* Use EurekaClient to get the coordinates of gRPC service instance from Eureka and consume the service :
+
+[source,java]
+.GreeterServiceConsumer.java
+----
+@EnableEurekaClient
+@Component
+public class GreeterServiceConsumer {
+    @Autowired
+    private EurekaClient client;
+    
+    public void greet(String name) {
+        final InstanceInfo instanceInfo = client.getNextServerFromEureka("my-service-name", false);<1>
+        final ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())
+                .usePlaintext(true)
+                .build(); <2>
+        final GreeterServiceGrpc.GreeterServiceFutureStub stub = GreeterServiceGrpc.newFutureStub(channel); <3>
+        stub.greet(name); <4>
+
+    }
+}
+----
+<1> Get the information about the `my-service-name` instance.
+<2> Build `channel` accordingly.
+<3> Create stub using the `channel`.
+<4> Invoke the service.
+
+
 
 == License
 

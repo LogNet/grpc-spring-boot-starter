@@ -21,9 +21,13 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
  * </pre>
  */
 @javax.annotation.Generated(
+<<<<<<< HEAD
     value = "by gRPC proto compiler (version 1.0.1)",
+=======
+    value = "by gRPC proto compiler (version 1.3.0)",
+>>>>>>> upstream/master
     comments = "Source: greeter.proto")
-public class GreeterGrpc {
+public final class GreeterGrpc {
 
   private GreeterGrpc() {}
 
@@ -80,7 +84,7 @@ public class GreeterGrpc {
       asyncUnimplementedUnaryCall(METHOD_SAY_HELLO, responseObserver);
     }
 
-    @java.lang.Override public io.grpc.ServerServiceDefinition bindService() {
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             METHOD_SAY_HELLO,
@@ -193,7 +197,7 @@ public class GreeterGrpc {
 
   private static final int METHODID_SAY_HELLO = 0;
 
-  private static class MethodHandlers<Req, Resp> implements
+  private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
@@ -201,7 +205,7 @@ public class GreeterGrpc {
     private final GreeterImplBase serviceImpl;
     private final int methodId;
 
-    public MethodHandlers(GreeterImplBase serviceImpl, int methodId) {
+    MethodHandlers(GreeterImplBase serviceImpl, int methodId) {
       this.serviceImpl = serviceImpl;
       this.methodId = methodId;
     }
@@ -230,9 +234,28 @@ public class GreeterGrpc {
     }
   }
 
-  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
-    return new io.grpc.ServiceDescriptor(SERVICE_NAME,
-        METHOD_SAY_HELLO);
+  private static final class GreeterDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
+      return io.grpc.examples.GreeterOuterClass.getDescriptor();
+    }
   }
 
+  private static volatile io.grpc.ServiceDescriptor serviceDescriptor;
+
+  public static io.grpc.ServiceDescriptor getServiceDescriptor() {
+    io.grpc.ServiceDescriptor result = serviceDescriptor;
+    if (result == null) {
+      synchronized (GreeterGrpc.class) {
+        result = serviceDescriptor;
+        if (result == null) {
+          serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
+              .setSchemaDescriptor(new GreeterDescriptorSupplier())
+              .addMethod(METHOD_SAY_HELLO)
+              .build();
+        }
+      }
+    }
+    return result;
+  }
 }
