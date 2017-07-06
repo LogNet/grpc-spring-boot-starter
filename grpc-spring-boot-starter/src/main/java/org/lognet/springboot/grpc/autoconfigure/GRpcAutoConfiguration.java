@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc.autoconfigure;
 
+import io.grpc.services.HealthStatusManager;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
@@ -22,6 +23,12 @@ public class GRpcAutoConfiguration {
     @ConditionalOnBean(annotation = GRpcService.class)
     public GRpcServerRunner grpcServerRunner(GRpcServerBuilderConfigurer configurer){
         return new GRpcServerRunner(configurer);
+    }
+
+    @Bean
+    @ConditionalOnBean(annotation = GRpcService.class)
+    public HealthStatusManager healthStatusManager() {
+        return new HealthStatusManager();
     }
 
     @Bean

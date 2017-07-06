@@ -1,6 +1,9 @@
 package org.lognet.springboot.grpc;
 
 import io.grpc.*;
+import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.services.HealthStatusManager;
+import io.netty.util.internal.ConcurrentSet;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.BeanCreationException;
@@ -12,20 +15,18 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.type.StandardMethodMetadata;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- *  Hosts embedded gRPC server.
+ * Hosts embedded gRPC server.
  */
 @Slf4j
-public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
-
-
+public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
+    private final Set<String> serviceList = new ConcurrentSet<>();
+    @Autowired
+    private HealthStatusManager healthStatusManager;
 
     @Autowired
     private AbstractApplicationContext applicationContext;
@@ -46,20 +47,26 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
     public void run(String... args) throws Exception {
         log.info("Starting gRPC Server ...");
 
-        Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class,ServerInterceptor.class)
-                .map(name -> applicationContext.getBeanFactory().getBean(name,ServerInterceptor.class))
+        Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
+                .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
                 .collect(Collectors.toList());
 
         final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
 
+        // Adding health service
+        serverBuilder.addService(healthStatusManager.getHealthService());
+
         // find and register all GRpcService-enabled beans
-        getBeanNamesByTypeWithAnnotation(GRpcService.class,BindableService.class)
-                .forEach(name->{
+        getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class)
+                .forEach(name -> {
                     BindableService srv = applicationContext.getBeanFactory().getBean(name, BindableService.class);
                     ServerServiceDefinition serviceDefinition = srv.bindService();
-                    GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name,GRpcService.class);
-                    serviceDefinition  = bindInterceptors(serviceDefinition,gRpcServiceAnn,globalInterceptors);
+                    GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name, GRpcService.class);
+                    serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
                     serverBuilder.addService(serviceDefinition);
+                    String serviceName = serviceDefinition.getServiceDescriptor().getName();
+                    healthStatusManager.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING);
+                    serviceList.add(serviceName);
                     log.info("'{}' service has been registered.", srv.getClass().getName());
 
                 });
@@ -71,7 +78,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
 
     }
 
-    private  ServerServiceDefinition bindInterceptors(ServerServiceDefinition serviceDefinition, GRpcService gRpcService, Collection<ServerInterceptor> globalInterceptors) {
+    private ServerServiceDefinition bindInterceptors(ServerServiceDefinition serviceDefinition, GRpcService gRpcService, Collection<ServerInterceptor> globalInterceptors) {
 
 
         Stream<? extends ServerInterceptor> privateInterceptors = Stream.of(gRpcService.interceptors())
@@ -81,18 +88,17 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                                 applicationContext.getBean(interceptorClass) :
                                 interceptorClass.newInstance();
                     } catch (Exception e) {
-                        throw  new BeanCreationException("Failed to create interceptor instance.",e);
+                        throw new BeanCreationException("Failed to create interceptor instance.", e);
                     }
                 });
 
         List<ServerInterceptor> interceptors = Stream.concat(
-                    gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream(): Stream.empty(),
-                    privateInterceptors)
+                gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
+                privateInterceptors)
                 .distinct()
                 .collect(Collectors.toList());
         return ServerInterceptors.intercept(serviceDefinition, interceptors);
     }
-
 
 
     private void startDaemonAwaitThread() {
@@ -102,7 +108,7 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
                 try {
                     GRpcServerRunner.this.server.awaitTermination();
                 } catch (InterruptedException e) {
-                    log.error("gRPC server stopped.",e);
+                    log.error("gRPC server stopped.", e);
                 }
             }
 
@@ -110,23 +116,25 @@ public class GRpcServerRunner implements CommandLineRunner,DisposableBean  {
         awaitThread.setDaemon(false);
         awaitThread.start();
     }
+
     @Override
     public void destroy() throws Exception {
         log.info("Shutting down gRPC server ...");
+        serviceList.stream().forEach(s -> healthStatusManager.clearStatus(s));
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
     }
 
-    private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception{
+    private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {
 
-       return Stream.of(applicationContext.getBeanNamesForType(beanType))
-                .filter(name->{
+        return Stream.of(applicationContext.getBeanNamesForType(beanType))
+                .filter(name -> {
                     final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
                     final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
 
-                    if ( !beansWithAnnotation.isEmpty() ) {
+                    if (!beansWithAnnotation.isEmpty()) {
                         return beansWithAnnotation.containsKey(name);
-                    } else if( beanDefinition.getSource() instanceof StandardMethodMetadata) {
+                    } else if (beanDefinition.getSource() instanceof StandardMethodMetadata) {
                         StandardMethodMetadata metadata = (StandardMethodMetadata) beanDefinition.getSource();
                         return metadata.isAnnotated(annotationType.getName());
                     }

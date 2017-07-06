@@ -1,6 +1,7 @@
 apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "io.grpc:grpc-services:${grpcVersion}"
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
    
     compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
