@@ -1,10 +1,10 @@
+
 buildscript {
     ext {
         springBootVersion = '1.5.2.RELEASE'
         grpcVersion = '1.4.0'
     }
     repositories {
-        mavenLocal()
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
         maven { url "https://plugins.gradle.org/m2/"}

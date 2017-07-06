@@ -18,11 +18,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 /**
  */
 @javax.annotation.Generated(
-<<<<<<< HEAD
-    value = "by gRPC proto compiler (version 1.0.1)",
-=======
     value = "by gRPC proto compiler (version 1.3.0)",
->>>>>>> upstream/master
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 

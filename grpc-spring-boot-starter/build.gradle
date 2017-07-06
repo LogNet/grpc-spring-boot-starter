@@ -2,8 +2,7 @@ apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
-    compile group: 'com.orbitz.consul', name: 'consul-client', version: '0.13.2'
-
+   
     compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
    
 }
