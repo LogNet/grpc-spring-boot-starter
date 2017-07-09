@@ -3,7 +3,6 @@ package org.lognet.springboot.grpc;
 import io.grpc.*;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.services.HealthStatusManager;
-import io.netty.util.internal.ConcurrentSet;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.BeanCreationException;
@@ -16,6 +15,7 @@ import org.springframework.core.type.StandardMethodMetadata;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
-    private final Set<String> serviceList = new ConcurrentSet<>();
+    private final Set<String> serviceList = new ConcurrentSkipListSet<>();
     @Autowired
     private HealthStatusManager healthStatusManager;
 
