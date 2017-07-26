@@ -98,6 +98,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 .distinct()
                 .collect(Collectors.toList());
         Collections.sort(interceptors,org.springframework.core.annotation.AnnotationAwareOrderComparator.INSTANCE);
+        Collections.reverse(interceptors);
         return ServerInterceptors.intercept(serviceDefinition, interceptors);
     }
 

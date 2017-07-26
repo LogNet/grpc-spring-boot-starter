@@ -57,7 +57,7 @@ public class OrderedInterceptorsTest {
     final GreeterOuterClass.HelloRequest helloRequest = GreeterOuterClass.HelloRequest.newBuilder().setName("hello")
         .build();
     greeterStub.sayHello(helloRequest).getMessage();
-    assertThat(calledInterceptors).containsExactly(4, 3, 2, 1);
+    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4, 10, 100);
   }
 
   @Configuration
@@ -107,6 +107,30 @@ public class OrderedInterceptorsTest {
       public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
           ServerCallHandler<ReqT, RespT> next) {
         calledInterceptors.add(1);
+        return next.startCall(call, headers);
+      }
+    }
+
+    // interceptors without any annotation will always be executed last, losing to any defined @Order
+    @GRpcGlobalInterceptor
+    static class UnorderedInterceptor implements ServerInterceptor {
+
+      @Override
+      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
+          ServerCallHandler<ReqT, RespT> next) {
+        calledInterceptors.add(100);
+        return next.startCall(call, headers);
+      }
+    }
+
+    @GRpcGlobalInterceptor
+    @Order // no value means lowest priority amongst all @Ordered, but higher priority than iceptors without the annot
+    static class DefaultOrderedInterceptor implements ServerInterceptor {
+
+      @Override
+      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
+          ServerCallHandler<ReqT, RespT> next) {
+        calledInterceptors.add(10);
         return next.startCall(call, headers);
       }
     }
