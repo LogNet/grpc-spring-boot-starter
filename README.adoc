@@ -105,21 +105,20 @@ The annotation on java config factory method is also supported :
      }
  }
 ----
-Global interceptors can be ordered using Spring's `@Ordered` or `@Priority` annotations. Note that Grpc executes the given interceptor list for a call in reverse order.
-So if you have interceptor A that relies on interceptor B to execute first you should define them like this:
+Global interceptors can be ordered using Spring's `@Ordered` or `@Priority` annotations. Following Spring's ordering semantics, lower order values have higher priority and will be executed first in the interceptor chain.
 
 [source,java]
 ----
 @GRpcGlobalInterceptor
 @Order(10)
 public  class A implements ServerInterceptor{
-    // ommited
+    // will be called before B
 }
 
 @GRpcGlobalInterceptor
 @Order(20)
 public  class B implements ServerInterceptor{
-    // ommited
+    // will be called after A
 }
 ----
 
