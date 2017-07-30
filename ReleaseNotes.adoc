@@ -1,5 +1,7 @@
-== Version 2.0.5-SNAPSHOT
+== Version 2.0.5
 - HealthStatusManager exposed as Spring bean
+- gRPC version upgraded to 1.5.0
+- Ordered execution support of global server interceptors.
 
 == Version 2.0.4
 - gRPC version upgraded to 1.4.0
