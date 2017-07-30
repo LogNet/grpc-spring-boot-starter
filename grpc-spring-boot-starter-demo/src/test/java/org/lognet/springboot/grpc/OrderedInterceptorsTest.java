@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, TheConfiguration.class},
-    webEnvironment = WebEnvironment.NONE, properties = "grpc.port=7777")
+    webEnvironment = WebEnvironment.NONE, properties = "grpc.port=7778")
 public class OrderedInterceptorsTest {
 
   private ManagedChannel channel;
@@ -40,7 +40,7 @@ public class OrderedInterceptorsTest {
 
   @Before
   public void setup() {
-    channel = ManagedChannelBuilder.forAddress("localhost", 7777)
+    channel = ManagedChannelBuilder.forAddress("localhost", 7778)
         .usePlaintext(true)
         .build();
     calledInterceptors.clear();
