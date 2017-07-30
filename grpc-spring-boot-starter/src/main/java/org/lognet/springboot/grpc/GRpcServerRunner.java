@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.type.StandardMethodMetadata;
 
 import java.lang.annotation.Annotation;
@@ -97,24 +98,20 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 privateInterceptors)
                 .distinct()
                 .collect(Collectors.toList());
-        Collections.sort(interceptors,org.springframework.core.annotation.AnnotationAwareOrderComparator.INSTANCE);
+        interceptors.sort(AnnotationAwareOrderComparator.INSTANCE);
         Collections.reverse(interceptors);
         return ServerInterceptors.intercept(serviceDefinition, interceptors);
     }
 
 
     private void startDaemonAwaitThread() {
-        Thread awaitThread = new Thread() {
-            @Override
-            public void run() {
+        Thread awaitThread = new Thread(()->{
                 try {
                     GRpcServerRunner.this.server.awaitTermination();
                 } catch (InterruptedException e) {
                     log.error("gRPC server stopped.", e);
                 }
-            }
-
-        };
+            });
         awaitThread.setDaemon(false);
         awaitThread.start();
     }
@@ -122,7 +119,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Override
     public void destroy() throws Exception {
         log.info("Shutting down gRPC server ...");
-        serviceList.stream().forEach(s -> healthStatusManager.clearStatus(s));
+        serviceList.forEach(s -> healthStatusManager.clearStatus(s));
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
     }
