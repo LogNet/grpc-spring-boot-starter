@@ -179,7 +179,7 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer()
 
 [NOTE]
 If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance of configurer. +
-If you need to differentiate between the passed `serverBuilder`s, you can check the type. +
+If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
 
 == Eureka Integration
