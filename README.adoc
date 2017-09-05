@@ -19,7 +19,7 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:2.0.5')
+    compile('org.lognet:grpc-spring-boot-starter:2.1.0')
 }
 ----
 
@@ -44,7 +44,7 @@ The starter supports also the  `in-process server`, which should be used for tes
     inProcessServerName: myTestServer <2>
 ----
 <1> Disables the default server (`NettyServer`).
-<2> Enables the in-process server.
+<2> Enables the `in-process` server.
 
 [NOTE]
 If you enable both the `NettyServer` and `in-process` server, they will both share the same instance of `HealthStatusManager` and `GRpcServerBuilderConfigurer` (see <<Custom gRPC Server Configuration>>).
@@ -154,8 +154,6 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 ----
 
 
-
-
 === Custom gRPC Server Configuration
 
 To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context  and override the `configure` method. +
@@ -180,8 +178,9 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer()
 ----
 
 [NOTE]
-If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance og configurer.
-If you need to differentiate between the passed `serverBuilder`s, you can check the type. This is the current limitation.
+If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance of configurer. +
+If you need to differentiate between the passed `serverBuilder`s, you can check the type. +
+This is the current limitation.
 
 == Eureka Integration
 
