@@ -2,9 +2,7 @@ apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile "io.grpc:grpc-stub:${grpcVersion}"
-    compile "io.grpc:grpc-protobuf:${grpcVersion}"
-    compile "io.grpc:grpc-netty:${grpcVersion}"
+
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile 'org.springframework.boot:spring-boot-starter-web'
 

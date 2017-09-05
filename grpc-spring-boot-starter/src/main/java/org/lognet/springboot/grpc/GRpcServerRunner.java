@@ -2,6 +2,8 @@ package org.lognet.springboot.grpc;
 
 import io.grpc.*;
 import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.netty.NettyServerBuilder;
 import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
@@ -25,7 +27,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
-    private final Set<String> serviceList = new ConcurrentSkipListSet<>();
+
     @Autowired
     private HealthStatusManager healthStatusManager;
 
@@ -40,8 +42,11 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
     private Server server;
 
-    public GRpcServerRunner(GRpcServerBuilderConfigurer configurer) {
+    private final ServerBuilder<?> serverBuilder;
+
+    public GRpcServerRunner(GRpcServerBuilderConfigurer configurer,ServerBuilder<?> serverBuilder) {
         this.configurer = configurer;
+        this.serverBuilder = serverBuilder;
     }
 
     @Override
@@ -52,7 +57,8 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
                 .collect(Collectors.toList());
 
-        final ServerBuilder<?> serverBuilder = ServerBuilder.forPort(gRpcServerProperties.getPort());
+
+
 
         // Adding health service
         serverBuilder.addService(healthStatusManager.getHealthService());
@@ -67,14 +73,16 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                     serverBuilder.addService(serviceDefinition);
                     String serviceName = serviceDefinition.getServiceDescriptor().getName();
                     healthStatusManager.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING);
-                    serviceList.add(serviceName);
+
                     log.info("'{}' service has been registered.", srv.getClass().getName());
 
                 });
 
+
         configurer.configure(serverBuilder);
         server = serverBuilder.build().start();
-        log.info("gRPC Server started, listening on port {}.", gRpcServerProperties.getPort());
+
+        log.info("gRPC Server started, listening on port {}.", server.getPort());
         startDaemonAwaitThread();
 
     }
@@ -119,7 +127,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Override
     public void destroy() throws Exception {
         log.info("Shutting down gRPC server ...");
-        serviceList.forEach(s -> healthStatusManager.clearStatus(s));
+        server.getServices().forEach(def->healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
     }

@@ -35,9 +35,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class,TestConfig.class}, webEnvironment = DEFINED_PORT)
-public class DemoAppTest {
+public class DemoAppTest extends GrpcServerTestBase{
 
-    private ManagedChannel channel;
+
 
     @Rule
     public OutputCapture outputCapture = new OutputCapture();
@@ -46,8 +46,7 @@ public class DemoAppTest {
     @Qualifier("globalInterceptor")
     private  ServerInterceptor globalInterceptor;
 
-    @Autowired
-    private ApplicationContext context;
+
 
 
     @Before
@@ -62,16 +61,12 @@ public class DemoAppTest {
         channel.shutdown();
     }
 
+
+
     @Test
-    public void simpleGreeting() throws ExecutionException, InterruptedException {
-
-
-        String name ="John";
-        final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
-        final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
-        final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertNotNull(reply);
-        assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
+    public void disabledServerTest() throws Throwable {
+        assertNotNull(grpcServerRunner);
+        assertNull(grpcInprocessServerRunner);
 
     }
 
