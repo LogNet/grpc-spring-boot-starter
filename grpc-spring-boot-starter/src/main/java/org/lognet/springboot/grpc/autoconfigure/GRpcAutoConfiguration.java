@@ -32,11 +32,6 @@ public class GRpcAutoConfiguration {
 
 
     @Autowired
-    private ApplicationContext ctx;
-
-
-    @Getter
-    @Autowired
     private GRpcServerProperties grpcServerProperties;
 
 
