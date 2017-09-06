@@ -44,18 +44,6 @@ public class DisabledGrpcServerTest extends GrpcServerTestBase {
 
 
 
-    @Before
-     public void setup() {
-         channel = InProcessChannelBuilder.forName(gRpcServerProperties.getInProcessServerName())
-        .usePlaintext(true)
-        .build();
-        }
-
-     @After
-     public void tearDown() {
-         channel.shutdown();
-     }
-
     @Test
     public void disabledServerTest() throws Throwable {
         assertNull(grpcServerRunner);

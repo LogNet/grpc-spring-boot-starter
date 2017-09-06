@@ -29,32 +29,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, TheConfiguration.class},
     webEnvironment = WebEnvironment.NONE, properties = "grpc.port=7778")
-public class OrderedInterceptorsTest {
+public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
-  private ManagedChannel channel;
+
   private static List<Integer> calledInterceptors = new ArrayList<>();
+
 
   @Before
   public void setup() {
-    channel = ManagedChannelBuilder.forAddress("localhost", 7778)
-        .usePlaintext(true)
-        .build();
+
     calledInterceptors.clear();
   }
 
-  @After
-  public void tearDown() {
-    channel.shutdown();
-  }
 
-  @Test
-  public void test_interceptor_order() throws Exception {
-    final GreeterBlockingStub greeterStub = GreeterGrpc.newBlockingStub(channel);
-    final GreeterOuterClass.HelloRequest helloRequest = GreeterOuterClass.HelloRequest.newBuilder().setName("hello")
-        .build();
-    greeterStub.sayHello(helloRequest).getMessage();
+  @Override
+  protected void afterGreeting() {
     assertThat(calledInterceptors).containsExactly(1, 2, 3, 4, 10, 100);
   }
+
+
 
   @Configuration
   public static class TheConfiguration {

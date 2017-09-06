@@ -19,6 +19,7 @@ import org.springframework.core.type.StandardMethodMetadata;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -105,24 +106,25 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
                 privateInterceptors)
                 .distinct()
-                .sorted(serverInterceptorComparator())
+                .sorted(serverInterceptorOrderComparator())
                 .collect(Collectors.toList());
         return ServerInterceptors.intercept(serviceDefinition, interceptors);
     }
 
-    private Comparator<Object> serverInterceptorComparator() {
+    private Comparator<Object> serverInterceptorOrderComparator() {
+        Function<Object,Boolean> isOrderAnnotated = obj->{
+            Order ann = obj instanceof Method ? AnnotationUtils.findAnnotation((Method) obj, Order.class) :
+                    AnnotationUtils.findAnnotation(obj.getClass(), Order.class);
+            return ann != null;
+        };
         return AnnotationAwareOrderComparator.INSTANCE.thenComparing((o1, o2) -> {
-            boolean p1 = isOrderAnnotated(o1);
-            boolean p2 = isOrderAnnotated(o2);
+            boolean p1 = isOrderAnnotated.apply(o1);
+            boolean p2 = isOrderAnnotated.apply(o2);
             return p1 && !p2 ? -1 : p2 && !p1 ? 1 : 0;
         }).reversed();
     }
 
-    private boolean isOrderAnnotated(Object obj) {
-        Order ann = obj instanceof Method ? AnnotationUtils.findAnnotation((Method) obj, Order.class) :
-                AnnotationUtils.findAnnotation(obj.getClass(), Order.class);
-        return ann != null;
-    }
+
 
     private void startDaemonAwaitThread() {
         Thread awaitThread = new Thread(()->{
