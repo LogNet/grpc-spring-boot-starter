@@ -27,6 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
@@ -73,8 +75,13 @@ public class DemoAppTest extends GrpcServerTestBase{
 
 
         // log interceptor should be invoked only on GreeterService and not CalculatorService
-        outputCapture.expect(CoreMatchers.containsString(GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
-        outputCapture.expect(CoreMatchers.not(CoreMatchers.containsString(CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
+        outputCapture.expect(containsString(GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
+        outputCapture.expect(not(containsString(CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
+
+
+        outputCapture.expect(containsString("I'm not Spring bean interceptor and still being invoked..."));
+
+
 
     }
 
