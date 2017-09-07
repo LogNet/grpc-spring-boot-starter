@@ -19,7 +19,7 @@ public class AopServiceMonitor {
 
     @AfterReturning("execution(* org.lognet..*Service.*(..))")
     public void logServiceAccess( ) {
-        System.out.println("Completed: ");
+        System.out.println("Hi from AOP.");
     }
 
 
