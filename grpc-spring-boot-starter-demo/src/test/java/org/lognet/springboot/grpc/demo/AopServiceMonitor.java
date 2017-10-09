@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc.demo;
 
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.Profile;
@@ -17,7 +18,8 @@ public class AopServiceMonitor {
     public AopServiceMonitor() {
     }
 
-    @AfterReturning("execution(* org.lognet..*Service.*(..))")
+    //@AfterReturning("execution(* org.lognet..*Service.*(..))")
+    @After("execution(* org.lognet..*Service.*(..))")
     public void logServiceAccess( ) {
         System.out.println("Hi from AOP.");
     }
