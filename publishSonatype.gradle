@@ -1,5 +1,6 @@
 apply plugin: 'com.bmuschko.nexus'
 
+//http://www.debonair.io/post/maven-cd/
 
 ['nexusPassword', 'nexusUsername'].each{
     if (System.env[it])
@@ -8,20 +9,7 @@ apply plugin: 'com.bmuschko.nexus'
 project['signing.keyId']=System.getenv('GPG_ID')
 project['signing.password']=System.getenv('GPG_PASSWORD')
 project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-//                authentication(userName: nexusUsername, password: nexusPassword)
-//                proxy(host: "185.46.212.34", port: 9480, type: 'http')
-//            }
-//            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
-//                authentication(userName: nexusUsername, password: nexusPassword)
-//                proxy(host: "185.46.212.34", port: 9480, type: 'http')
-//            }
-//        }
-//    }
-//}
+
 modifyPom {
     project {
         name 'grpc-spring-boot-starter'
