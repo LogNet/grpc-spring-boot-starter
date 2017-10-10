@@ -5,6 +5,8 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
+
+    private static final Logger log = LoggerFactory.getLogger(GRpcServerRunner.class);
 
     @Autowired
     private HealthStatusManager healthStatusManager;
