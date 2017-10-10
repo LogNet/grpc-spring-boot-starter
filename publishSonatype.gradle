@@ -1,0 +1,54 @@
+apply plugin: 'com.bmuschko.nexus'
+
+
+['nexusPassword', 'nexusUsername','signing.keyId','signing.password','signing.secretKeyRingFile'].each{
+    if (System.env[it])
+        project[it] = System.env[it]
+}
+
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+//                authentication(userName: nexusUsername, password: nexusPassword)
+//                proxy(host: "185.46.212.34", port: 9480, type: 'http')
+//            }
+//            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+//                authentication(userName: nexusUsername, password: nexusPassword)
+//                proxy(host: "185.46.212.34", port: 9480, type: 'http')
+//            }
+//        }
+//    }
+//}
+modifyPom {
+    project {
+        name 'grpc-spring-boot-starter'
+        description 'grpc-spring-boot-starter'
+        url 'https://github.com/LogNet/grpc-spring-boot-starter'
+
+        scm {
+            url 'https://github.com/LogNet/grpc-spring-boot-starter'
+            connection 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+            developerConnection 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'jvmlet'
+                name 'Furer Alexander'
+                email 'furer.alexander@gmail.com'
+            }
+        }
+    }
+}
+
+
+

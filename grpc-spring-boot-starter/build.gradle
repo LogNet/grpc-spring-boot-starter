@@ -1,4 +1,4 @@
-apply from: "${rootDir}/publish.gradle"
+apply from: "${rootDir}/publishSonatype.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
