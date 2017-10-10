@@ -8,3 +8,5 @@ gradle-app.setting
 bin/
 !/.gitignore
 !/.travis.yml
+grpc-spring-boot-starter.ipr
+grpc-spring-boot-starter.iws

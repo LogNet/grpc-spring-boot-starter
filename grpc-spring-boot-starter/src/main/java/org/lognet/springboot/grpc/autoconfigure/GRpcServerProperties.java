@@ -33,5 +33,27 @@ public class GRpcServerProperties {
      */
     private String inProcessServerName;
 
+    public int getPort() {
+        return port;
+    }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getInProcessServerName() {
+        return inProcessServerName;
+    }
+
+    public void setInProcessServerName(String inProcessServerName) {
+        this.inProcessServerName = inProcessServerName;
+    }
 }
