@@ -1,8 +1,10 @@
 package org.lognet.springboot.grpc.demo;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Profile(value = {"aopTest"})
+@Slf4j
 public class AopServiceMonitor {
 
     public AopServiceMonitor() {
@@ -20,8 +23,14 @@ public class AopServiceMonitor {
 
     //@AfterReturning("execution(* org.lognet..*Service.*(..))")
     @After("execution(* org.lognet..*Service.*(..))")
-    public void logServiceAccess( ) {
-        System.out.println("Hi from AOP.");
+    public void afterLogServiceAccess( ) {
+
+        log.info("Hi from AOP. - after");
+    }
+
+    @Before("execution(* org.lognet..*Service.*(..))")
+    public void beforeLogServiceAccess( ) {
+        log.info("Hi from AOP. - before");
     }
 
 

@@ -49,6 +49,7 @@ subprojects {
 
     dependencies{
         compileOnly('org.projectlombok:lombok:1.16.6')
+        testCompileOnly('org.projectlombok:lombok:1.16.6')
     }
 
 }
