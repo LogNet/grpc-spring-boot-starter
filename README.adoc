@@ -27,7 +27,10 @@ dependencies {
 
 * Start by https://github.com/google/protobuf-gradle-plugin[generating] stub and server interface(s) from your `.proto` file(s).
 * Annotate your server interface implementation(s) with `@org.lognet.springboot.grpc.GRpcService`
+** Enable class proxies (`spring.aop.proxy-target-class=true`) if your @GRpcService class relies on proxy-based Spring services like @Transactional
 * Optionally configure the server port in your `application.yml/properties`. Default port is `6565`
+
+
 
 [source,yaml]
 ----
