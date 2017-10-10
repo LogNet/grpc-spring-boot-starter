@@ -1,11 +1,13 @@
 apply plugin: 'com.bmuschko.nexus'
 
 
-['nexusPassword', 'nexusUsername','signing.keyId','signing.password','signing.secretKeyRingFile'].each{
+['nexusPassword', 'nexusUsername'].each{
     if (System.env[it])
         project[it] = System.env[it]
 }
-
+project['signing.keyId']=System.getenv('GPG_ID')
+project['signing.password']=System.getenv('GPG_PASSWORD')
+project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 //uploadArchives {
 //    repositories {
 //        mavenDeployer {
