@@ -14,7 +14,7 @@ after_success:
  - ./gradlew bintrayUpload artifactoryPublish
  - bash <(curl -s https://codecov.io/bash)
 script:
- - ./gradlew --info check
+ - ./gradlew check
  - ./gradlew codeCoverageReport
 
 

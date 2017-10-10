@@ -40,7 +40,11 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
+    test {
+        testLogging {
+            exceptionFormat = 'full'
+        }
+    }
 
 
     dependencies{
