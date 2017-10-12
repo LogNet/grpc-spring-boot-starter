@@ -49,6 +49,21 @@ The starter supports also the  `in-process server`, which should be used for tes
 [NOTE]
 If you enable both the `NettyServer` and `in-process` server, they will both share the same instance of `HealthStatusManager` and `GRpcServerBuilderConfigurer` (see <<Custom gRPC Server Configuration>>).
 
+If you want to start the server with TLS enabled, the following configuration properties must be set:
+[source,yaml]
+----
+ grpc:
+    transportSecurity:
+       enabled: true <1>
+       certificateChainFilePath: /home/abc/certs/stuff.pem <2>
+       privateKeyFilePath: /home/abc/certs/server.pkcs8.key <3>
+----
+<1> Enable the transport security
+<2> Full path to the PEM file containing the full certificate chain
+<3> Full path to the private key file in PKCS #8 format
+
+[NOTE]
+In addition to the changes in the configuration, gRPC requires additional dependencies to use TLS. See https://github.com/grpc/grpc-java/blob/master/SECURITY.md#transport-security-tls[the gRPC documentation] for further information.
 
 
 == Show case
