@@ -33,5 +33,32 @@ public class GRpcServerProperties {
      */
     private String inProcessServerName;
 
+    /**
+     * Transport security options for the gRPC server. Transport security is disabled by default.
+     *
+     * Additional dependencies are needed to start a server with TLS enabled.
+     * See https://github.com/grpc/grpc-java/blob/master/SECURITY.md#transport-security-tls
+     */
+    private final TransportSecurity transportSecurity = new TransportSecurity();
+
+    @Getter @Setter
+    public static class TransportSecurity {
+
+        /**
+         * TLS will only be enabled if this is set to true.
+         */
+        private boolean enabled = false;
+
+        /**
+         * Path to the file containing the complete certificateChain. Path should be the absolute path to that file.
+         */
+        private String certificateChainFilePath = "";
+
+        /**
+         * Path to the file containing the private key in PKCS8 format. Path should be the absolute path to that file.
+         */
+        private String privateKeyFilePath = "";
+
+    }
 
 }

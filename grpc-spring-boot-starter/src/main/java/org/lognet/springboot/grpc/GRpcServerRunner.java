@@ -16,6 +16,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.StandardMethodMetadata;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -38,7 +39,6 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
-
     private GRpcServerBuilderConfigurer configurer;
 
     private Server server;
@@ -58,8 +58,17 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
                 .collect(Collectors.toList());
 
+        // Enable SSL if enabled
+        if (gRpcServerProperties.getTransportSecurity().isEnabled()) {
+            try {
+                File certChainFile = new File(gRpcServerProperties.getTransportSecurity().getCertificateChainFilePath());
+                File privateKeyFile = new File(gRpcServerProperties.getTransportSecurity().getPrivateKeyFilePath());
 
-
+                serverBuilder.useTransportSecurity(certChainFile, privateKeyFile);
+            } catch (NullPointerException exception) {
+                log.error("Could not configure the server to use TLS, starting without TLS.", exception);
+            }
+        }
 
         // Adding health service
         serverBuilder.addService(healthStatusManager.getHealthService());

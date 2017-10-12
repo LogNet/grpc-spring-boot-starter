@@ -6,8 +6,11 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile 'org.springframework.boot:spring-boot-starter-web'
 
-
     compile project(':grpc-spring-boot-starter')
+
+    // Uncomment this dependency and add the corresponding configuration properties
+    //  to enable TLS for the server.
+    // compile "io.netty:netty-tcnative-boringssl-static:2.0.5.Final"
 
     testCompile 'org.springframework.boot:spring-boot-starter-aop'
     testCompile('org.springframework.boot:spring-boot-starter-test')
