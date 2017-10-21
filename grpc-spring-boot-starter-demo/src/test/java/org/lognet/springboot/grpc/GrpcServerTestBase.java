@@ -12,8 +12,15 @@ import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
+import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -42,10 +49,24 @@ public abstract class GrpcServerTestBase {
 
     @Before
     public final void setupChannels() {
-        if(gRpcServerProperties.isEnabled()) {
-            channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost", gRpcServerProperties.getPort())
+        if (gRpcServerProperties.isEnabled()) {
+            int port = gRpcServerProperties.getPort();
+            if (port == 0) {
+                port = SocketUtils.findAvailableTcpPort(40000, 50000);
+            }
+            channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost", port)
                     .usePlaintext(true)
-                    ).build();
+            ).build();
+
+            if (context instanceof ConfigurableApplicationContext) {
+                MutablePropertySources sources = ((ConfigurableApplicationContext) context).getEnvironment().getPropertySources();
+                PropertySource<?> source = sources.get("server.ports");
+                if (source == null) {
+                    source = new MapPropertySource("server.ports", new HashMap<String, Object>());
+                    sources.addFirst(source);
+                }
+                ((Map<String, Object>) source.getSource()).put("local.grpc.port", port);
+            }
         }
         if(StringUtils.hasText(gRpcServerProperties.getInProcessServerName())){
             inProcChannel = onChannelBuild(
