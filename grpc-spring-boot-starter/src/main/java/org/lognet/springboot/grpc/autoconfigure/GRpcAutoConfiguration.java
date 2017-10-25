@@ -45,20 +45,22 @@ public class GRpcAutoConfiguration {
     @ConditionalOnProperty(value = "grpc.enabled", havingValue = "true", matchIfMissing = true)
     public GRpcServerRunner grpcServerRunner(GRpcServerBuilderConfigurer configurer) {
         int port = grpcServerProperties.getPort();
-        if (port == 0) {
-            port = SocketUtils.findAvailableTcpPort(40000, 50000);
-        }
+
+        GRpcServerRunner gRpcServerRunner = new GRpcServerRunner(configurer, ServerBuilder.forPort(port));
+
         if (applicationContext instanceof ConfigurableApplicationContext) {
+            int runningPort = gRpcServerRunner.getRunningPort();
+
             MutablePropertySources sources = ((ConfigurableApplicationContext) applicationContext).getEnvironment().getPropertySources();
             PropertySource<?> source = sources.get("server.ports");
             if (source == null) {
                 source = new MapPropertySource("server.ports", new HashMap<String, Object>());
                 sources.addFirst(source);
             }
-            ((Map<String, Object>) source.getSource()).put("local.grpc.port", port);
+            ((Map<String, Object>) source.getSource()).put("local.grpc.port", runningPort);
         }
 
-        return new GRpcServerRunner(configurer, ServerBuilder.forPort(port));
+        return gRpcServerRunner;
     }
 
     @Bean
