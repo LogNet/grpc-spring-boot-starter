@@ -18,7 +18,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.6.1)",
+    value = "by gRPC proto compiler (version 1.7.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -38,6 +38,7 @@ public final class CalculatorGrpc {
               io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
               io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
+          .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
           .build();
 
   /**
@@ -206,10 +207,38 @@ public final class CalculatorGrpc {
     }
   }
 
-  private static final class CalculatorDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+  private static abstract class CalculatorBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
+    CalculatorBaseDescriptorSupplier() {}
+
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
       return io.grpc.examples.CalculatorOuterClass.getDescriptor();
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
+      return getFileDescriptor().findServiceByName("Calculator");
+    }
+  }
+
+  private static final class CalculatorFileDescriptorSupplier
+      extends CalculatorBaseDescriptorSupplier {
+    CalculatorFileDescriptorSupplier() {}
+  }
+
+  private static final class CalculatorMethodDescriptorSupplier
+      extends CalculatorBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
+    private final String methodName;
+
+    CalculatorMethodDescriptorSupplier(String methodName) {
+      this.methodName = methodName;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
+      return getServiceDescriptor().findMethodByName(methodName);
     }
   }
 
@@ -222,7 +251,7 @@ public final class CalculatorGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new CalculatorDescriptorSupplier())
+              .setSchemaDescriptor(new CalculatorFileDescriptorSupplier())
               .addMethod(METHOD_CALCULATE)
               .build();
         }

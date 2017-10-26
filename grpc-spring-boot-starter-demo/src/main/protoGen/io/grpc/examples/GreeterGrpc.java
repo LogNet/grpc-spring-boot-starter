@@ -21,7 +21,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.6.1)",
+    value = "by gRPC proto compiler (version 1.7.0)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 
@@ -41,6 +41,7 @@ public final class GreeterGrpc {
               io.grpc.examples.GreeterOuterClass.HelloRequest.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
               io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
+          .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("SayHello"))
           .build();
 
   /**
@@ -233,10 +234,38 @@ public final class GreeterGrpc {
     }
   }
 
-  private static final class GreeterDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+  private static abstract class GreeterBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
+    GreeterBaseDescriptorSupplier() {}
+
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
       return io.grpc.examples.GreeterOuterClass.getDescriptor();
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
+      return getFileDescriptor().findServiceByName("Greeter");
+    }
+  }
+
+  private static final class GreeterFileDescriptorSupplier
+      extends GreeterBaseDescriptorSupplier {
+    GreeterFileDescriptorSupplier() {}
+  }
+
+  private static final class GreeterMethodDescriptorSupplier
+      extends GreeterBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
+    private final String methodName;
+
+    GreeterMethodDescriptorSupplier(String methodName) {
+      this.methodName = methodName;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
+      return getServiceDescriptor().findMethodByName(methodName);
     }
   }
 
@@ -249,7 +278,7 @@ public final class GreeterGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new GreeterDescriptorSupplier())
+              .setSchemaDescriptor(new GreeterFileDescriptorSupplier())
               .addMethod(METHOD_SAY_HELLO)
               .build();
         }
