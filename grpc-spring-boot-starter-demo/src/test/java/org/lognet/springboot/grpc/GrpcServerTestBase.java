@@ -43,7 +43,7 @@ public abstract class GrpcServerTestBase {
     @Before
     public final void setupChannels() {
         if(gRpcServerProperties.isEnabled()) {
-            channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost", gRpcServerProperties.getPort())
+            channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost",getPort() )
                     .usePlaintext(true)
                     ).build();
         }
@@ -54,6 +54,9 @@ public abstract class GrpcServerTestBase {
                             ).build();
 
         }
+    }
+    protected int getPort(){
+        return  gRpcServerProperties.getPort();
     }
 
     protected ManagedChannelBuilder<?>  onChannelBuild(ManagedChannelBuilder<?> channelBuilder){
@@ -71,9 +74,9 @@ public abstract class GrpcServerTestBase {
     }
 
     @Test
-    public void simpleGreeting() throws ExecutionException, InterruptedException {
+    final public void simpleGreeting() throws ExecutionException, InterruptedException {
 
-
+        beforeGreeting();
         String name ="John";
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(Optional.ofNullable(channel).orElse(inProcChannel));
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
@@ -83,6 +86,11 @@ public abstract class GrpcServerTestBase {
         afterGreeting();
 
     }
+
+    protected void beforeGreeting() {
+
+    }
+
     protected void afterGreeting(){
 
     }

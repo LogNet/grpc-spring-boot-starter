@@ -28,7 +28,8 @@ dependencies {
 * Start by https://github.com/google/protobuf-gradle-plugin[generating] stub and server interface(s) from your `.proto` file(s).
 * Annotate your server interface implementation(s) with `@org.lognet.springboot.grpc.GRpcService`
 * Optionally configure the server port in your `application.yml/properties`. Default port is `6565`.
-* A random port can be defined by setting the port to `0`. The actual port being used can then be retrieved from the property `local.grpc.port`.
+* A random port can be defined by setting the port to `0`. The actual port being used can then be retrieved from the property `local.grpc.port`, or
+using `@LocalRunningGrpcPort` annotation which will inject the running port (explicitly configured or randomly selected)
 
 [source,yaml]
 ----
