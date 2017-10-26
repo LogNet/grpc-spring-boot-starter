@@ -20,13 +20,6 @@ public class GRpcServerProperties {
      */
     private int port = 6565;
 
-    public int getPort() {
-        if (port == 0) {
-            port = SocketUtils.findAvailableTcpPort(40000, 50000);
-        }
-        return port;
-    }
-
     /**
      * Enables the embedded grpc server.
      */

@@ -5,6 +5,7 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,23 +82,14 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
         configurer.configure(serverBuilder);
         server = serverBuilder.build().start();
+        applicationContext.publishEvent(new GRpcServerInitializedEvent(server));
 
         log.info("gRPC Server started, listening on port {}.", server.getPort());
         startDaemonAwaitThread();
 
     }
 
-    /**
-     * Return the port the server is actually running on.
-     *
-     * @return the port the server is actually running on or 0, if the server is not initialized yet
-     */
-    public int getRunningPort() {
-        if (server == null) {
-            return 0;
-        }
-        return server.getPort();
-    }
+
 
     private ServerServiceDefinition bindInterceptors(ServerServiceDefinition serviceDefinition, GRpcService gRpcService, Collection<ServerInterceptor> globalInterceptors) {
 
