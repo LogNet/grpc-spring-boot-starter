@@ -1,5 +1,6 @@
-== Version 2.1.2
+== Version 2.1.3
 - Random gRPC server port support
+- Artifact's group name switched back to `org.lognet`
 
 == Version 2.1.1
 - Fixed wrong interceptors ordering bug.
