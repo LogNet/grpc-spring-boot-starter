@@ -1,24 +1,24 @@
 package io.grpc.examples;
 
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncUnaryCall;
+import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
+import static io.grpc.stub.ClientCalls.blockingUnaryCall;
+import static io.grpc.stub.ClientCalls.futureUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.7.0)",
+    value = "by gRPC proto compiler (version 1.8.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -28,18 +28,37 @@ public final class CalculatorGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
+  @java.lang.Deprecated // Use {@link #getCalculateMethod()} instead. 
   public static final io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
-      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> METHOD_CALCULATE =
-      io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
-          .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-          .setFullMethodName(generateFullMethodName(
-              "Calculator", "Calculate"))
-          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
-          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
-          .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
-          .build();
+      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> METHOD_CALCULATE = getCalculateMethod();
+
+  private static volatile io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
+      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
+
+  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
+  public static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
+      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod() {
+    io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
+    if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
+      synchronized (CalculatorGrpc.class) {
+        if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
+          CalculatorGrpc.getCalculateMethod = getCalculateMethod = 
+              io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "Calculator", "Calculate"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
+                  .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
+                  .build();
+          }
+        }
+     }
+     return getCalculateMethod;
+  }
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -72,13 +91,13 @@ public final class CalculatorGrpc {
      */
     public void calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(METHOD_CALCULATE, responseObserver);
+      asyncUnimplementedUnaryCall(getCalculateMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            METHOD_CALCULATE,
+            getCalculateMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
@@ -111,7 +130,7 @@ public final class CalculatorGrpc {
     public void calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(METHOD_CALCULATE, getCallOptions()), request, responseObserver);
+          getChannel().newCall(getCalculateMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -137,7 +156,7 @@ public final class CalculatorGrpc {
      */
     public io.grpc.examples.CalculatorOuterClass.CalculatorResponse calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request) {
       return blockingUnaryCall(
-          getChannel(), METHOD_CALCULATE, getCallOptions(), request);
+          getChannel(), getCalculateMethod(), getCallOptions(), request);
     }
   }
 
@@ -164,7 +183,7 @@ public final class CalculatorGrpc {
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> calculate(
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(METHOD_CALCULATE, getCallOptions()), request);
+          getChannel().newCall(getCalculateMethod(), getCallOptions()), request);
     }
   }
 
@@ -252,7 +271,7 @@ public final class CalculatorGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new CalculatorFileDescriptorSupplier())
-              .addMethod(METHOD_CALCULATE)
+              .addMethod(getCalculateMethod())
               .build();
         }
       }

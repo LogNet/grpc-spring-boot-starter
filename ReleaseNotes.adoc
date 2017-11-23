@@ -1,3 +1,6 @@
+== Version 2.1.4
+- gRPC version upgraded to 1.8.0
+
 == Version 2.1.3
 - Random gRPC server port support
 - Fixed wrong interceptors ordering bug.
