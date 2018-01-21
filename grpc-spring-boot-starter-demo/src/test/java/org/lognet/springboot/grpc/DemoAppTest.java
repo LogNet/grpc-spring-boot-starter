@@ -1,7 +1,5 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.ServerInterceptor;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
@@ -10,17 +8,18 @@ import io.grpc.examples.GreeterOuterClass;
 import io.grpc.health.v1.HealthCheckRequest;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
-import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -30,16 +29,17 @@ import java.util.concurrent.ExecutionException;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
  * Created by alexf on 28-Jan-16.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DemoApp.class,TestConfig.class}, webEnvironment = DEFINED_PORT)
+@SpringBootTest(classes = {DemoApp.class,TestConfig.class}, webEnvironment = RANDOM_PORT)
 public class DemoAppTest extends GrpcServerTestBase{
 
-
+    @LocalServerPort
+    private int localServerPort;
 
     @Rule
     public OutputCapture outputCapture = new OutputCapture();
@@ -49,14 +49,10 @@ public class DemoAppTest extends GrpcServerTestBase{
     private  ServerInterceptor globalInterceptor;
 
 
-
-
-
     @Test
     public void disabledServerTest() throws Throwable {
         assertNotNull(grpcServerRunner);
         assertNull(grpcInprocessServerRunner);
-
     }
 
     @Test
@@ -80,16 +76,13 @@ public class DemoAppTest extends GrpcServerTestBase{
 
 
         outputCapture.expect(containsString("I'm not Spring bean interceptor and still being invoked..."));
-
-
-
     }
 
         @Test
     public void actuatorTest() throws ExecutionException, InterruptedException {
         final TestRestTemplate template = new TestRestTemplate();
 
-        ResponseEntity<String> response = template.getForEntity("http://localhost:8080/env", String.class);
+        ResponseEntity<String> response = template.getForEntity("http://localhost:" + localServerPort + "/env", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
