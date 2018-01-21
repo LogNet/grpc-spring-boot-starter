@@ -1,8 +1,8 @@
 
 buildscript {
     ext {
-        springBootVersion = '1.5.8.RELEASE'
-        grpcVersion = '1.8.0'
+        springBootVersion = '1.5.9.RELEASE'
+        grpcVersion = '1.9.0'
     }
     repositories {
         mavenCentral()
@@ -14,7 +14,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'com.palantir:jacoco-coverage:0.4.0'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
@@ -48,8 +48,8 @@ subprojects {
 
 
     dependencies{
-        compileOnly('org.projectlombok:lombok:1.16.6')
-        testCompileOnly('org.projectlombok:lombok:1.16.6')
+        compileOnly('org.projectlombok:lombok:1.16.20')
+        testCompileOnly('org.projectlombok:lombok:1.16.20')
     }
 
 }
