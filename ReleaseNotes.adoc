@@ -1,3 +1,7 @@
+== Version 2.1.5
+- gRPC version upgraded to 1.9.0
+- Spring boot  upgraded to 1.5.9
+
 == Version 2.1.4
 - gRPC version upgraded to 1.8.0
 
