@@ -2,8 +2,6 @@ package org.lognet.springboot.grpc.context;
 
 import io.grpc.ServerBuilder;
 import org.lognet.springboot.grpc.GRpcServerRunner;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
-import org.springframework.boot.context.embedded.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;

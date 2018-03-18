@@ -1,8 +1,8 @@
 
 buildscript {
     ext {
-        springBootVersion = '1.5.9.RELEASE'
-        grpcVersion = '1.9.0'
+        springBootVersion = '2.0.0.RELEASE'
+        grpcVersion = '1.10.0'
     }
     repositories {
         mavenCentral()
@@ -14,7 +14,8 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.4.RELEASE"
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.5'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'com.palantir:jacoco-coverage:0.4.0'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
@@ -23,6 +24,7 @@ buildscript {
 apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'
 apply plugin: 'jacoco'
+apply plugin: "io.spring.dependency-management"
 
 allprojects{
     repositories {
