@@ -18,7 +18,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.8.0)",
+    value = "by gRPC proto compiler (version 1.10.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -30,7 +30,7 @@ public final class CalculatorGrpc {
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   @java.lang.Deprecated // Use {@link #getCalculateMethod()} instead. 
   public static final io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
-      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> METHOD_CALCULATE = getCalculateMethod();
+      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> METHOD_CALCULATE = getCalculateMethodHelper();
 
   private static volatile io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
@@ -38,6 +38,11 @@ public final class CalculatorGrpc {
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod() {
+    return getCalculateMethodHelper();
+  }
+
+  private static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
+      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethodHelper() {
     io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
     if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
       synchronized (CalculatorGrpc.class) {
@@ -91,13 +96,13 @@ public final class CalculatorGrpc {
      */
     public void calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getCalculateMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getCalculateMethodHelper(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            getCalculateMethod(),
+            getCalculateMethodHelper(),
             asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
@@ -130,7 +135,7 @@ public final class CalculatorGrpc {
     public void calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getCalculateMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getCalculateMethodHelper(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -156,7 +161,7 @@ public final class CalculatorGrpc {
      */
     public io.grpc.examples.CalculatorOuterClass.CalculatorResponse calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request) {
       return blockingUnaryCall(
-          getChannel(), getCalculateMethod(), getCallOptions(), request);
+          getChannel(), getCalculateMethodHelper(), getCallOptions(), request);
     }
   }
 
@@ -183,7 +188,7 @@ public final class CalculatorGrpc {
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> calculate(
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getCalculateMethod(), getCallOptions()), request);
+          getChannel().newCall(getCalculateMethodHelper(), getCallOptions()), request);
     }
   }
 
@@ -271,7 +276,7 @@ public final class CalculatorGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new CalculatorFileDescriptorSupplier())
-              .addMethod(getCalculateMethod())
+              .addMethod(getCalculateMethodHelper())
               .build();
         }
       }

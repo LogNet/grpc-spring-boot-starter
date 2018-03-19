@@ -19,11 +19,11 @@ public final class GreeterOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
         getNameBytes();
@@ -39,6 +39,7 @@ public final class GreeterOuterClass {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:HelloRequest)
       HelloRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use HelloRequest.newBuilder() to construct.
     private HelloRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -50,14 +51,19 @@ public final class GreeterOuterClass {
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private HelloRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -67,7 +73,8 @@ public final class GreeterOuterClass {
               done = true;
               break;
             default: {
-              if (!input.skipField(tag)) {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -86,6 +93,7 @@ public final class GreeterOuterClass {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -104,7 +112,7 @@ public final class GreeterOuterClass {
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public java.lang.String getName() {
       java.lang.Object ref = name_;
@@ -119,7 +127,7 @@ public final class GreeterOuterClass {
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -150,6 +158,7 @@ public final class GreeterOuterClass {
       if (!getNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
+      unknownFields.writeTo(output);
     }
 
     public int getSerializedSize() {
@@ -160,11 +169,11 @@ public final class GreeterOuterClass {
       if (!getNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
@@ -178,6 +187,7 @@ public final class GreeterOuterClass {
       boolean result = true;
       result = result && getName()
           .equals(other.getName());
+      result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
 
@@ -187,7 +197,7 @@ public final class GreeterOuterClass {
         return memoizedHashCode;
       }
       int hash = 41;
-      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + NAME_FIELD_NUMBER;
       hash = (53 * hash) + getName().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -195,6 +205,17 @@ public final class GreeterOuterClass {
       return hash;
     }
 
+    public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static io.grpc.examples.GreeterOuterClass.HelloRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -346,7 +367,7 @@ public final class GreeterOuterClass {
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
       public Builder clearField(
@@ -359,12 +380,12 @@ public final class GreeterOuterClass {
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -382,6 +403,7 @@ public final class GreeterOuterClass {
           name_ = other.name_;
           onChanged();
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -410,7 +432,7 @@ public final class GreeterOuterClass {
 
       private java.lang.Object name_ = "";
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public java.lang.String getName() {
         java.lang.Object ref = name_;
@@ -425,7 +447,7 @@ public final class GreeterOuterClass {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
@@ -441,7 +463,7 @@ public final class GreeterOuterClass {
         }
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setName(
           java.lang.String value) {
@@ -454,7 +476,7 @@ public final class GreeterOuterClass {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder clearName() {
         
@@ -463,7 +485,7 @@ public final class GreeterOuterClass {
         return this;
       }
       /**
-       * <code>optional string name = 1;</code>
+       * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
@@ -478,12 +500,12 @@ public final class GreeterOuterClass {
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -506,7 +528,7 @@ public final class GreeterOuterClass {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new HelloRequest(input, extensionRegistry);
+        return new HelloRequest(input, extensionRegistry);
       }
     };
 
@@ -530,11 +552,11 @@ public final class GreeterOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     java.lang.String getMessage();
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     com.google.protobuf.ByteString
         getMessageBytes();
@@ -550,6 +572,7 @@ public final class GreeterOuterClass {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:HelloReply)
       HelloReplyOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use HelloReply.newBuilder() to construct.
     private HelloReply(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -561,14 +584,19 @@ public final class GreeterOuterClass {
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private HelloReply(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -578,7 +606,8 @@ public final class GreeterOuterClass {
               done = true;
               break;
             default: {
-              if (!input.skipField(tag)) {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -597,6 +626,7 @@ public final class GreeterOuterClass {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -615,7 +645,7 @@ public final class GreeterOuterClass {
     public static final int MESSAGE_FIELD_NUMBER = 1;
     private volatile java.lang.Object message_;
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -630,7 +660,7 @@ public final class GreeterOuterClass {
       }
     }
     /**
-     * <code>optional string message = 1;</code>
+     * <code>string message = 1;</code>
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -661,6 +691,7 @@ public final class GreeterOuterClass {
       if (!getMessageBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
       }
+      unknownFields.writeTo(output);
     }
 
     public int getSerializedSize() {
@@ -671,11 +702,11 @@ public final class GreeterOuterClass {
       if (!getMessageBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
@@ -689,6 +720,7 @@ public final class GreeterOuterClass {
       boolean result = true;
       result = result && getMessage()
           .equals(other.getMessage());
+      result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
 
@@ -698,7 +730,7 @@ public final class GreeterOuterClass {
         return memoizedHashCode;
       }
       int hash = 41;
-      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
       hash = (53 * hash) + getMessage().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -706,6 +738,17 @@ public final class GreeterOuterClass {
       return hash;
     }
 
+    public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static io.grpc.examples.GreeterOuterClass.HelloReply parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -857,7 +900,7 @@ public final class GreeterOuterClass {
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
       public Builder clearField(
@@ -870,12 +913,12 @@ public final class GreeterOuterClass {
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -893,6 +936,7 @@ public final class GreeterOuterClass {
           message_ = other.message_;
           onChanged();
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -921,7 +965,7 @@ public final class GreeterOuterClass {
 
       private java.lang.Object message_ = "";
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
@@ -936,7 +980,7 @@ public final class GreeterOuterClass {
         }
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public com.google.protobuf.ByteString
           getMessageBytes() {
@@ -952,7 +996,7 @@ public final class GreeterOuterClass {
         }
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder setMessage(
           java.lang.String value) {
@@ -965,7 +1009,7 @@ public final class GreeterOuterClass {
         return this;
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder clearMessage() {
         
@@ -974,7 +1018,7 @@ public final class GreeterOuterClass {
         return this;
       }
       /**
-       * <code>optional string message = 1;</code>
+       * <code>string message = 1;</code>
        */
       public Builder setMessageBytes(
           com.google.protobuf.ByteString value) {
@@ -989,12 +1033,12 @@ public final class GreeterOuterClass {
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1017,7 +1061,7 @@ public final class GreeterOuterClass {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new HelloReply(input, extensionRegistry);
+        return new HelloReply(input, extensionRegistry);
       }
     };
 

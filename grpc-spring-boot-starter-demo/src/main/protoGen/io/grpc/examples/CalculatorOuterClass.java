@@ -19,21 +19,21 @@ public final class CalculatorOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional double number1 = 1;</code>
+     * <code>double number1 = 1;</code>
      */
     double getNumber1();
 
     /**
-     * <code>optional double number2 = 2;</code>
+     * <code>double number2 = 2;</code>
      */
     double getNumber2();
 
     /**
-     * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+     * <code>.CalculatorRequest.OperationType operation = 3;</code>
      */
     int getOperationValue();
     /**
-     * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+     * <code>.CalculatorRequest.OperationType operation = 3;</code>
      */
     io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation();
   }
@@ -44,6 +44,7 @@ public final class CalculatorOuterClass {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CalculatorRequest)
       CalculatorRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CalculatorRequest.newBuilder() to construct.
     private CalculatorRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -57,14 +58,19 @@ public final class CalculatorOuterClass {
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CalculatorRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -74,7 +80,8 @@ public final class CalculatorOuterClass {
               done = true;
               break;
             default: {
-              if (!input.skipField(tag)) {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -103,6 +110,7 @@ public final class CalculatorOuterClass {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -237,7 +245,7 @@ public final class CalculatorOuterClass {
     public static final int NUMBER1_FIELD_NUMBER = 1;
     private double number1_;
     /**
-     * <code>optional double number1 = 1;</code>
+     * <code>double number1 = 1;</code>
      */
     public double getNumber1() {
       return number1_;
@@ -246,7 +254,7 @@ public final class CalculatorOuterClass {
     public static final int NUMBER2_FIELD_NUMBER = 2;
     private double number2_;
     /**
-     * <code>optional double number2 = 2;</code>
+     * <code>double number2 = 2;</code>
      */
     public double getNumber2() {
       return number2_;
@@ -255,13 +263,13 @@ public final class CalculatorOuterClass {
     public static final int OPERATION_FIELD_NUMBER = 3;
     private int operation_;
     /**
-     * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+     * <code>.CalculatorRequest.OperationType operation = 3;</code>
      */
     public int getOperationValue() {
       return operation_;
     }
     /**
-     * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+     * <code>.CalculatorRequest.OperationType operation = 3;</code>
      */
     public io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation() {
       io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType result = io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.valueOf(operation_);
@@ -289,6 +297,7 @@ public final class CalculatorOuterClass {
       if (operation_ != io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.ADD.getNumber()) {
         output.writeEnum(3, operation_);
       }
+      unknownFields.writeTo(output);
     }
 
     public int getSerializedSize() {
@@ -308,11 +317,11 @@ public final class CalculatorOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, operation_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
@@ -333,6 +342,7 @@ public final class CalculatorOuterClass {
           == java.lang.Double.doubleToLongBits(
               other.getNumber2()));
       result = result && operation_ == other.operation_;
+      result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
 
@@ -342,7 +352,7 @@ public final class CalculatorOuterClass {
         return memoizedHashCode;
       }
       int hash = 41;
-      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + NUMBER1_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getNumber1()));
@@ -356,6 +366,17 @@ public final class CalculatorOuterClass {
       return hash;
     }
 
+    public static io.grpc.examples.CalculatorOuterClass.CalculatorRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.CalculatorOuterClass.CalculatorRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static io.grpc.examples.CalculatorOuterClass.CalculatorRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -509,7 +530,7 @@ public final class CalculatorOuterClass {
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
       public Builder clearField(
@@ -522,12 +543,12 @@ public final class CalculatorOuterClass {
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -550,6 +571,7 @@ public final class CalculatorOuterClass {
         if (other.operation_ != 0) {
           setOperationValue(other.getOperationValue());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -578,13 +600,13 @@ public final class CalculatorOuterClass {
 
       private double number1_ ;
       /**
-       * <code>optional double number1 = 1;</code>
+       * <code>double number1 = 1;</code>
        */
       public double getNumber1() {
         return number1_;
       }
       /**
-       * <code>optional double number1 = 1;</code>
+       * <code>double number1 = 1;</code>
        */
       public Builder setNumber1(double value) {
         
@@ -593,7 +615,7 @@ public final class CalculatorOuterClass {
         return this;
       }
       /**
-       * <code>optional double number1 = 1;</code>
+       * <code>double number1 = 1;</code>
        */
       public Builder clearNumber1() {
         
@@ -604,13 +626,13 @@ public final class CalculatorOuterClass {
 
       private double number2_ ;
       /**
-       * <code>optional double number2 = 2;</code>
+       * <code>double number2 = 2;</code>
        */
       public double getNumber2() {
         return number2_;
       }
       /**
-       * <code>optional double number2 = 2;</code>
+       * <code>double number2 = 2;</code>
        */
       public Builder setNumber2(double value) {
         
@@ -619,7 +641,7 @@ public final class CalculatorOuterClass {
         return this;
       }
       /**
-       * <code>optional double number2 = 2;</code>
+       * <code>double number2 = 2;</code>
        */
       public Builder clearNumber2() {
         
@@ -630,13 +652,13 @@ public final class CalculatorOuterClass {
 
       private int operation_ = 0;
       /**
-       * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+       * <code>.CalculatorRequest.OperationType operation = 3;</code>
        */
       public int getOperationValue() {
         return operation_;
       }
       /**
-       * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+       * <code>.CalculatorRequest.OperationType operation = 3;</code>
        */
       public Builder setOperationValue(int value) {
         operation_ = value;
@@ -644,14 +666,14 @@ public final class CalculatorOuterClass {
         return this;
       }
       /**
-       * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+       * <code>.CalculatorRequest.OperationType operation = 3;</code>
        */
       public io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation() {
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType result = io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.valueOf(operation_);
         return result == null ? io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+       * <code>.CalculatorRequest.OperationType operation = 3;</code>
        */
       public Builder setOperation(io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType value) {
         if (value == null) {
@@ -663,7 +685,7 @@ public final class CalculatorOuterClass {
         return this;
       }
       /**
-       * <code>optional .CalculatorRequest.OperationType operation = 3;</code>
+       * <code>.CalculatorRequest.OperationType operation = 3;</code>
        */
       public Builder clearOperation() {
         
@@ -673,12 +695,12 @@ public final class CalculatorOuterClass {
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -701,7 +723,7 @@ public final class CalculatorOuterClass {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new CalculatorRequest(input, extensionRegistry);
+        return new CalculatorRequest(input, extensionRegistry);
       }
     };
 
@@ -725,7 +747,7 @@ public final class CalculatorOuterClass {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional double result = 1;</code>
+     * <code>double result = 1;</code>
      */
     double getResult();
   }
@@ -736,6 +758,7 @@ public final class CalculatorOuterClass {
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CalculatorResponse)
       CalculatorResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
     // Use CalculatorResponse.newBuilder() to construct.
     private CalculatorResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -747,14 +770,19 @@ public final class CalculatorOuterClass {
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      return this.unknownFields;
     }
     private CalculatorResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -764,7 +792,8 @@ public final class CalculatorOuterClass {
               done = true;
               break;
             default: {
-              if (!input.skipField(tag)) {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -782,6 +811,7 @@ public final class CalculatorOuterClass {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
+        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -800,7 +830,7 @@ public final class CalculatorOuterClass {
     public static final int RESULT_FIELD_NUMBER = 1;
     private double result_;
     /**
-     * <code>optional double result = 1;</code>
+     * <code>double result = 1;</code>
      */
     public double getResult() {
       return result_;
@@ -821,6 +851,7 @@ public final class CalculatorOuterClass {
       if (result_ != 0D) {
         output.writeDouble(1, result_);
       }
+      unknownFields.writeTo(output);
     }
 
     public int getSerializedSize() {
@@ -832,11 +863,11 @@ public final class CalculatorOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(1, result_);
       }
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    private static final long serialVersionUID = 0L;
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
@@ -852,6 +883,7 @@ public final class CalculatorOuterClass {
           java.lang.Double.doubleToLongBits(getResult())
           == java.lang.Double.doubleToLongBits(
               other.getResult()));
+      result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
 
@@ -861,7 +893,7 @@ public final class CalculatorOuterClass {
         return memoizedHashCode;
       }
       int hash = 41;
-      hash = (19 * hash) + getDescriptorForType().hashCode();
+      hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + RESULT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getResult()));
@@ -870,6 +902,17 @@ public final class CalculatorOuterClass {
       return hash;
     }
 
+    public static io.grpc.examples.CalculatorOuterClass.CalculatorResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.CalculatorOuterClass.CalculatorResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
     public static io.grpc.examples.CalculatorOuterClass.CalculatorResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1017,7 +1060,7 @@ public final class CalculatorOuterClass {
       }
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
       public Builder clearField(
@@ -1030,12 +1073,12 @@ public final class CalculatorOuterClass {
       }
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1052,6 +1095,7 @@ public final class CalculatorOuterClass {
         if (other.getResult() != 0D) {
           setResult(other.getResult());
         }
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -1080,13 +1124,13 @@ public final class CalculatorOuterClass {
 
       private double result_ ;
       /**
-       * <code>optional double result = 1;</code>
+       * <code>double result = 1;</code>
        */
       public double getResult() {
         return result_;
       }
       /**
-       * <code>optional double result = 1;</code>
+       * <code>double result = 1;</code>
        */
       public Builder setResult(double value) {
         
@@ -1095,7 +1139,7 @@ public final class CalculatorOuterClass {
         return this;
       }
       /**
-       * <code>optional double result = 1;</code>
+       * <code>double result = 1;</code>
        */
       public Builder clearResult() {
         
@@ -1105,12 +1149,12 @@ public final class CalculatorOuterClass {
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return this;
+        return super.mergeUnknownFields(unknownFields);
       }
 
 
@@ -1133,7 +1177,7 @@ public final class CalculatorOuterClass {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new CalculatorResponse(input, extensionRegistry);
+        return new CalculatorResponse(input, extensionRegistry);
       }
     };
 
