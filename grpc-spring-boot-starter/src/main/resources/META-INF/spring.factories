@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration
+ org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration
 
 org.springframework.context.ApplicationContextInitializer=\
-org.lognet.springboot.grpc.context.GRpcServerPortInfoApplicationContextInitializer
+  org.lognet.springboot.grpc.context.GRpcServerPortInfoApplicationContextInitializer

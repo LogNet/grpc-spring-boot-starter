@@ -4,6 +4,7 @@ import io.grpc.Server;
 import org.springframework.context.ApplicationEvent;
 
 public class GRpcServerInitializedEvent extends ApplicationEvent {
+
     /**
      * Create a new ApplicationEvent.
      *
@@ -12,7 +13,9 @@ public class GRpcServerInitializedEvent extends ApplicationEvent {
     public GRpcServerInitializedEvent(Server source) {
         super(source);
     }
+
     public Server getServer(){
         return (Server) getSource();
     }
+
 }

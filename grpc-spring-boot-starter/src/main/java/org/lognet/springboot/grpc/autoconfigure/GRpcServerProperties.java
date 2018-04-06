@@ -3,17 +3,15 @@ package org.lognet.springboot.grpc.autoconfigure;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.util.SocketUtils;
 
 /**
  * Created by alexf on 26-Jan-16.
  */
-
 @ConfigurationProperties("grpc")
-@Getter @Setter
+@Getter
+@Setter
 public class GRpcServerProperties {
+
     /**
      * gRPC server port
      *
@@ -32,6 +30,5 @@ public class GRpcServerProperties {
      *
      */
     private String inProcessServerName;
-
 
 }
