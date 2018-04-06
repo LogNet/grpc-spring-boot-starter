@@ -1,13 +1,11 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.*;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterGrpc.GreeterBlockingStub;
-import io.grpc.examples.GreeterOuterClass;
-import org.junit.After;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.OrderedInterceptorsTest.TheConfiguration;
 import org.lognet.springboot.grpc.demo.DemoApp;
