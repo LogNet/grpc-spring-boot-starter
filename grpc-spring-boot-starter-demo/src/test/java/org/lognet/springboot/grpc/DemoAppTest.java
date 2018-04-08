@@ -16,7 +16,8 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -24,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URI;
 import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -38,8 +40,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = {DemoApp.class,TestConfig.class}, webEnvironment = RANDOM_PORT)
 public class DemoAppTest extends GrpcServerTestBase{
 
-    @LocalServerPort
-    private int localServerPort;
+    @Autowired
+    private TestRestTemplate restTemplate;
 
     @Rule
     public OutputCapture outputCapture = new OutputCapture();
@@ -71,8 +73,8 @@ public class DemoAppTest extends GrpcServerTestBase{
 
 
         // log interceptor should be invoked only on GreeterService and not CalculatorService
-        outputCapture.expect(containsString(GreeterGrpc.METHOD_SAY_HELLO.getFullMethodName()));
-        outputCapture.expect(not(containsString(CalculatorGrpc.METHOD_CALCULATE.getFullMethodName())));
+        outputCapture.expect(containsString(GreeterGrpc.getSayHelloMethod().getFullMethodName()));
+        outputCapture.expect(not(containsString(CalculatorGrpc.getCalculateMethod().getFullMethodName())));
 
 
         outputCapture.expect(containsString("I'm not Spring bean interceptor and still being invoked..."));
@@ -80,9 +82,7 @@ public class DemoAppTest extends GrpcServerTestBase{
 
         @Test
     public void actuatorTest() throws ExecutionException, InterruptedException {
-        final TestRestTemplate template = new TestRestTemplate();
-
-        ResponseEntity<String> response = template.getForEntity("http://localhost:" + localServerPort + "/env", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/env", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 

@@ -1,3 +1,13 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
+    }
+}
+
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 
@@ -53,10 +63,11 @@ task cleanProtoGen{
     }
 }
 clean.dependsOn cleanProtoGen
+bootRepackage.enabled  =false
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBoot_1_X_Version}"
     }
 }
 

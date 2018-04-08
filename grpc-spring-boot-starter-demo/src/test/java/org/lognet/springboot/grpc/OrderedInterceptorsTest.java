@@ -13,7 +13,9 @@ import org.lognet.springboot.grpc.OrderedInterceptorsTest.TheConfiguration;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -44,7 +46,7 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
   @Override
   protected void afterGreeting() {
-    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4, 10, 100);
+    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5, 10, 100);
   }
 
 
@@ -101,7 +103,7 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
     }
 
     @GRpcGlobalInterceptor
-    @Order // no value means lowest priority amongst all @Ordered, but higher priority than iceptors without the annot
+    @Order // no value means lowest priority amongst all @Ordered, but higher priority than interceptors without the annotation
     static class DefaultOrderedInterceptor implements ServerInterceptor {
 
       @Override
@@ -123,5 +125,25 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
         return next.startCall(call, headers);
       }
     }
+
+    @Bean
+    @GRpcGlobalInterceptor
+    public  ServerInterceptor myInterceptor(){
+      return new MyInterceptor();
+    }
+
+     class MyInterceptor implements ServerInterceptor,Ordered {
+      @Override
+      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+        calledInterceptors.add(5);
+        return next.startCall(call, headers);
+      }
+
+       @Override
+       public int getOrder() {
+         return 5;
+       }
+     }
+
   }
 }

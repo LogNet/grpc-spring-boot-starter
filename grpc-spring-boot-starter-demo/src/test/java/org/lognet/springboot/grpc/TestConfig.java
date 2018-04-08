@@ -27,8 +27,10 @@ public class TestConfig {
         when(mock.interceptCall(notNull(ServerCall.class),notNull(Metadata.class),notNull(ServerCallHandler.class))).thenAnswer(new Answer<ServerCall.Listener>() {
             @Override
             public ServerCall.Listener answer(InvocationOnMock invocation) throws Throwable {
-                return invocation.getArgumentAt(2,ServerCallHandler.class).startCall(invocation.getArgumentAt(0,ServerCall.class),
-                        invocation.getArgumentAt(1,Metadata.class)
+
+                return ServerCallHandler.class.cast(invocation.getArguments()[2]).startCall(
+                        ServerCall.class.cast(invocation.getArguments()[0]),
+                        Metadata.class.cast(invocation.getArguments()[1])
                 );
             }
         });

@@ -156,8 +156,8 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                     final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
                     final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
 
-                    if (!beansWithAnnotation.isEmpty()) {
-                        return beansWithAnnotation.containsKey(name);
+                    if (beansWithAnnotation.containsKey(name)) {
+                        return true;
                     } else if (beanDefinition.getSource() instanceof StandardMethodMetadata) {
                         StandardMethodMetadata metadata = (StandardMethodMetadata) beanDefinition.getSource();
                         return metadata.isAnnotated(annotationType.getName());

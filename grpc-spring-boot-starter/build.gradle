@@ -1,11 +1,19 @@
 //apply from: "${rootDir}/publishSonatype.gradle"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
+    }
+}
 apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBootVersion )
+    compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBoot_1_X_Version )
    
-    compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBoot_1_X_Version}")
    
 }
 compileJava.dependsOn(processResources)

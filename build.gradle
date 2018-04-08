@@ -1,7 +1,8 @@
 
 buildscript {
     ext {
-        springBootVersion = '1.5.9.RELEASE'
+        springBoot_1_X_Version = '1.5.11.RELEASE'
+        springBoot_2_X_Version = '2.0.1.RELEASE'
         grpcVersion = '1.10.0'
     }
     repositories {
@@ -12,8 +13,7 @@ buildscript {
 
       }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
+          classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.5'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'com.palantir:jacoco-coverage:0.4.0'
