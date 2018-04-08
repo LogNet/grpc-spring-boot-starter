@@ -1,3 +1,13 @@
+== Version 2.3.0
+* gRPC version upgraded to 1.11.0
+* Fixed #80
+* Added Spring boot 2.X demo project
+* Spring boot  upgraded to 1.5.11
+* Tested with
+    ** springBoot_1_X_Version = '1.5.11.RELEASE'
+    ** springBoot_2_X_Version = '2.0.1.RELEASE'
+
+
 == Version 2.2.0
 - gRPC version upgraded to 1.10.0
 - Gradle 4.6

@@ -40,7 +40,7 @@ public class GRpcServerBuilderConfigurerTest {
     @Before
     public void setup() {
         channel = ManagedChannelBuilder.forAddress("localhost", 7777)
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
     }
 

@@ -19,7 +19,7 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:2.2.0')
+    compile('org.lognet:grpc-spring-boot-starter:2.3.0')
 }
 ----
 
@@ -56,7 +56,8 @@ If you enable both the `NettyServer` and `in-process` server, they will both sha
 
 == Show case
 
-In the 'grpc-spring-boot-starter-demo' project you can find fully functional example with integration test.
+In the 'grpc-spring-boot-starter-demo' project you can find fully functional examples with integration tests. +
+The 'grpc-spring-boot2-starter-demo' project runs the same demo services and tests with *spring boot 2*.
 
 === Service implementation
 The service definition from `.proto` file looks like this :
@@ -314,7 +315,7 @@ public class GreeterServiceConsumer {
     public void greet(String name) {
         final InstanceInfo instanceInfo = client.getNextServerFromEureka("my-service-name", false);<1>
         final ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())
-                .usePlaintext(true)
+                .usePlaintext()
                 .build(); <2>
         final GreeterServiceGrpc.GreeterServiceFutureStub stub = GreeterServiceGrpc.newFutureStub(channel); <3>
         stub.greet(name); <4>

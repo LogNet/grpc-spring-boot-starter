@@ -44,13 +44,13 @@ public abstract class GrpcServerTestBase {
     public final void setupChannels() {
         if(gRpcServerProperties.isEnabled()) {
             channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost",getPort() )
-                    .usePlaintext(true)
+                    .usePlaintext()
                     ).build();
         }
         if(StringUtils.hasText(gRpcServerProperties.getInProcessServerName())){
             inProcChannel = onChannelBuild(
                                 InProcessChannelBuilder.forName(gRpcServerProperties.getInProcessServerName())
-                                .usePlaintext(true)
+                                .usePlaintext()
                             ).build();
 
         }
