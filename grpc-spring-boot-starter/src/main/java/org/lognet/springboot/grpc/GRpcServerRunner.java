@@ -15,7 +15,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.type.StandardMethodMetadata;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -158,9 +158,9 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
                     if (beansWithAnnotation.containsKey(name)) {
                         return true;
-                    } else if (beanDefinition.getSource() instanceof StandardMethodMetadata) {
-                        StandardMethodMetadata metadata = (StandardMethodMetadata) beanDefinition.getSource();
-                        return metadata.isAnnotated(annotationType.getName());
+                    } else if (beanDefinition.getSource() instanceof AnnotatedTypeMetadata) {
+                        return AnnotatedTypeMetadata.class.cast(beanDefinition.getSource()).isAnnotated(annotationType.getName());
+
                     }
 
                     return false;
