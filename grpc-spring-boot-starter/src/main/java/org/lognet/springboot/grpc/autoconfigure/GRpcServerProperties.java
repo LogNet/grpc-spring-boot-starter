@@ -33,5 +33,11 @@ public class GRpcServerProperties {
      */
     private String inProcessServerName;
 
+    /**
+     * Enables server reflection using <a href="https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md">ProtoReflectionService</a>.
+     * Available only from gRPC 1.3 or higher.
+     */
+    private boolean enableReflection = false;
+
 
 }
