@@ -82,8 +82,8 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 });
 
         if (gRpcServerProperties.isEnableReflection()) {
-            log.info("'{}' service has been registered.", ProtoReflectionService.class.getName());
             serverBuilder.addService(ProtoReflectionService.newInstance());
+            log.info("'{}' service has been registered.", ProtoReflectionService.class.getName());
         }
 
         configurer.configure(serverBuilder);
