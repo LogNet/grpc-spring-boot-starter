@@ -8,7 +8,6 @@ import io.grpc.examples.GreeterOuterClass;
 import io.grpc.health.v1.HealthCheckRequest;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
-import io.grpc.protobuf.services.ProtoReflectionService;
 import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
 import io.grpc.reflection.v1alpha.ServerReflectionRequest;
 import io.grpc.reflection.v1alpha.ServerReflectionResponse;
@@ -22,8 +21,6 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -31,10 +28,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
@@ -106,6 +104,7 @@ public class DemoAppTest extends GrpcServerTestBase{
     public void testReflection() throws InterruptedException {
         List<String> discoveredServiceNames = new ArrayList<>();
         ServerReflectionRequest request = ServerReflectionRequest.newBuilder().setListServices("services").setHost("localhost").build();
+        CountDownLatch latch = new CountDownLatch(1);
         ServerReflectionGrpc.newStub(channel).serverReflectionInfo(new StreamObserver<ServerReflectionResponse>() {
             @Override
             public void onNext(ServerReflectionResponse value) {
@@ -122,10 +121,11 @@ public class DemoAppTest extends GrpcServerTestBase{
 
             @Override
             public void onCompleted() {
-
+                latch.countDown();
             }
         }).onNext(request);
-        Thread.sleep(1000l);
+
+        latch.await(1, TimeUnit.SECONDS);
         assertFalse(discoveredServiceNames.isEmpty());
     }
 
