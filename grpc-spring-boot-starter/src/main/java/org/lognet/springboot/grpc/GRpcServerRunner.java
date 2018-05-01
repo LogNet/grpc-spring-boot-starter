@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc;
 
 import io.grpc.*;
 import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.protobuf.services.ProtoReflectionService;
 import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
@@ -79,6 +80,11 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                     log.info("'{}' service has been registered.", srv.getClass().getName());
 
                 });
+
+        if (gRpcServerProperties.isEnableReflection()) {
+            serverBuilder.addService(ProtoReflectionService.newInstance());
+            log.info("'{}' service has been registered.", ProtoReflectionService.class.getName());
+        }
 
         configurer.configure(serverBuilder);
         server = serverBuilder.build().start();
