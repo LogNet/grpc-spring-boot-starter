@@ -1,18 +1,10 @@
 package io.grpc.examples;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
@@ -21,7 +13,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.11.0)",
+        value = "by gRPC proto compiler (version 1.13.1)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 
@@ -30,22 +22,11 @@ public final class GreeterGrpc {
   public static final String SERVICE_NAME = "Greeter";
 
   // Static method descriptors that strictly reflect the proto.
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  @java.lang.Deprecated // Use {@link #getSayHelloMethod()} instead. 
-  public static final io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
-      io.grpc.examples.GreeterOuterClass.HelloReply> METHOD_SAY_HELLO = getSayHelloMethodHelper();
-
   private static volatile io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
       io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod;
 
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
       io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod() {
-    return getSayHelloMethodHelper();
-  }
-
-  private static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
-      io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethodHelper() {
     io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod;
     if ((getSayHelloMethod = GreeterGrpc.getSayHelloMethod) == null) {
       synchronized (GreeterGrpc.class) {
@@ -105,13 +86,13 @@ public final class GreeterGrpc {
      */
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getSayHelloMethodHelper(), responseObserver);
+        asyncUnimplementedUnaryCall(getSayHelloMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            getSayHelloMethodHelper(),
+                  getSayHelloMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.GreeterOuterClass.HelloRequest,
@@ -150,7 +131,7 @@ public final class GreeterGrpc {
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(getSayHelloMethodHelper(), getCallOptions()), request, responseObserver);
+              getChannel().newCall(getSayHelloMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -182,7 +163,7 @@ public final class GreeterGrpc {
      */
     public io.grpc.examples.GreeterOuterClass.HelloReply sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request) {
       return blockingUnaryCall(
-          getChannel(), getSayHelloMethodHelper(), getCallOptions(), request);
+              getChannel(), getSayHelloMethod(), getCallOptions(), request);
     }
   }
 
@@ -215,7 +196,7 @@ public final class GreeterGrpc {
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayHello(
         io.grpc.examples.GreeterOuterClass.HelloRequest request) {
       return futureUnaryCall(
-          getChannel().newCall(getSayHelloMethodHelper(), getCallOptions()), request);
+              getChannel().newCall(getSayHelloMethod(), getCallOptions()), request);
     }
   }
 
@@ -303,7 +284,7 @@ public final class GreeterGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new GreeterFileDescriptorSupplier())
-              .addMethod(getSayHelloMethodHelper())
+                  .addMethod(getSayHelloMethod())
               .build();
         }
       }

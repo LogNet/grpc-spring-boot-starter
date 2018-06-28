@@ -1,3 +1,9 @@
+== Version 2.4.0
+* gRPC version upgraded to 1.13.1
+* Tested with
+    ** springBoot_1_X_Version = '1.5.13.RELEASE'
+    ** springBoot_2_X_Version = '2.0.3.RELEASE'
+
 == Version 2.3.2
 * Server reflection support
 
