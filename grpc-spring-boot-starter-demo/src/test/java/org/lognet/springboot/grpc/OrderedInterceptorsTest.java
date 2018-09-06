@@ -1,15 +1,15 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.*;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterGrpc.GreeterBlockingStub;
-import io.grpc.examples.GreeterOuterClass;
-import org.junit.After;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.OrderedInterceptorsTest.TheConfiguration;
+import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
     webEnvironment = WebEnvironment.NONE, properties = "grpc.port=7778")
 public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
+  @LocalRunningGrpcPort
+  int runningPort;
 
   private static List<Integer> calledInterceptors = new ArrayList<>();
 
@@ -43,6 +45,11 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
     calledInterceptors.clear();
   }
 
+  @Override
+  protected void beforeGreeting() {
+    Assert.assertEquals(7778, runningPort);
+    Assert.assertEquals(getPort(), runningPort);
+  }
 
   @Override
   protected void afterGreeting() {

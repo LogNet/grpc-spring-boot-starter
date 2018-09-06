@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +35,9 @@ public abstract class GrpcServerTestBase {
     protected ManagedChannel channel;
     protected ManagedChannel inProcChannel;
 
+    @LocalRunningGrpcPort
+    int runningPort;
+
     @Autowired
     protected ApplicationContext context;
 
@@ -56,7 +60,7 @@ public abstract class GrpcServerTestBase {
         }
     }
     protected int getPort(){
-        return  gRpcServerProperties.getPort();
+        return runningPort;
     }
 
     protected ManagedChannelBuilder<?>  onChannelBuild(ManagedChannelBuilder<?> channelBuilder){

@@ -86,7 +86,7 @@ public final class GreeterGrpc {
      */
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-        asyncUnimplementedUnaryCall(getSayHelloMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getSayHelloMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {

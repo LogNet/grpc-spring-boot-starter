@@ -43,7 +43,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Created by alexf on 28-Jan-16.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DemoApp.class,TestConfig.class}, webEnvironment = RANDOM_PORT, properties = "grpc.enableReflection=true")
+@SpringBootTest(classes = {DemoApp.class, TestConfig.class}, webEnvironment = RANDOM_PORT
+        , properties = {"grpc.enableReflection=true",
+        "grpc.port=0"
+})
 public class DemoAppTest extends GrpcServerTestBase{
 
     @Autowired

@@ -77,7 +77,7 @@ public final class CalculatorGrpc {
      */
     public void calculate(io.grpc.examples.CalculatorOuterClass.CalculatorRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.CalculatorOuterClass.CalculatorResponse> responseObserver) {
-        asyncUnimplementedUnaryCall(getCalculateMethod(), responseObserver);
+      asyncUnimplementedUnaryCall(getCalculateMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
