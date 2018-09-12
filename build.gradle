@@ -41,6 +41,7 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     test {
+        forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
         }

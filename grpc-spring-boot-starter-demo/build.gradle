@@ -7,7 +7,6 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
     }
 }
-
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 
@@ -20,7 +19,8 @@ dependencies {
     compile project(':grpc-spring-boot-starter')
 
     testCompile 'org.springframework.boot:spring-boot-starter-aop'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
 }
 sourceSets {
     main {

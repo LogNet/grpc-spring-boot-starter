@@ -13,7 +13,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 
-sourceSets.test{
+project.sourceSets.test{
     java{
         srcDir "${project(':grpc-spring-boot-starter-demo').getProjectDir()}/src/test/java"
     }
@@ -26,6 +26,7 @@ dependencies {
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile 'org.springframework.boot:spring-boot-starter-aop'
+	testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
 
     testRuntime('org.springframework.boot:spring-boot-starter-actuator')
     testRuntime('org.springframework.boot:spring-boot-starter-web')
