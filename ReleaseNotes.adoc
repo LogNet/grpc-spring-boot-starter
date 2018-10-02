@@ -1,4 +1,4 @@
-== Version 2.4.3-SNAPSHOT
+== Version 2.4.2
 * gRPC version upgraded to 1.15.0
 
 == Version 2.4.1
