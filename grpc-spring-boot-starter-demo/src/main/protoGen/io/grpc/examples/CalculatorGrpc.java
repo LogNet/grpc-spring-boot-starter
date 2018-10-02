@@ -10,7 +10,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 /**
  */
 @javax.annotation.Generated(
-        value = "by gRPC proto compiler (version 1.13.1)",
+        value = "by gRPC proto compiler (version 1.15.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -22,29 +22,34 @@ public final class CalculatorGrpc {
   private static volatile io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
 
-  public static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
-      io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod() {
-    io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
-    if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
-      synchronized (CalculatorGrpc.class) {
+    @io.grpc.stub.annotations.RpcMethod(
+            fullMethodName = SERVICE_NAME + '/' + "Calculate",
+            requestType = io.grpc.examples.CalculatorOuterClass.CalculatorRequest.class,
+            responseType = io.grpc.examples.CalculatorOuterClass.CalculatorResponse.class,
+            methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+    public static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
+            io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod() {
+        io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
         if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
-          CalculatorGrpc.getCalculateMethod = getCalculateMethod = 
-              io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "Calculator", "Calculate"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
-                  .build();
-          }
+            synchronized (CalculatorGrpc.class) {
+                if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
+                    CalculatorGrpc.getCalculateMethod = getCalculateMethod =
+                            io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
+                                    .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+                                    .setFullMethodName(generateFullMethodName(
+                                            "Calculator", "Calculate"))
+                                    .setSampledToLocalTracing(true)
+                                    .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                                            io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
+                                    .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                                            io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
+                                    .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
+                                    .build();
+                }
+            }
         }
-     }
-     return getCalculateMethod;
-  }
+        return getCalculateMethod;
+    }
 
   /**
    * Creates a new async stub that supports all call types for the service

@@ -1,3 +1,6 @@
+== Version 2.4.2
+* gRPC version upgraded to 1.15.0
+
 == Version 2.4.1
 * Gradle 4.10
 * Fixes #93
