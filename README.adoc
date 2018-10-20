@@ -177,17 +177,16 @@ In your implementation of `configure` method, you can add your custom configurat
 [source,java]
 ----
 @Component
-public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
-        @Override
-        public void configure(ServerBuilder<?> serverBuilder){
-            serverBuilder
-                .executor(YOUR EXECUTOR INSTANCE)
-                .compressorRegistry(YOUR COMPRESSION REGISTRY)
-                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
-                .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer {
+    @Override
+    public void configure(ServerBuilder<?> serverBuilder){
+        serverBuilder
+            .executor(YOUR EXECUTOR INSTANCE)
+            .compressorRegistry(YOUR COMPRESSION REGISTRY)
+            .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
+            .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
 
-        }
-    };
+    }
 }
 ----
 
