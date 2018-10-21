@@ -21,7 +21,7 @@ repositories {
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:2.4.2')
+    compile('org.lognet:grpc-spring-boot-starter:2.4.3')
 }
 ----
 
@@ -185,7 +185,7 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
                 .compressorRegistry(YOUR COMPRESSION REGISTRY)
                 .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
                 .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
-            ((NettyServerBuilder)serverBuilder)// cast to NettyServerBuilder (which is default server) for further customization
+            ((NettyServerBuilder)serverBuilder)// cast to NettyServerBuilder (which is the default server) for further customization
                     .maxConnectionAge(...)
                     .maxConnectionAgeGrace(...);
 
