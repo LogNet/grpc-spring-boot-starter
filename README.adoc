@@ -177,7 +177,7 @@ In your implementation of `configure` method, you can add your custom configurat
 [source,java]
 ----
 @Component
-public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer(){
+public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
         @Override
         public void configure(ServerBuilder<?> serverBuilder){
             serverBuilder
@@ -185,6 +185,9 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer()
                 .compressorRegistry(YOUR COMPRESSION REGISTRY)
                 .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
                 .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
+            ((NettyServerBuilder)serverBuilder)// cast to NettyServerBuilder (which is default server) for further customization
+                    .maxConnectionAge(...)
+                    .maxConnectionAgeGrace(...);
 
         }
     };
