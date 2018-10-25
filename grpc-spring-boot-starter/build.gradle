@@ -1,4 +1,4 @@
-//apply from: "${rootDir}/publishSonatype.gradle"
+apply from: "${rootDir}/publishSonatype.gradle"
 buildscript {
     repositories {
         mavenCentral()
@@ -7,7 +7,7 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
     }
 }
-apply from: "${rootDir}/publish.gradle"
+//apply from: "${rootDir}/publish.gradle"
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
