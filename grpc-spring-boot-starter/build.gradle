@@ -1,4 +1,6 @@
-apply from: "${rootDir}/release.gradle"
+apply from: "${rootDir}/publishSonatype.gradle"
+//apply from: "${rootDir}/publish.gradle"
+
 buildscript {
     repositories {
         mavenCentral()
