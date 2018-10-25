@@ -128,7 +128,7 @@ public class DemoAppTest extends GrpcServerTestBase{
             }
         }).onNext(request);
 
-        latch.await(1, TimeUnit.SECONDS);
+        latch.await(3, TimeUnit.SECONDS);
         assertFalse(discoveredServiceNames.isEmpty());
     }
 
