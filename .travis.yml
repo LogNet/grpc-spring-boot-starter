@@ -1,6 +1,8 @@
 language: java
 jdk:
   - oraclejdk8
+sudo: false
+dist: trusty
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
@@ -10,8 +12,8 @@ cache:
 before_install:
 - "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in codesigning.asc.enc -out codesigning.asc -d && gpg --import ./codesigning.asc || echo"
 after_success:
-# - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./gradlew uploadArchives"
- - ./gradlew bintrayUpload artifactoryPublish
+ - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./gradlew uploadArchives"
+# - ./gradlew bintrayUpload artifactoryPublish
  - bash <(curl -s https://codecov.io/bash)
 script:
  - ./gradlew check

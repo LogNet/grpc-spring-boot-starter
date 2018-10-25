@@ -8,5 +8,5 @@ project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 }
 
 apply from: "${rootDir}/publishSonatype.gradle"
-apply from: "${rootDir}/publish.gradle"
+//apply from: "${rootDir}/publish.gradle"
 
