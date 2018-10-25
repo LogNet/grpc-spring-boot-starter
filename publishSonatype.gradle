@@ -1,10 +1,7 @@
-println project['signing.keyId']
 
 project['signing.keyId']=System.getenv('GPG_ID')
 project['signing.password']=System.getenv('GPG_PASSWORD')
 project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
-
-println project['signing.keyId']
 
 apply plugin: 'com.bmuschko.nexus'
 
