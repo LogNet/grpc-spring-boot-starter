@@ -1,17 +1,7 @@
-
-project['signing.keyId']=System.getenv('GPG_ID')
-project['signing.password']=System.getenv('GPG_PASSWORD')
-project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
-
 apply plugin: 'com.bmuschko.nexus'
 
-//http://www.debonair.io/post/maven-cd/
 
-['nexusPassword', 'nexusUsername'].each{
-    if (System.env[it])
-        project[it] = System.env[it]
-}
-
+ 
 modifyPom {
     project {
         name 'grpc-spring-boot-starter'

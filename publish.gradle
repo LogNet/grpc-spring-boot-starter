@@ -19,10 +19,7 @@ artifacts {
 
 
 //Load data from environment if present to support Travis
-['bintrayUser', 'bintrayApiKey'].each{
-    if (System.env[it])
-        project[it] = System.env[it]
-}
+
 
 //install {
 //    repositories.mavenInstaller {

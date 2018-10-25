@@ -1,0 +1,12 @@
+project['signing.keyId']=System.getenv('GPG_ID')
+project['signing.password']=System.getenv('GPG_PASSWORD')
+project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
+
+['bintrayUser', 'bintrayApiKey','nexusPassword', 'nexusUsername'].each{
+    if (System.env[it])
+        project[it] = System.env[it]
+}
+
+apply from: "${rootDir}/publishSonatype.gradle"
+apply from: "${rootDir}/publish.gradle"
+
