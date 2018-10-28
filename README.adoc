@@ -21,14 +21,18 @@ The starter can be used both by *1.5.X* and *2.X.X* spring boot applications.
 [source,gradle]
 ----
 repositories {  
-   jcenter()  
-   // maven { url "http://oss.jfrog.org/oss-snapshot-local" } //for snashot builds
+    mavenCentral()
+   //maven { url "https://oss.sonatype.org/content/repositories/snapshots" } //for snashot builds
    
 }
 dependencies {
-    compile('org.lognet:grpc-spring-boot-starter:2.4.3')
+    compile 'io.github.lognet:grpc-spring-boot-starter:3.0.0'
 }
 ----
+
+[IMPORTANT]
+Starting from release `3.0.0` the artifacts are published to *maven central*.
+Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
 == Usage
 
