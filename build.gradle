@@ -25,6 +25,17 @@ apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'
 apply plugin: 'jacoco'
 apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging{
+
+}
+def isRelease  = !(version ==~ /.*SNAPSHOT/)
+closeAndReleaseRepository{
+     onlyIf {
+        isRelease
+    }
+}
+
 allprojects{
     repositories {
         mavenCentral()

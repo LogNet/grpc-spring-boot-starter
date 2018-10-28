@@ -11,17 +11,8 @@ project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 
 apply plugin: 'com.bmuschko.nexus'
 
-nexusStaging{
 
-}
-def isRelease  = !(version ==~ /.*SNAPSHOT/)
 
-closeAndReleaseRepository{
-    dependsOn uploadArchives
-    onlyIf {
-        isRelease
-    }
-}
 modifyPom {
     project {
         name 'grpc-spring-boot-starter'
