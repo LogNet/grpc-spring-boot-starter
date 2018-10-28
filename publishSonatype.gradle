@@ -13,12 +13,10 @@ apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
-closeAndReleaseRepository {
-    dependsOn  uploadArchives
-    onlyIf {
+closeAndReleaseRepository.dependsOn  uploadArchives
+closeAndReleaseRepository.onlyIf {
         isRelease
     }
-}
 
 
 modifyPom {

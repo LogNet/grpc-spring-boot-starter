@@ -1,12 +1,17 @@
-= Spring boot starter for http://www.grpc.io/[gRPC framework.] https://bintray.com/lognet/maven/grpc-spring-boot-starter/_latestVersion[ image:https://api.bintray.com/packages/lognet/maven/grpc-spring-boot-starter/images/download.svg[Download]] image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter] image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"] https://bintray.com/lognet/maven/grpc-spring-boot-starter?source=watch[ image:https://www.bintray.com/docs/images/bintray_badge_color.png[]]
+= Spring boot starter for http://www.grpc.io/[gRPC framework.]
+
+image:https://img.shields.io/maven-central/v/io.github.lognet/grpc-spring-boot-starter.svg?label=Maven%20Central[link=https://search.maven.org/search?q=g:%22io.github.lognet%22%20AND%20a:%22grpc-spring-boot-starter%22]
+image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
+image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"]
+
 :toc:
 :source-highlighter: prettify
 :numbered:
 :icons: font
 
 
-== Features
 
+== Features
 Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application. +
 
 The starter can be used both by *1.5.X* and *2.X.X* spring boot applications.
