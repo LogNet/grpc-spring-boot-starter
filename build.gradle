@@ -18,23 +18,13 @@ buildscript {
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'com.palantir:jacoco-coverage:0.4.0'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.10.0"
     }
 }
 apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'
 apply plugin: 'jacoco'
-apply plugin: 'io.codearte.nexus-staging'
 
-nexusStaging{
-
-}
-def isRelease  = !(version ==~ /.*SNAPSHOT/)
-closeAndReleaseRepository{
-     onlyIf {
-        isRelease
-    }
-}
 
 allprojects{
     repositories {
