@@ -13,7 +13,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-        value = "by gRPC proto compiler (version 1.15.1)",
+    value = "by gRPC proto compiler (version 1.15.1)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 
@@ -25,34 +25,34 @@ public final class GreeterGrpc {
   private static volatile io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
       io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod;
 
-    @io.grpc.stub.annotations.RpcMethod(
-            fullMethodName = SERVICE_NAME + '/' + "SayHello",
-            requestType = io.grpc.examples.GreeterOuterClass.HelloRequest.class,
-            responseType = io.grpc.examples.GreeterOuterClass.HelloReply.class,
-            methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-    public static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
-            io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod() {
-        io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod;
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "SayHello",
+      requestType = io.grpc.examples.GreeterOuterClass.HelloRequest.class,
+      responseType = io.grpc.examples.GreeterOuterClass.HelloReply.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest,
+      io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod() {
+    io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply> getSayHelloMethod;
+    if ((getSayHelloMethod = GreeterGrpc.getSayHelloMethod) == null) {
+      synchronized (GreeterGrpc.class) {
         if ((getSayHelloMethod = GreeterGrpc.getSayHelloMethod) == null) {
-            synchronized (GreeterGrpc.class) {
-                if ((getSayHelloMethod = GreeterGrpc.getSayHelloMethod) == null) {
-                    GreeterGrpc.getSayHelloMethod = getSayHelloMethod =
-                            io.grpc.MethodDescriptor.<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply>newBuilder()
-                                    .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-                                    .setFullMethodName(generateFullMethodName(
-                                            "Greeter", "SayHello"))
-                                    .setSampledToLocalTracing(true)
-                                    .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                                            io.grpc.examples.GreeterOuterClass.HelloRequest.getDefaultInstance()))
-                                    .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                                            io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
-                                    .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("SayHello"))
-                                    .build();
-                }
-            }
+          GreeterGrpc.getSayHelloMethod = getSayHelloMethod = 
+              io.grpc.MethodDescriptor.<io.grpc.examples.GreeterOuterClass.HelloRequest, io.grpc.examples.GreeterOuterClass.HelloReply>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "Greeter", "SayHello"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.HelloRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
+                  .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("SayHello"))
+                  .build();
+          }
         }
-        return getSayHelloMethod;
-    }
+     }
+     return getSayHelloMethod;
+  }
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -97,7 +97,7 @@ public final class GreeterGrpc {
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-                  getSayHelloMethod(),
+            getSayHelloMethod(),
             asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.GreeterOuterClass.HelloRequest,
@@ -136,7 +136,7 @@ public final class GreeterGrpc {
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
       asyncUnaryCall(
-              getChannel().newCall(getSayHelloMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getSayHelloMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -168,7 +168,7 @@ public final class GreeterGrpc {
      */
     public io.grpc.examples.GreeterOuterClass.HelloReply sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request) {
       return blockingUnaryCall(
-              getChannel(), getSayHelloMethod(), getCallOptions(), request);
+          getChannel(), getSayHelloMethod(), getCallOptions(), request);
     }
   }
 
@@ -201,7 +201,7 @@ public final class GreeterGrpc {
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayHello(
         io.grpc.examples.GreeterOuterClass.HelloRequest request) {
       return futureUnaryCall(
-              getChannel().newCall(getSayHelloMethod(), getCallOptions()), request);
+          getChannel().newCall(getSayHelloMethod(), getCallOptions()), request);
     }
   }
 
@@ -289,7 +289,7 @@ public final class GreeterGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new GreeterFileDescriptorSupplier())
-                  .addMethod(getSayHelloMethod())
+              .addMethod(getSayHelloMethod())
               .build();
         }
       }
