@@ -13,10 +13,11 @@ apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
-
+println isRelease
 [closeAndReleaseRepository,closeRepository,releaseRepository].each { t ->
-    println t
-    t.enabled = isRelease
+    t.onlyIf {
+        isRelease
+    }
 }
 
 
