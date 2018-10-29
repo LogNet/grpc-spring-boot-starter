@@ -15,9 +15,8 @@ apply plugin: 'io.codearte.nexus-staging'
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
 
 [closeAndReleaseRepository,closeRepository,releaseRepository].each { t ->
-    t.onlyIf {
-        isRelease
-    }
+    println t
+    t.enabled = isRelease
 }
 
 
