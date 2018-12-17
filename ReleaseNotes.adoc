@@ -1,3 +1,6 @@
+== Version 3.0.1
+* gRPC version upgraded to 1.17.1
+
 == Version 3.0.0
 * The artifacts are published to *maven central*.
   Pay attention that group has changed from `org.lognet` to `io.github.lognet`.
