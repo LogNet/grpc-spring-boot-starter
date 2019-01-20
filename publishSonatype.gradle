@@ -1,13 +1,4 @@
 
-
-
-
-
-['nexusPassword', 'nexusUsername'].each{
-    if (System.env[it])
-        project[it] = System.env[it]
-}
-
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "de.marcphilipp.nexus-publish"
 
