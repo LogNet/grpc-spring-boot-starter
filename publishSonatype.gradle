@@ -20,9 +20,6 @@ def isRelease  = !(version ==~ /.*SNAPSHOT/)
 
 
 
-project['signing.keyId']=System.getenv('GPG_ID')
-project['signing.password']=System.getenv('GPG_PASSWORD')
-project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 
 
 
