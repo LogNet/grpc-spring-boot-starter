@@ -1,10 +1,22 @@
 apply plugin: 'com.bmuschko.nexus'
-
+apply plugin: "de.marcphilipp.nexus-publish"
 
 //apply from: "${rootDir}/publish.gradle"
 
 
-
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact (javadocJar) {
+                classifier = 'javadoc'
+            }
+            artifact (sourcesJar) {
+                classifier = 'sources'
+            }
+        }
+    }
+}
 
 
 buildscript {
