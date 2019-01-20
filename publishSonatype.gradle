@@ -14,6 +14,10 @@ def isRelease  = !(version ==~ /.*SNAPSHOT/)
     }
 }
 
+['nexusPassword', 'nexusUsername'].each{
+    if (System.env[it])
+        project[it] = System.env[it]
+}
 
 
 
