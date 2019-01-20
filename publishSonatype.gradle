@@ -11,11 +11,10 @@ project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 
 
 apply plugin: 'com.bmuschko.nexus'
-
+apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "de.marcphilipp.nexus-publish"
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
-
 [closeAndReleaseRepository,closeRepository,releaseRepository].each { t ->
     t.onlyIf {
         isRelease
