@@ -25,7 +25,7 @@ buildscript {
 apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'
 apply plugin: 'jacoco'
-
+apply plugin: 'io.codearte.nexus-staging'
 
 allprojects{
     repositories {
