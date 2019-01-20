@@ -2,7 +2,7 @@ buildscript {
     ext {
         springBoot_1_X_Version = '1.5.13.RELEASE'
         springBoot_2_X_Version = '2.0.3.RELEASE'
-        grpcVersion = '1.16.1'
+        grpcVersion = '1.17.2'
     }
     repositories {
         mavenCentral()
@@ -27,7 +27,7 @@ allprojects { pr ->
     pr['signing.password'] = System.getenv('GPG_PASSWORD')
     pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/secring.gpg'
 
-    
+
 }
 apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'

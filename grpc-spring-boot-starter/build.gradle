@@ -101,16 +101,3 @@ dependencies {
 compileJava.dependsOn(processResources)
 
 
-
-//model {
-//    tasks.generatePomFileForMavenJavaPublication {
-//        destination = file("$buildDir/generated-pom.xml")
-//    }
-//    tasks.publishMavenJavaPublicationToMavenLocal {
-//        dependsOn project.tasks.signArchives
-//    }
-//    tasks.publishMavenJavaPublicationToNexusRepository {
-//        dependsOn project.tasks.signArchives
-//    }
-//}
-
