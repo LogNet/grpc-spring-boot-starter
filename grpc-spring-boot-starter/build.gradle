@@ -34,15 +34,15 @@ publishing {
             from components.java
 
             // create the sign pom artifact
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
-            }
+//            pom.withXml {
+//                def pomFile = file("${project.buildDir}/generated-pom.xml")
+//                writeTo(pomFile)
+//                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+//                artifact(pomAscFile) {
+//                    classifier = null
+//                    extension = 'pom.asc'
+//                }
+//            }
             artifact(sourceJar) {
                 classifier = 'sources'
             }
