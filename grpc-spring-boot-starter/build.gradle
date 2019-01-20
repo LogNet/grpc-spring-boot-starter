@@ -145,7 +145,7 @@ model {
     tasks.publishMavenJavaPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
-    tasks.publishMavenJavaPublicationToMavenRepository {
+    tasks.publishMavenJavaPublicationToNexusRepository {
         dependsOn project.tasks.signArchives
     }
 }
