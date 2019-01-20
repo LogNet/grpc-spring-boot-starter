@@ -1,7 +1,7 @@
 
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
-    stagingProfileId = project.version.toString()
+    //stagingProfileId = project.version.toString()
 }
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
