@@ -1,5 +1,5 @@
 == Version 3.0.2
-* gRPC version upgraded to 1.17.2
+* gRPC version upgraded to 1.17.1
 
 == Version 3.0.1
 * gRPC version upgraded to 1.16.1
