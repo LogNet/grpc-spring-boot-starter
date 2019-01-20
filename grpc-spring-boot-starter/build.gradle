@@ -30,7 +30,34 @@ nexusPublishing {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            customizePom(pom)
+            pom{
+                name 'grpc-spring-boot-starter'
+                description 'grpc-spring-boot-starter'
+                url 'https://github.com/LogNet/grpc-spring-boot-starter'
+
+                scm {
+                    url 'https://github.com/LogNet/grpc-spring-boot-starter'
+                    connection 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+                    developerConnection 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'jvmlet'
+                        name 'Furer Alexander'
+                        email 'furer.alexander@gmail.com'
+                    }
+                }
+                
+            }
             
             from components.java
 
@@ -74,59 +101,16 @@ dependencies {
 compileJava.dependsOn(processResources)
 
 
-def customizePom(pom) {
-    pom.withXml {
-        def root = asNode()
 
-        // eliminate test-scoped dependencies (no need in maven central POMs)
-        root.dependencies.removeAll { dep ->
-            dep.scope == "test"
-        }
-
-        // add all items necessary for maven central publication
-        root.children().last() + {
-
-
-
-            name 'grpc-spring-boot-starter'
-            description 'grpc-spring-boot-starter'
-            url 'https://github.com/LogNet/grpc-spring-boot-starter'
-
-            scm {
-                url 'https://github.com/LogNet/grpc-spring-boot-starter'
-                connection 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-                developerConnection 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
-            }
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'jvmlet'
-                    name 'Furer Alexander'
-                    email 'furer.alexander@gmail.com'
-                }
-            }
-
-        }
-    }
-}
-
-model {
-    tasks.generatePomFileForMavenJavaPublication {
-        destination = file("$buildDir/generated-pom.xml")
-    }
-    tasks.publishMavenJavaPublicationToMavenLocal {
-        dependsOn project.tasks.signArchives
-    }
-    tasks.publishMavenJavaPublicationToNexusRepository {
-        dependsOn project.tasks.signArchives
-    }
-}
+//model {
+//    tasks.generatePomFileForMavenJavaPublication {
+//        destination = file("$buildDir/generated-pom.xml")
+//    }
+//    tasks.publishMavenJavaPublicationToMavenLocal {
+//        dependsOn project.tasks.signArchives
+//    }
+//    tasks.publishMavenJavaPublicationToNexusRepository {
+//        dependsOn project.tasks.signArchives
+//    }
+//}
 
