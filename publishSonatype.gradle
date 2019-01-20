@@ -12,7 +12,7 @@ project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
-
+apply plugin: "de.marcphilipp.nexus-publish"
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
 println isRelease
@@ -21,7 +21,12 @@ println isRelease
         isRelease
     }
 }
-
+nexusPublishing {
+    packageGroup = project.nexusStaging.packageGroup
+    stagingProfileId = project.nexusStaging.stagingProfileId
+    username = project.nexusStaging.username
+    password = project.nexusStaging.password
+}
 
 modifyPom {
     project {
