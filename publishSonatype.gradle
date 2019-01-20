@@ -10,7 +10,7 @@ project['signing.secretKeyRingFile']='/home/travis/.gnupg/secring.gpg'
 
 
 
-apply plugin: 'com.bmuschko.nexus'
+
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "de.marcphilipp.nexus-publish"
 
@@ -22,34 +22,6 @@ def isRelease  = !(version ==~ /.*SNAPSHOT/)
 }
 
 
-modifyPom {
-    project {
-        name 'grpc-spring-boot-starter'
-        description 'grpc-spring-boot-starter'
-        url 'https://github.com/LogNet/grpc-spring-boot-starter'
 
-        scm {
-            url 'https://github.com/LogNet/grpc-spring-boot-starter'
-            connection 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-            developerConnection 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'jvmlet'
-                name 'Furer Alexander'
-                email 'furer.alexander@gmail.com'
-            }
-        }
-    }
-}
 
 
