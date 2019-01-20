@@ -27,10 +27,7 @@ allprojects { pr ->
     pr['signing.password'] = System.getenv('GPG_PASSWORD')
     pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/secring.gpg'
 
-    ['nexusPassword', 'nexusUsername'].each {
-        if (System.env[it])
-            pr[it] = System.env[it]
-    }
+    
 }
 apply plugin: 'idea'
 apply plugin: 'com.palantir.jacoco-full-report'
