@@ -7,6 +7,15 @@ apply plugin: "de.marcphilipp.nexus-publish"
 nexusPublishing {
     stagingProfileId = rootProject.nexusStaging.stagingProfileId
 }
+signing {
+    required {
+        // signing is required if this is a release version and the artifacts are to be published
+        !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
+            gradle.taskGraph.hasTask it
+        }
+    }
+    sign publishing.publications
+}
 publishing {
     publications {
         mavenJava(MavenPublication) {
