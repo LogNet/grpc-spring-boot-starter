@@ -3,6 +3,10 @@
 
 
 
+['nexusPassword', 'nexusUsername'].each{
+    if (System.env[it])
+        project[it] = System.env[it]
+}
 
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "de.marcphilipp.nexus-publish"
@@ -14,10 +18,7 @@ def isRelease  = !(version ==~ /.*SNAPSHOT/)
     }
 }
 
-['nexusPassword', 'nexusUsername'].each{
-    if (System.env[it])
-        project[it] = System.env[it]
-}
+
 
 project['signing.keyId']=System.getenv('GPG_ID')
 project['signing.password']=System.getenv('GPG_PASSWORD')
