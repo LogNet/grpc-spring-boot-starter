@@ -50,17 +50,17 @@ publishing {
                 classifier = 'javadoc'
             }
             // create the signed artifacts
-            project.tasks.signArchives.signatureFiles.each {
-                artifact(it) {
-                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
-                    if (matcher.find()) {
-                        classifier = matcher.group(1)
-                    } else {
-                        classifier = null
-                    }
-                    extension = 'jar.asc'
-                }
-            }
+//            project.tasks.signArchives.signatureFiles.each {
+//                artifact(it) {
+//                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+//                    if (matcher.find()) {
+//                        classifier = matcher.group(1)
+//                    } else {
+//                        classifier = null
+//                    }
+//                    extension = 'jar.asc'
+//                }
+//            }
         }
     }
 }
