@@ -11,6 +11,10 @@
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "de.marcphilipp.nexus-publish"
 
+nexusStaging {
+    stagingProfileId = project.version.toString()
+}
+
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
 [closeAndReleaseRepository,closeRepository,releaseRepository].each { t ->
     t.onlyIf {
