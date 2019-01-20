@@ -1,9 +1,12 @@
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: "de.marcphilipp.nexus-publish"
 
+
 //apply from: "${rootDir}/publish.gradle"
 
-
+nexusPublishing {
+    stagingProfileId = rootProject.nexusStaging.stagingProfileId
+}
 publishing {
     publications {
         mavenJava(MavenPublication) {
