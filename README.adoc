@@ -28,11 +28,20 @@ repositories {
 dependencies {
     compile 'io.github.lognet:grpc-spring-boot-starter:3.1.0'
 }
+
+
 ----
 
 [IMPORTANT]
 Starting from release `3.0.0` the artifacts are published to *maven central*.
 Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
+
+
+
+
+
+[NOTE]
+The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[here]  https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.adoc[here,role="external" ]
 
 == Usage
 
