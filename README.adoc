@@ -41,7 +41,7 @@ Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
 
 [NOTE]
-The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[here]  https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.adoc[here,role="external" ]
+The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[here]  https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.adoc[here^]
 
 == Usage
 
