@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: grpc-demo
+  cloud:
+    config:
+      uri: http://localhost:${config.port:8888}

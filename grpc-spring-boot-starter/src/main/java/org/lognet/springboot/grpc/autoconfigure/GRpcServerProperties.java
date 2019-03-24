@@ -16,7 +16,7 @@ public class GRpcServerProperties {
      * gRPC server port
      *
      */
-    private int port = DEFAULT_GRPC_PORT;
+    private int port = 0;
 
     /**
      * Enables the embedded grpc server.

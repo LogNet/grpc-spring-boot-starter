@@ -31,6 +31,8 @@ dependencies {
     testRuntime('org.springframework.boot:spring-boot-starter-actuator')
     testRuntime('org.springframework.boot:spring-boot-starter-web')
 
+	testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
+	testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"
 
 }
 bootJar.enabled  =false
