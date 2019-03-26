@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.util.SocketUtils;
 
 import java.util.Optional;
@@ -15,7 +14,6 @@ import java.util.Optional;
 
 @ConfigurationProperties("grpc")
 @Getter @Setter
-@Component("grpcProperties")
 public class GRpcServerProperties {
     public static final int DEFAULT_GRPC_PORT = 6565;
     /**
