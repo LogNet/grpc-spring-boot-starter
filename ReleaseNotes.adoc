@@ -1,3 +1,7 @@
+== Version 3.2.1
+* Closes #103 and #99
+Property `local.grpc.port` was removed , please use `@LocalRunningGrpcPort` annotation on `int` field to get running port.
+
 == Version 3.2.0
 * gRPC version upgraded to 1.19.0
 

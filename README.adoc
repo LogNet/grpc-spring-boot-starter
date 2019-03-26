@@ -26,7 +26,7 @@ repositories {
    
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:3.2.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:3.2.1'
 }
 
 
@@ -55,8 +55,8 @@ The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[
     port: 6565
 ----
 [NOTE]
-A random port can be defined by setting the port to `0`. The actual port being used can then be retrieved from the property `local.grpc.port`, or
-using `@LocalRunningGrpcPort` annotation which will inject the running port (explicitly configured or randomly selected)
+A random port can be defined by setting the port to `0`. +
+The actual port being used can then be retrieved by using `@LocalRunningGrpcPort` annotation on `int` field which will inject the running port (explicitly configured or randomly selected)
 
 * Optionally enable server reflection, see https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md)
 
