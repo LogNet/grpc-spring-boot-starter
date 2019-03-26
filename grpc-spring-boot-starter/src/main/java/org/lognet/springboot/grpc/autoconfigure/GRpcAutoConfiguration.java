@@ -6,7 +6,6 @@ import io.grpc.services.HealthStatusManager;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
-import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,21 +21,17 @@ import org.springframework.context.annotation.Bean;
 
 @AutoConfigureOrder
 @ConditionalOnBean(annotation = GRpcService.class)
-@EnableConfigurationProperties(GRpcServerProperties.class)
+@EnableConfigurationProperties (GRpcServerProperties.class)
 public class GRpcAutoConfiguration {
 
-    @LocalRunningGrpcPort
-    private int port;
 
     @Autowired
     private GRpcServerProperties grpcServerProperties;
 
-
-
     @Bean
     @ConditionalOnProperty(value = "grpc.enabled", havingValue = "true", matchIfMissing = true)
     public GRpcServerRunner grpcServerRunner(GRpcServerBuilderConfigurer configurer) {
-        return new GRpcServerRunner(configurer, ServerBuilder.forPort(port));
+        return new GRpcServerRunner(configurer, ServerBuilder.forPort(grpcServerProperties.getRunningPort()));
     }
 
     @Bean

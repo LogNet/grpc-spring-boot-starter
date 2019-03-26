@@ -1,8 +1,13 @@
 package org.lognet.springboot.grpc.autoconfigure;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import org.springframework.util.SocketUtils;
+
+import java.util.Optional;
 
 /**
  * Created by alexf on 26-Jan-16.
@@ -10,13 +15,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("grpc")
 @Getter @Setter
+@Component("grpcProperties")
 public class GRpcServerProperties {
     public static final int DEFAULT_GRPC_PORT = 6565;
     /**
      * gRPC server port
      *
      */
-    private int port = 0;
+    private Integer port = null;
+
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
+    private Integer runningPort= null;
 
     /**
      * Enables the embedded grpc server.
@@ -37,5 +47,18 @@ public class GRpcServerProperties {
      */
     private boolean enableReflection = false;
 
+    public Integer getRunningPort(){
+        if ( null == runningPort) {
+            synchronized (this) {
+                if (null==runningPort) {
+                    runningPort = Optional.ofNullable(port)
+                            .map(p -> 0 == p ? SocketUtils.findAvailableTcpPort() : p)
+                            .orElse(DEFAULT_GRPC_PORT);
+                }
+            }
+        }
+        return runningPort;
+
+    }
 
 }

@@ -45,7 +45,7 @@ public class EnvVarGrpcPortTest extends GrpcServerTestBase {
 
     @Override
     protected void beforeGreeting() {
-        Assert.assertEquals(randomPort, gRpcServerProperties.getPort());
+        Assert.assertEquals(randomPort, gRpcServerProperties.getPort().intValue());
         Assert.assertEquals(randomPort, runningPort);
     }
 }

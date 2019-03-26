@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
@@ -8,6 +9,7 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.Assert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
@@ -23,7 +25,7 @@ public class DefaultGrpcPortTest extends GrpcServerTestBase {
 
     @Override
     protected void beforeGreeting() {
-        Assert.assertEquals(0, gRpcServerProperties.getPort());
+        assertThat( gRpcServerProperties.getPort(), CoreMatchers.nullValue(Integer.class));
         Assert.assertEquals(GRpcServerProperties.DEFAULT_GRPC_PORT, runningPort);
     }
 }

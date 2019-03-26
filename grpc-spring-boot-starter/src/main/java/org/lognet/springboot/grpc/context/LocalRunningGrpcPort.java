@@ -8,7 +8,6 @@ import java.lang.annotation.*;
         ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Value("#{environment.containsProperty('grpc.port') && '0' != environment.getProperty('grpc.port') ? environment.getProperty('grpc.port'): ${" + LocalRunningGrpcPort.propertyName + "}}")
+@Value("#{@'grpc-org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties'.getRunningPort()}")
 public @interface LocalRunningGrpcPort {
-    String propertyName = "local.grpc.port";
 }
