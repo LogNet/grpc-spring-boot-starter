@@ -36,7 +36,7 @@ public abstract class GrpcServerTestBase {
     protected ManagedChannel inProcChannel;
 
     @LocalRunningGrpcPort
-    int runningPort;
+    protected  int runningPort;
 
     @Autowired
     protected ApplicationContext context;

@@ -39,6 +39,7 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
     protected Environment environment;
 
 
+
     public static void startConfigServer(Properties properties) throws IOException, URISyntaxException {
 
         File cfgFile = temporaryFolder.newFile("grpc-demo.properties");

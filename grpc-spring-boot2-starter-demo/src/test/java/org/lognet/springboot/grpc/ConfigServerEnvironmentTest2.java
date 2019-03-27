@@ -3,9 +3,6 @@ package org.lognet.springboot.grpc;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
-import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,18 +13,6 @@ import static org.junit.Assert.assertNotEquals;
 
 
 public class ConfigServerEnvironmentTest2 extends ConfigServerEnvironmentBaseTest{
-
-    @LocalRunningGrpcPort
-    private int runningPort;
-
-    @Value("#{environment.getProperty('local.grpc.port')}")
-    Object localP;
-
-    @Value("#{environment.getProperty('grpc.port')}")
-    Object p;
-
-    @Autowired
-    GRpcServerProperties properties;
 
 
     @BeforeClass
@@ -44,9 +29,9 @@ public class ConfigServerEnvironmentTest2 extends ConfigServerEnvironmentBaseTes
     @Test
     public void assertConfigServerConfiguredPort(){
 
-        assertNotEquals(runningPort,properties.getPort().intValue());
+        assertNotEquals(runningPort,gRpcServerProperties.getPort().intValue());
         assertNotEquals(GRpcServerProperties.DEFAULT_GRPC_PORT,getPort());
-        assertEquals(0,properties.getPort().intValue());
+        assertEquals(0,gRpcServerProperties.getPort().intValue());
     }
 
 
