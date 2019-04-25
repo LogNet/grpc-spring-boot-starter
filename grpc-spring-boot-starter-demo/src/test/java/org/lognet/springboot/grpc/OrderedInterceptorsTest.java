@@ -71,7 +71,7 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
     class MySixthInterceptor implements ServerInterceptor,Ordered {
       @Override
       public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(6);
+        calledInterceptors.add(getOrder());
         return next.startCall(call, headers);
       }
 
