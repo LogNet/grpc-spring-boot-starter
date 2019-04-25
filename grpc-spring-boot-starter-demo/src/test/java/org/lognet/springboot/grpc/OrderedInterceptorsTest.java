@@ -53,7 +53,7 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
   @Override
   protected void afterGreeting() {
-    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5, 10, 100);
+    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 10, 100);
   }
 
 
@@ -152,5 +152,20 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
        }
      }
 
+	@Bean
+	@Order(6)
+	@GRpcGlobalInterceptor
+	public  ServerInterceptor mySixthInterceptor(){
+	  return new MySixthInterceptor();
+	}
+	
+	 class MySixthInterceptor implements ServerInterceptor {
+	  @Override
+	  public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+	    calledInterceptors.add(6);
+	    return next.startCall(call, headers);
+	  }
+	 }
   }
+
 }
