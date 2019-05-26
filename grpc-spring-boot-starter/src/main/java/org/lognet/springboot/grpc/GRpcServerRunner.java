@@ -7,6 +7,7 @@ import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
+import org.lognet.springboot.grpc.context.GRpcServerStoppedEvent;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +89,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
         configurer.configure(serverBuilder);
         server = serverBuilder.build().start();
-        applicationContext.publishEvent(new GRpcServerInitializedEvent(server));
+        applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext,server));
 
         log.info("gRPC Server started, listening on port {}.", server.getPort());
         startDaemonAwaitThread();
@@ -153,6 +154,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
         server.getServices().forEach(def->healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
         Optional.ofNullable(server).ifPresent(Server::shutdown);
         log.info("gRPC server stopped.");
+        applicationContext.publishEvent(new GRpcServerStoppedEvent(applicationContext,server));
     }
 
     private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {

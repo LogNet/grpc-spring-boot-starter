@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-
 public class ConfigServerEnvironmentTest1 extends ConfigServerEnvironmentBaseTest{
 
 

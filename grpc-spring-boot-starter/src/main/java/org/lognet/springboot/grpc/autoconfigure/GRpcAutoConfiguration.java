@@ -52,4 +52,11 @@ public class GRpcAutoConfiguration {
     public GRpcServerBuilderConfigurer serverBuilderConfigurer(){
         return new GRpcServerBuilderConfigurer();
     }
+
+
+
+
+
+
+
 }
