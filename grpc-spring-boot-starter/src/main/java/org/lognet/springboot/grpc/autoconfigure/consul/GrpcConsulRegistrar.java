@@ -4,19 +4,19 @@ import com.ecwid.consul.v1.agent.model.NewService;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.lognet.springboot.grpc.context.GRpcServerStoppedEvent;
 import org.lognet.springboot.grpc.context.GrpcServerEvent;
-import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
+import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 
 public class GrpcConsulRegistrar {
 
     private ConsulRegistration registration;
-    private ServiceRegistry<ConsulRegistration> consulServiceRegistry;
+    private ConsulServiceRegistry consulServiceRegistry;
 
-    public GrpcConsulRegistrar(ServiceRegistry<ConsulRegistration>  consulServiceRegistry) {
+    public GrpcConsulRegistrar(ConsulServiceRegistry consulServiceRegistry) {
         this.consulServiceRegistry = consulServiceRegistry;
     }
 

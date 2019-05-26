@@ -4,6 +4,7 @@ import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,16 +21,22 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApp.class,
         // Normally spring.cloud.config.enabled:true is the default but since we have the
         // config server on the classpath we need to set it explicitly
-        properties = { "spring.cloud.config.enabled:true"})
+        properties = { "spring.cloud.config.enabled=true",
+                "spring.cloud.consul.discovery.enabled=false",
+                "spring.cloud.service-registry.enabled=false",
+                "spring.cloud.service-registry.auto-registration.enabled=false",
+})
 public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase{
 
-    private static int configPort = SocketUtils.findAvailableTcpPort();
+
     private static ConfigurableApplicationContext server;
 
     @ClassRule
@@ -41,7 +48,7 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
 
 
     public static void startConfigServer(Properties properties) throws IOException, URISyntaxException {
-
+        int configPort = SocketUtils.findAvailableTcpPort();
         File cfgFile = temporaryFolder.newFile("grpc-demo.properties");
         try(OutputStream os = new FileOutputStream(cfgFile)) {
             properties.store(os,null);
@@ -50,7 +57,11 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
 
         server = SpringApplication.run(org.springframework.cloud.config.server.ConfigServerApplication.class,
                 "--server.port=" + configPort,
-                "--spring.autoconfigure.exclude=org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration",
+                "--spring.autoconfigure.exclude="+Stream.of(GRpcAutoConfiguration.class)
+                        .map(Class::getName).collect(Collectors.joining(",")),
+                "--spring.cloud.consul.discovery.enabled=false",
+                "--spring.cloud.service-registry.enabled=false",
+                "--spring.cloud.service-registry.auto-registration.enabled=false",
                 "--spring.cloud.config.server.health.enabled=false",
                 "--spring.cloud.config.server.bootstrap=false",
                 "--spring.profiles.active=native",

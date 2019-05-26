@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 public class ConsulRegistrationTest {
 
     @ClassRule
-    public static final ConsulResource consul = new ConsulResource();
+    public static final ConsulResource consul = new ConsulResource(8500);
 
     @Autowired
     private DiscoveryClient discoveryClient;
