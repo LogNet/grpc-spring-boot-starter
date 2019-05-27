@@ -5,6 +5,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.SocketUtils;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,7 +29,16 @@ import static org.junit.Assert.assertNotNull;
 public class ConsulRegistrationTest {
 
     @ClassRule
-    public static final ConsulResource consul = new ConsulResource(8500);
+    public static final ConsulResource consul(){
+        int port = SocketUtils.findAvailableTcpPort();
+        ConsulResource consulResource = new ConsulResource(port);
+        System.setProperty("spring.cloud.consul.port",String.valueOf(port));
+        return consulResource;
+    }
+    @AfterClass
+    public  static void clear(){
+        System.clearProperty("spring.cloud.consul.port");
+    }
 
     @Autowired
     private DiscoveryClient discoveryClient;
@@ -46,7 +57,5 @@ public class ConsulRegistrationTest {
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
         assertNotNull("Replay should not be null",reply);
-
-
     }
 }
