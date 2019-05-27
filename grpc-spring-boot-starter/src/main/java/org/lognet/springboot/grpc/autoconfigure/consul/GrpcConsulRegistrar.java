@@ -2,16 +2,15 @@ package org.lognet.springboot.grpc.autoconfigure.consul;
 
 import com.ecwid.consul.v1.agent.model.NewService;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
-import org.lognet.springboot.grpc.context.GRpcServerStoppedEvent;
-import org.lognet.springboot.grpc.context.GrpcServerEvent;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.EventListener;
 
-public class GrpcConsulRegistrar {
+public class GrpcConsulRegistrar implements SmartLifecycle {
 
     private ConsulRegistration registration;
     private ConsulServiceRegistry consulServiceRegistry;
@@ -25,16 +24,9 @@ public class GrpcConsulRegistrar {
         registration = getRegistration(initializedEvent);
         consulServiceRegistry.register(registration);
     }
-    @EventListener
-    public void onGrpcServerStopped(GRpcServerStoppedEvent initializedEvent) {
-
-        consulServiceRegistry.deregister(registration);
-        consulServiceRegistry.close();
-    }
 
 
-
-    private ConsulRegistration getRegistration(GrpcServerEvent event) {
+    private ConsulRegistration getRegistration(GRpcServerInitializedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
 
 
@@ -47,7 +39,7 @@ public class GrpcConsulRegistrar {
         }
         String appName = "grpc_" + ConsulAutoRegistration.getAppName(properties, applicationContext.getEnvironment());
         grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
-        grpcService.setId("grpc_" +ConsulAutoRegistration.getInstanceId(properties, applicationContext));
+        grpcService.setId("grpc_" + ConsulAutoRegistration.getInstanceId(properties, applicationContext));
 
 /*
         service.setTags(createTags(properties));
@@ -65,4 +57,38 @@ public class GrpcConsulRegistrar {
     }
 
 
+    @Override
+    public boolean isAutoStartup() {
+        return false;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        stop();
+        callback.run();
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public synchronized void stop() {
+
+        consulServiceRegistry.deregister(registration);
+        consulServiceRegistry.close();
+        registration = null;
+
+    }
+
+    @Override
+    public synchronized boolean isRunning() {
+        return null != registration;
+    }
+
+    @Override
+    public int getPhase() {
+        return 0;
+    }
 }
