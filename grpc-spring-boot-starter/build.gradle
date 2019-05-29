@@ -97,8 +97,7 @@ dependencies {
    
     compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBoot_1_X_Version}")
 
-    compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-consul-discovery', version: '2.1.1.RELEASE'
-    compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul', version: '2.1.1.RELEASE'
+    compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: '2.1.1.RELEASE'
 
 
 }

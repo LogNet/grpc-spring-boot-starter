@@ -13,11 +13,11 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 
-//project.sourceSets.test{
-//    java{
-//        srcDir "${project(':grpc-spring-boot-starter-demo').getProjectDir()}/src/test/java"
-//    }
-//}
+project.sourceSets.test{
+    java{
+        srcDir "${project(':grpc-spring-boot-starter-demo').getProjectDir()}/src/test/java"
+    }
+}
 ext {
 	set('springCloudVersion', "Greenwich.SR1")
 }
@@ -25,7 +25,7 @@ dependencies {
 
     testCompile project(':grpc-spring-boot-starter-demo')
 
-	testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
+	//testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
 
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
