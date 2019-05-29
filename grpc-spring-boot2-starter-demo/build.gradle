@@ -25,7 +25,7 @@ dependencies {
 
     testCompile project(':grpc-spring-boot-starter-demo')
 
-	//testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
+	testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
 
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')

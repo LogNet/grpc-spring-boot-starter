@@ -1,3 +1,7 @@
+== Version 3.2.3
+* gRPC version upgraded to 1.21.0
+* Consul auto-registration support
+
 == Version 3.2.2
 * gRPC version upgraded to 1.20.0
 

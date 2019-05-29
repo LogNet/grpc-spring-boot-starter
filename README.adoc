@@ -26,7 +26,7 @@ repositories {
    
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:3.2.2'
+    compile 'io.github.lognet:grpc-spring-boot-starter:3.3.0'
 }
 
 
@@ -216,6 +216,12 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
 If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance of configurer. +
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
+
+== Consul Integration
+
+Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry  if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath. +
+The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
+
 
 == Eureka Integration
 

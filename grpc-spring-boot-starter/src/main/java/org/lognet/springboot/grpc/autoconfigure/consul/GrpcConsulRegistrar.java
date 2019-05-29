@@ -37,9 +37,9 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
         if (!properties.isPreferAgentAddress()) {
             grpcService.setAddress(properties.getHostname());
         }
-        String appName = "grpc_" + ConsulAutoRegistration.getAppName(properties, applicationContext.getEnvironment());
+        String appName = "grpc-" + ConsulAutoRegistration.getAppName(properties, applicationContext.getEnvironment());
         grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
-        grpcService.setId("grpc_" + ConsulAutoRegistration.getInstanceId(properties, applicationContext));
+        grpcService.setId("grpc-" + ConsulAutoRegistration.getInstanceId(properties, applicationContext));
 
 /*
         service.setTags(createTags(properties));
