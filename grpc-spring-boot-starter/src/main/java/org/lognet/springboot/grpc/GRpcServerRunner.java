@@ -149,10 +149,14 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        log.info("Shutting down gRPC server ...");
-        server.getServices().forEach(def->healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
-        Optional.ofNullable(server).ifPresent(Server::shutdown);
-        log.info("gRPC server stopped.");
+
+        Optional.ofNullable(server).ifPresent(s->{
+            log.info("Shutting down gRPC server ...");
+            s.getServices().forEach(def->healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
+            s.shutdown();
+            log.info("gRPC server stopped.");
+        });
+
     }
 
     private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {
