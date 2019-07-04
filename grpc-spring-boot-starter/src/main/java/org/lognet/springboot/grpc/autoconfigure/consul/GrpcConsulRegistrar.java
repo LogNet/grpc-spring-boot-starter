@@ -25,41 +25,44 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
         consulServiceRegistry.register(registration);
     }
 
-
     private ConsulRegistration getRegistration(GRpcServerInitializedEvent event) {
-        ApplicationContext applicationContext = event.getApplicationContext();
+        ApplicationContext context = event.getApplicationContext();
+        ConsulDiscoveryProperties properties = context.getBean(ConsulDiscoveryProperties.class);
+        GrpcConsulProperties discoveryProperties = context.getBean(GrpcConsulProperties.class);
 
+        NewService service = new NewService();
+        service.setPort(event.getServer().getPort());
 
-        ConsulDiscoveryProperties properties = applicationContext.getBean(ConsulDiscoveryProperties.class);
-
-        NewService grpcService = new NewService();
-        grpcService.setPort(event.getServer().getPort());
+        /** Set address */
         if (!properties.isPreferAgentAddress()) {
-            grpcService.setAddress(properties.getHostname());
+            service.setAddress(properties.getHostname());
         }
-        String appName = "grpc-" + ConsulAutoRegistration.getAppName(properties, applicationContext.getEnvironment());
-        grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
-        grpcService.setId("grpc-" + ConsulAutoRegistration.getInstanceId(properties, applicationContext));
 
-/*
-        service.setTags(createTags(properties));
-        setCheck(service, autoServiceRegistrationProperties, properties, context,
-                    heartbeatProperties);
+        /** Set service name */
+        String serviceName = discoveryProperties.getServiceName() != null
+            && !discoveryProperties.getServiceName().isEmpty()
+            ? discoveryProperties.getServiceName()
+            : "grpc" + ConsulAutoRegistration.SEPARATOR + ConsulAutoRegistration.getAppName(
+                properties, context.getEnvironment()
+            );
+        service.setName(ConsulAutoRegistration.normalizeForDns(serviceName));
 
+        /** Set service id */
+        service.setId("grpc" + ConsulAutoRegistration.SEPARATOR +
+            ConsulAutoRegistration.getInstanceId(properties, context)
+        );
 
+        /** Set service tags */
+        if (discoveryProperties.getTags() != null) {
+            service.setTags(discoveryProperties.getTags());
+        }
 
-
-
-        */
-
-
-        return new ConsulRegistration(grpcService, properties);
+        return new ConsulRegistration(service, properties);
     }
-
 
     @Override
     public boolean isAutoStartup() {
-        return false;
+      return false;
     }
 
     @Override
@@ -70,16 +73,13 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
 
     @Override
     public void start() {
-
     }
 
     @Override
     public synchronized void stop() {
-
         consulServiceRegistry.deregister(registration);
         consulServiceRegistry.close();
         registration = null;
-
     }
 
     @Override

@@ -13,18 +13,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnClass(ConsulServiceRegistry.class)
-@AutoConfigureAfter({ ConsulServiceRegistryAutoConfiguration.class, GRpcAutoConfiguration.class})
+@AutoConfigureAfter({
+    ConsulServiceRegistryAutoConfiguration.class,
+    GRpcAutoConfiguration.class,
+    GrpcConsulAutoConfiguration.class
+})
 @ConditionalOnProperty(value = "spring.cloud.service-registry.auto-registration.enabled", matchIfMissing = true)
 @ConditionalOnBean({ConsulServiceRegistry.class, GRpcServerRunner.class})
-public class ConsulGrpcAutoConfiguration{
-
-
+public class ConsulGrpcAutoConfiguration {
 
     @Bean
-    public GrpcConsulRegistrar consulRegistrar(ConsulServiceRegistry consulServiceRegistry){
+    public GrpcConsulRegistrar consulRegistrar(ConsulServiceRegistry consulServiceRegistry) {
         return new GrpcConsulRegistrar(consulServiceRegistry);
     }
-
-
 }
-
