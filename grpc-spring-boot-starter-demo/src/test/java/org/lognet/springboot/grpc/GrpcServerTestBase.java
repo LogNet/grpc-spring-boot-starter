@@ -5,6 +5,8 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import io.grpc.inprocess.InProcessChannelBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +15,10 @@ import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -45,11 +49,22 @@ public abstract class GrpcServerTestBase {
     protected GRpcServerProperties gRpcServerProperties;
 
     @Before
-    public final void setupChannels() {
+    public final void setupChannels() throws IOException {
         if(gRpcServerProperties.isEnabled()) {
-            channel = onChannelBuild(ManagedChannelBuilder.forAddress("localhost",getPort() )
-                    .usePlaintext()
-                    ).build();
+            ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress("localhost", getPort());
+            Resource certChain = Optional.ofNullable(gRpcServerProperties.getSecurity())
+                    .map(GRpcServerProperties.SecurityProperties::getCertChain)
+                    .orElse(null);
+            if(null!= certChain){
+                ((NettyChannelBuilder)channelBuilder)
+                        .useTransportSecurity()
+                        .sslContext(GrpcSslContexts.forClient().trustManager(certChain.getInputStream()).build());
+            }else{
+                channelBuilder.usePlaintext();
+            }
+
+
+            channel = onChannelBuild(channelBuilder).build();
         }
         if(StringUtils.hasText(gRpcServerProperties.getInProcessServerName())){
             inProcChannel = onChannelBuild(

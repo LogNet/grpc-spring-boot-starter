@@ -94,6 +94,7 @@ dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
     compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBoot_1_X_Version )
+    compile  'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
    
     compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBoot_1_X_Version}")
 

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 import org.springframework.util.SocketUtils;
 
 import java.util.Optional;
@@ -21,6 +22,8 @@ public class GRpcServerProperties {
      *
      */
     private Integer port = null;
+
+    private SecurityProperties security ;
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -59,4 +62,9 @@ public class GRpcServerProperties {
 
     }
 
+    @Getter @Setter
+    public static class SecurityProperties{
+        private Resource certChain;
+        private Resource privateKey;
+    }
 }

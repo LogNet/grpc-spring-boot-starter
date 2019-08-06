@@ -186,6 +186,34 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 }
 ----
 
+=== Transport Security (TLS)
+
+The transport security can be configured using root certificate and it's private key paths:
+
+[source,yaml]
+----
+ grpc:
+    security:
+      cert-chain: classpath:cert/server-cert.pem
+      private-key: file:../grpc-spring-boot-starter-demo/src/test/resources/cert/server-key.pem
+----
+
+The value of both properties is in form supported by https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/io/ResourceEditor.html[ResourceEditor]. +
+
+The client side should be configured accordingly :
+
+[source,java]
+----
+((NettyChannelBuilder)channelBuilder)
+ .useTransportSecurity()
+ .sslContext(GrpcSslContexts.forClient().trustManager(certChain).build());
+----
+
+This starter will pull the `io.netty:netty-tcnative-boringssl-static` dependency by default to support SSL. +
+If  you need another SSL/TLS support, please exclude this dependency and follow https://github.com/grpc/grpc-java/blob/master/SECURITY.md[Security Guide].
+
+[NOTE]
+If the more detailed tuning is needed for security setup, please use custom configurer described in <<Custom gRPC Server Configuration>>
 
 === Custom gRPC Server Configuration
 
@@ -205,6 +233,10 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
                 .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
                 .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
             ((NettyServerBuilder)serverBuilder)// cast to NettyServerBuilder (which is the default server) for further customization
+                    .sslContext(GrpcSslContexts  // security fine tuning
+                                    .forServer(...)
+                                    .trustManager(...)
+                                    .build())
                     .maxConnectionAge(...)
                     .maxConnectionAgeGrace(...);
 

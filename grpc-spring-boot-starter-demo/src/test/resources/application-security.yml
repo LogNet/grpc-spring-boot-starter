@@ -1,0 +1,4 @@
+grpc:
+  security:
+    cert-chain: classpath:cert/server-cert.pem
+    private-key: file:../grpc-spring-boot-starter-demo/src/test/resources/cert/server-key.pem

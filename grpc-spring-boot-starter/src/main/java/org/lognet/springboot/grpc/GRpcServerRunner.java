@@ -21,6 +21,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,14 +42,14 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     private GRpcServerProperties gRpcServerProperties;
 
 
-    private GRpcServerBuilderConfigurer configurer;
+    private Consumer<ServerBuilder<?>> configurator;
 
     private Server server;
 
     private final ServerBuilder<?> serverBuilder;
 
-    public GRpcServerRunner(GRpcServerBuilderConfigurer configurer,ServerBuilder<?> serverBuilder) {
-        this.configurer = configurer;
+    public GRpcServerRunner(Consumer<ServerBuilder<?>> configurator, ServerBuilder<?> serverBuilder) {
+        this.configurator = configurator;
         this.serverBuilder = serverBuilder;
     }
 
@@ -86,7 +87,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
             log.info("'{}' service has been registered.", ProtoReflectionService.class.getName());
         }
 
-        configurer.configure(serverBuilder);
+        configurator.accept(serverBuilder);
         server = serverBuilder.build().start();
         applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext,server));
 
