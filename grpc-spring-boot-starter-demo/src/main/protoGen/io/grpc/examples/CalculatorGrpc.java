@@ -1,16 +1,24 @@
 package io.grpc.examples;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
+import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.22.1)",
+    value = "by gRPC proto compiler (version 1.23.0)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -33,22 +41,21 @@ public final class CalculatorGrpc {
     if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
       synchronized (CalculatorGrpc.class) {
         if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
-          CalculatorGrpc.getCalculateMethod = getCalculateMethod = 
+          CalculatorGrpc.getCalculateMethod = getCalculateMethod =
               io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(
-                  "Calculator", "Calculate"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Calculate"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
-                  .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
-                  .build();
-          }
+              .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
+              .build();
         }
-     }
-     return getCalculateMethod;
+      }
+    }
+    return getCalculateMethod;
   }
 
   /**
