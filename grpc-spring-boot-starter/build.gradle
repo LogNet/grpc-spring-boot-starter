@@ -24,6 +24,7 @@ signing {
 
 
 nexusPublishing {
+    clientTimeout = java.time.Duration.ofMinutes(5)
     repositories {
         sonatype()
     }
