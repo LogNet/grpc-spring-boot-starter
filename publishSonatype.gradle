@@ -1,7 +1,7 @@
 
 apply plugin: 'io.codearte.nexus-staging'
 nexusStaging{
-    stagingProfileId ='632626fc90406e'
+   // stagingProfileId ='632626fc90406e'
     username=System.env['nexusUsername']
     password=System.env['nexusPassword']
 

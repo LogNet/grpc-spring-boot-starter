@@ -8,3 +8,4 @@ gradle-app.setting
 bin/
 !/.gitignore
 !/.travis.yml
+out/
