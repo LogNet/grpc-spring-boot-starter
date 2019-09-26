@@ -59,7 +59,7 @@ The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[
 A random port can be defined by setting the port to `0`. +
 The actual port being used can then be retrieved by using `@LocalRunningGrpcPort` annotation on `int` field which will inject the running port (explicitly configured or randomly selected)
 
-* Optionally enable server reflection, see https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md)
+* Optionally enable server reflection (see https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md)
 
 [source,yaml]
 ----
@@ -255,6 +255,7 @@ This is the current limitation.
 Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry  if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath. +
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
 
+You can find the test that demonstrates the feature link:grpc-spring-boot2-starter-demo/src/test/java/org/lognet/springboot/grpc/ConsulRegistrationTest.java[here].
 
 == Eureka Integration
 
