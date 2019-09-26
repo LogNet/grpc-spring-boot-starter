@@ -25,9 +25,7 @@ signing {
 
 nexusPublishing {
     repositories {
-        sonatype  {
-            stagingProfileId = rootProject.nexusStaging.stagingProfileId
-        }
+        sonatype()
     }
 
 }
