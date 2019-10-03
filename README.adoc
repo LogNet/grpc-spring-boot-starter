@@ -27,7 +27,7 @@ repositories {
    
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:3.4.2'
+    compile 'io.github.lognet:grpc-spring-boot-starter:3.4.3'
 }
 
 
