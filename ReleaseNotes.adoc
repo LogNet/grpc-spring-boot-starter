@@ -1,3 +1,6 @@
+== Version 3.5.0
+* gRPC version upgraded to 1.25.0
+
 == Version 3.4.3
 * Spring boot 1.2.x compatibility
 
