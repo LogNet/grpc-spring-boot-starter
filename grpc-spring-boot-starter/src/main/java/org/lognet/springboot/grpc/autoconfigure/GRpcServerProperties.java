@@ -27,7 +27,7 @@ public class GRpcServerProperties {
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    private Integer runningPort= null;
+    private volatile Integer runningPort = null;
 
     /**
      * Enables the embedded grpc server.
@@ -48,10 +48,10 @@ public class GRpcServerProperties {
      */
     private boolean enableReflection = false;
 
-    public Integer getRunningPort(){
-        if ( null == runningPort) {
+    public Integer getRunningPort() {
+        if (null == runningPort) {
             synchronized (this) {
-                if (null==runningPort) {
+                if (null == runningPort) {
                     runningPort = Optional.ofNullable(port)
                             .map(p -> 0 == p ? SocketUtils.findAvailableTcpPort() : p)
                             .orElse(DEFAULT_GRPC_PORT);
