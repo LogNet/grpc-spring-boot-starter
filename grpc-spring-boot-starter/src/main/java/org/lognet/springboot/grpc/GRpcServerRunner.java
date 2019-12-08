@@ -41,7 +41,6 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
-
     private Consumer<ServerBuilder<?>> configurator;
 
     private Server server;
@@ -60,9 +59,6 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
         Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
                 .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
                 .collect(Collectors.toList());
-
-
-
 
         // Adding health service
         serverBuilder.addService(healthStatusManager.getHealthService());
@@ -96,10 +92,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
     }
 
-
-
     private ServerServiceDefinition bindInterceptors(ServerServiceDefinition serviceDefinition, GRpcService gRpcService, Collection<ServerInterceptor> globalInterceptors) {
-
 
         Stream<? extends ServerInterceptor> privateInterceptors = Stream.of(gRpcService.interceptors())
                 .map(interceptorClass -> {
@@ -134,8 +127,6 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
         }).reversed();
     }
 
-
-
     private void startDaemonAwaitThread() {
         Thread awaitThread = new Thread(()->{
                 try {
@@ -144,6 +135,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                     log.error("gRPC server stopped.", e);
                 }
             });
+        awaitThread.setName("grpc-server-awaiter");
         awaitThread.setDaemon(false);
         awaitThread.start();
     }
