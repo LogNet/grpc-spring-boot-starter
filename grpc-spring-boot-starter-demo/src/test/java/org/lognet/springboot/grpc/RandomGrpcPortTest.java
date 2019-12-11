@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = "grpc.port=0")
+@SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = {"grpc.port=0","grpc.shutdownGrace=0"})
 public class RandomGrpcPortTest extends GrpcServerTestBase {
 
     @Override
