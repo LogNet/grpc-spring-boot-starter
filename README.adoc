@@ -67,7 +67,7 @@ The actual port being used can then be retrieved by using `@LocalRunningGrpcPort
     enableReflection: true
 ----
 
-* Optionally set how long to wait for preexisting calls to finish during graceful server shutdown. New calls will be rejected during this time. A negative value is equivalent to an infinite grace period. Default value is `0`.
+* Optionally set the number of seconds to wait for preexisting calls to finish during graceful server shutdown. New calls will be rejected during this time. A negative value is equivalent to an infinite grace period. Default value is `0` (means don't wait).
 
 [source,yaml]
 ----
