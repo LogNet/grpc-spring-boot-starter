@@ -150,9 +150,10 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
             s.shutdown();
             int shutdownGrace = gRpcServerProperties.getShutdownGrace();
             try {
+                // If shutdownGrace is 0, then don't call awaitTermination
                 if (shutdownGrace < 0) {
                     s.awaitTermination();
-                } else {
+                } else if (shutdownGrace > 0) {
                     s.awaitTermination(shutdownGrace, TimeUnit.SECONDS);
                 }
             } catch (InterruptedException e) {

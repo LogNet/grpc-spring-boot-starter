@@ -50,9 +50,9 @@ public class GRpcServerProperties {
 
     /**
      * Number of seconds to wait for preexisting calls to finish before shutting down.
-     * If the value is less than 0, the grace period is infinite.
+     * A negative value is equivalent to an infinite grace period
      */
-    private int shutdownGrace = -1;
+    private int shutdownGrace = 0;
 
     public Integer getRunningPort() {
         if (null == runningPort) {
