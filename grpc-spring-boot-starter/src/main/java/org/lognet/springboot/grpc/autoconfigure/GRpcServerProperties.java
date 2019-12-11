@@ -48,6 +48,12 @@ public class GRpcServerProperties {
      */
     private boolean enableReflection = false;
 
+    /**
+     * Number of seconds to wait for preexisting calls to finish before shutting down.
+     * If the value is less than 0, the grace period is infinite.
+     */
+    private int shutdownGrace = -1;
+
     public Integer getRunningPort() {
         if (null == runningPort) {
             synchronized (this) {
