@@ -32,7 +32,6 @@ import java.util.function.Consumer;
 @Slf4j
 public class GRpcAutoConfiguration {
 
-
     @Autowired
     private GRpcServerProperties grpcServerProperties;
 
@@ -47,8 +46,6 @@ public class GRpcAutoConfiguration {
     public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator){
         return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
     }
-
-
 
     @Bean
     public HealthStatusManager healthStatusManager() {
@@ -85,10 +82,5 @@ public class GRpcAutoConfiguration {
             configurer.configure(serverBuilder);
         };
     }
-
-
-
-
-
 
 }

@@ -6,8 +6,9 @@ import org.junit.runners.model.Statement;
 import java.util.function.Predicate;
 
 public class ExpectExceptionWithPredicate extends Statement {
-    private Predicate<Throwable> inspector;
-    private Statement next;
+
+    private final Predicate<Throwable> inspector;
+    private final Statement next;
 
     public ExpectExceptionWithPredicate(Statement next, Predicate<Throwable> inspector) {
         this.next = next;

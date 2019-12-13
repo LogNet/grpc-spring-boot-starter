@@ -12,8 +12,9 @@ import org.springframework.context.event.EventListener;
 
 public class GrpcConsulRegistrar implements SmartLifecycle {
 
+    private final ConsulServiceRegistry consulServiceRegistry;
+
     private ConsulRegistration registration;
-    private ConsulServiceRegistry consulServiceRegistry;
 
     public GrpcConsulRegistrar(ConsulServiceRegistry consulServiceRegistry) {
         this.consulServiceRegistry = consulServiceRegistry;
@@ -24,7 +25,6 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
         registration = getRegistration(initializedEvent);
         consulServiceRegistry.register(registration);
     }
-
 
     private ConsulRegistration getRegistration(GRpcServerInitializedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();

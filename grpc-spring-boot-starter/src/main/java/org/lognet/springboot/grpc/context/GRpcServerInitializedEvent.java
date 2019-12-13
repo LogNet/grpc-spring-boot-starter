@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 public class GRpcServerInitializedEvent extends ApplicationEvent {
-    private Server server;
+    private final Server server;
 
     public GRpcServerInitializedEvent(ApplicationContext context,Server server) {
         super(context);

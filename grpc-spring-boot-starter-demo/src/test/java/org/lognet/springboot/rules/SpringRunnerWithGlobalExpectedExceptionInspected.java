@@ -9,9 +9,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.function.Predicate;
 
 
-
 public class SpringRunnerWithGlobalExpectedExceptionInspected extends SpringJUnit4ClassRunner {
-    private Class<? extends Predicate<Throwable>> expectedExceptionInspector;
+    private final Class<? extends Predicate<Throwable>> expectedExceptionInspector;
 
     public SpringRunnerWithGlobalExpectedExceptionInspected(Class<?> clazz) throws InitializationError {
         super(clazz);
