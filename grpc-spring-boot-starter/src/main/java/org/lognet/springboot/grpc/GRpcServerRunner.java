@@ -41,7 +41,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
-    private Consumer<ServerBuilder<?>> configurator;
+    private final Consumer<ServerBuilder<?>> configurator;
 
     private Server server;
 

@@ -35,7 +35,6 @@ public abstract class GrpcServerTestBase {
     @Qualifier("grpcInprocessServerRunner")
     protected GRpcServerRunner grpcInprocessServerRunner;
 
-
     protected ManagedChannel channel;
     protected ManagedChannel inProcChannel;
 

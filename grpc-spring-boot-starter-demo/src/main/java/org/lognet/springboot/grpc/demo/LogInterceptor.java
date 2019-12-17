@@ -5,7 +5,6 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.springframework.stereotype.Component;
 
 /**
