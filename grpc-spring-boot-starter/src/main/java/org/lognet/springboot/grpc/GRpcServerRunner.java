@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -48,9 +49,12 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
     private final ServerBuilder<?> serverBuilder;
 
+    private final CountDownLatch latch;
+
     public GRpcServerRunner(Consumer<ServerBuilder<?>> configurator, ServerBuilder<?> serverBuilder) {
         this.configurator = configurator;
         this.serverBuilder = serverBuilder;
+        this.latch = new CountDownLatch(1);
     }
 
     @Override
@@ -131,9 +135,9 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     private void startDaemonAwaitThread() {
         Thread awaitThread = new Thread(()->{
                 try {
-                    GRpcServerRunner.this.server.awaitTermination();
+                    latch.await();
                 } catch (InterruptedException e) {
-                    log.error("gRPC server stopped.", e);
+                    log.error("gRPC server awaiter interrupted.", e);
                 }
             });
         awaitThread.setName("grpc-server-awaiter");
@@ -158,6 +162,8 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 }
             } catch (InterruptedException e) {
                 log.error("gRPC server interrupted during destroy.", e);
+            } finally {
+                latch.countDown();
             }
             log.info("gRPC server stopped.");
         });
