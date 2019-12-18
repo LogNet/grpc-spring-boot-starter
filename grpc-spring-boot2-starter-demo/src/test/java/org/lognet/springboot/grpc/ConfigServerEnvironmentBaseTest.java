@@ -33,6 +33,7 @@ import java.util.stream.Stream;
                 "spring.cloud.consul.discovery.enabled=false",
                 "spring.cloud.service-registry.enabled=false",
                 "spring.cloud.service-registry.auto-registration.enabled=false",
+                "grpc.shutdownGrace=1",
 })
 public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase{
 

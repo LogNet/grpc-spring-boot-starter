@@ -21,10 +21,10 @@ The starter can be used both by *1.5.X* and *2.X.X* spring boot applications.
 
 [source,gradle]
 ----
-repositories {  
+repositories {
     mavenCentral()
    //maven { url "https://oss.sonatype.org/content/repositories/snapshots" } //for snashot builds
-   
+
 }
 dependencies {
     compile 'io.github.lognet:grpc-spring-boot-starter:3.5.0'
@@ -65,6 +65,14 @@ The actual port being used can then be retrieved by using `@LocalRunningGrpcPort
 ----
  grpc:
     enableReflection: true
+----
+
+* Optionally set the number of seconds to wait for preexisting calls to finish during graceful server shutdown. New calls will be rejected during this time. A negative value is equivalent to an infinite grace period. Default value is `0` (means don't wait).
+
+[source,yaml]
+----
+ grpc:
+    shutdownGrace: 30
 ----
 
 The starter supports also the `in-process server`, which should be used for testing purposes :
@@ -306,7 +314,7 @@ eureka:
 ----
 <1> Specify the port number the gRPC is listening on.
 <2> Register the eureka service port to be the same as `grpc.port` so client will know where to send the requests to.
-<3> Specify the  registry URL, so the service will register itself with. 
+<3> Specify the  registry URL, so the service will register itself with.
 
 
 * Expose the gRPC service as part of Spring Boot Application.
@@ -382,7 +390,7 @@ public class GreeterServiceConsumerApplication {
 public class GreeterServiceConsumer {
     @Autowired
     private EurekaClient client;
-    
+
     public void greet(String name) {
         final InstanceInfo instanceInfo = client.getNextServerFromEureka("my-service-name", false);<1>
         final ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())

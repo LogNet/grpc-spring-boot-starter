@@ -15,7 +15,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class },webEnvironment = NONE
-        ,properties = {"grpc.enabled=false","grpc.inProcessServerName=testServer"}
+        ,properties = {"grpc.enabled=false","grpc.inProcessServerName=testServer","grpc.shutdownGrace=-1"}
 )
 public class DisabledGrpcServerTest extends GrpcServerTestBase {
 

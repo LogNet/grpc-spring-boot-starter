@@ -18,6 +18,7 @@ public class ConfigServerEnvironmentTest1 extends ConfigServerEnvironmentBaseTes
     public static void startConfigServer() throws IOException, URISyntaxException {
         Properties properties = new Properties();
         properties.put("grpc.port","6666");
+        properties.put("grpc.shutdownGrace","1");
         startConfigServer(properties);
 
     }
