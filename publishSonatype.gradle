@@ -4,6 +4,8 @@ nexusStaging{
    // stagingProfileId ='632626fc90406e'
     username=System.env['nexusUsername']
     password=System.env['nexusPassword']
+    delayBetweenRetriesInMillis = 100000
+    numberOfRetries= 40
 
 }
 
