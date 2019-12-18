@@ -46,7 +46,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = {DemoApp.class, TestConfig.class}, webEnvironment = RANDOM_PORT
         , properties = {"grpc.enableReflection=true",
         "grpc.port=0",
-        "grpc.shutdownGrace=0"
+        "grpc.shutdownGrace=-1"
 })
 public class DemoAppTest extends GrpcServerTestBase{
 

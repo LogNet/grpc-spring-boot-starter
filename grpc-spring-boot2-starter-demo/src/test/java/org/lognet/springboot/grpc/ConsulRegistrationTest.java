@@ -28,7 +28,8 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApp.class, properties = {"spring.cloud.config.enabled:false",
         "spring.cloud.consul.discovery.enabled=true",
-        "spring.cloud.service-registry.auto-registration.enabled=true"})
+        "spring.cloud.service-registry.auto-registration.enabled=true",
+        "grpc.shutdownGrace=1"})
 
 public class ConsulRegistrationTest {
     @ClassRule
