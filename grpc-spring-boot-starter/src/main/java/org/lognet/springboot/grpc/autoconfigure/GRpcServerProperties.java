@@ -14,16 +14,16 @@ import java.util.Optional;
  */
 
 @ConfigurationProperties("grpc")
-@Getter @Setter
+@Getter
+@Setter
 public class GRpcServerProperties {
     public static final int DEFAULT_GRPC_PORT = 6565;
     /**
      * gRPC server port
-     *
      */
     private Integer port = null;
 
-    private SecurityProperties security ;
+    private SecurityProperties security;
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -38,7 +38,6 @@ public class GRpcServerProperties {
     /**
      * In process server name.
      * If  the value is not empty, the embedded in-process server will be created and started.
-     *
      */
     private String inProcessServerName;
 
@@ -68,9 +67,20 @@ public class GRpcServerProperties {
 
     }
 
-    @Getter @Setter
-    public static class SecurityProperties{
+    @Getter
+    @Setter
+    public static class SecurityProperties {
         private Resource certChain;
         private Resource privateKey;
+    }
+
+    @Getter
+    @Setter
+    public static class Health {
+        /**
+         * Is grpc health endpoint enable or not.
+         * In case if set to true this health check will be used during consul registration
+         */
+        private boolean endpointEnable;
     }
 }

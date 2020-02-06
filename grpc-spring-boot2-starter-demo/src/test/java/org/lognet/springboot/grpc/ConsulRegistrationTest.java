@@ -30,32 +30,30 @@ import static org.junit.Assert.assertNotNull;
         "spring.cloud.consul.discovery.enabled=true",
         "spring.cloud.service-registry.auto-registration.enabled=true",
         "grpc.shutdownGrace=1"})
-
 public class ConsulRegistrationTest {
+
     @ClassRule
-    public static final ConsulResource consul(){
+    public static final ConsulResource consul() {
         int port = SocketUtils.findAvailableTcpPort();
         ConsulResource consulResource = new ConsulResource(port);
-        System.setProperty("spring.cloud.consul.port",String.valueOf(port));
+        System.setProperty("spring.cloud.consul.port", String.valueOf(port));
         return consulResource;
     }
+
     @AfterClass
-    public  static void clear(){
+    public static void clear() {
         System.clearProperty("spring.cloud.consul.port");
     }
-
-
-
 
     @Autowired
     private DiscoveryClient discoveryClient;
 
     @Autowired
-    ConfigurableApplicationContext applicationContext;
+    private ConfigurableApplicationContext applicationContext;
 
     @Test
     public void contextLoads() throws ExecutionException, InterruptedException {
-        List<ServiceInstance> instances = discoveryClient.getInstances("grpc-grpc-demo");
+        List<ServiceInstance> instances = discoveryClient.getInstances("grpc-demo-grpc");
         assertFalse(instances.isEmpty());
 
         ServiceInstance serviceInstance = instances.get(0);
@@ -64,9 +62,9 @@ public class ConsulRegistrationTest {
                 .build();
 
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
-        final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
+        final GreeterOuterClass.HelloRequest helloRequest = GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertNotNull("Replay should not be null",reply);
+        assertNotNull("Replay should not be null", reply);
         applicationContext.stop();
     }
 }
