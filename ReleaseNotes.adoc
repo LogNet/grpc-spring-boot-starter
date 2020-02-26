@@ -1,3 +1,7 @@
+== Version 3.5.2
+* gRPC version upgraded to 1.27.2
+* Gradle 5.6.3
+
 == Version 3.5.1
 * Graceful shutdown timeout setting
 * Fixed potential race condition issue when defining running port.

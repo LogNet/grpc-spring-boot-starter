@@ -10,7 +10,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.25.0)",
+    value = "by gRPC proto compiler (version 1.27.2)",
     comments = "Source: calculator.proto")
 public final class CalculatorGrpc {
 
@@ -54,7 +54,14 @@ public final class CalculatorGrpc {
    * Creates a new async stub that supports all call types for the service
    */
   public static CalculatorStub newStub(io.grpc.Channel channel) {
-    return new CalculatorStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CalculatorStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CalculatorStub>() {
+        @java.lang.Override
+        public CalculatorStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CalculatorStub(channel, callOptions);
+        }
+      };
+    return CalculatorStub.newStub(factory, channel);
   }
 
   /**
@@ -62,7 +69,14 @@ public final class CalculatorGrpc {
    */
   public static CalculatorBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    return new CalculatorBlockingStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CalculatorBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CalculatorBlockingStub>() {
+        @java.lang.Override
+        public CalculatorBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CalculatorBlockingStub(channel, callOptions);
+        }
+      };
+    return CalculatorBlockingStub.newStub(factory, channel);
   }
 
   /**
@@ -70,7 +84,14 @@ public final class CalculatorGrpc {
    */
   public static CalculatorFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    return new CalculatorFutureStub(channel);
+    io.grpc.stub.AbstractStub.StubFactory<CalculatorFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<CalculatorFutureStub>() {
+        @java.lang.Override
+        public CalculatorFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new CalculatorFutureStub(channel, callOptions);
+        }
+      };
+    return CalculatorFutureStub.newStub(factory, channel);
   }
 
   /**
@@ -99,19 +120,15 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorStub extends io.grpc.stub.AbstractStub<CalculatorStub> {
-    private CalculatorStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CalculatorStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CalculatorStub extends io.grpc.stub.AbstractAsyncStub<CalculatorStub> {
+    private CalculatorStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CalculatorStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CalculatorStub(channel, callOptions);
     }
 
@@ -126,19 +143,15 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorBlockingStub extends io.grpc.stub.AbstractStub<CalculatorBlockingStub> {
-    private CalculatorBlockingStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CalculatorBlockingStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CalculatorBlockingStub extends io.grpc.stub.AbstractBlockingStub<CalculatorBlockingStub> {
+    private CalculatorBlockingStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorBlockingStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CalculatorBlockingStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CalculatorBlockingStub(channel, callOptions);
     }
 
@@ -152,19 +165,15 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorFutureStub extends io.grpc.stub.AbstractStub<CalculatorFutureStub> {
-    private CalculatorFutureStub(io.grpc.Channel channel) {
-      super(channel);
-    }
-
-    private CalculatorFutureStub(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+  public static final class CalculatorFutureStub extends io.grpc.stub.AbstractFutureStub<CalculatorFutureStub> {
+    private CalculatorFutureStub(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorFutureStub build(io.grpc.Channel channel,
-        io.grpc.CallOptions callOptions) {
+    protected CalculatorFutureStub build(
+        io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new CalculatorFutureStub(channel, callOptions);
     }
 
