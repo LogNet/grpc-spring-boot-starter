@@ -23,7 +23,8 @@ ext {
 }
 dependencies {
 
-    testCompile project(':grpc-spring-boot-starter-demo')
+
+    compile project(':grpc-spring-boot-starter-demo')
 
 	testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
 
@@ -36,8 +37,9 @@ dependencies {
     testRuntime('org.springframework.boot:spring-boot-starter-web')
 	
 	
-    testRuntime('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-	testCompile 'com.pszymczyk.consul:embedded-consul:2.0.0'
+    testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
+    runtime('org.springframework.cloud:spring-cloud-starter-consul-discovery')
+	testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
 
 	testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
 	testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"

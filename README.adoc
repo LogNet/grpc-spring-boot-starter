@@ -260,8 +260,15 @@ This is the current limitation.
 
 == Consul Integration
 
-Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry  if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath. +
+Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry
+if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath and
+`spring.cloud.service-registry.auto-registration.enabled` is *NOT* set to `false`. +
+
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
+
+Setting `spring.cloud.consul.discovery.register-health-check` to true will register GRPC health check service in Consul.
+
+Tags could be set by defining `spring.cloud.consul.discovery.tags` property.
 
 You can find the test that demonstrates the feature link:grpc-spring-boot2-starter-demo/src/test/java/org/lognet/springboot/grpc/ConsulRegistrationTest.java[here].
 

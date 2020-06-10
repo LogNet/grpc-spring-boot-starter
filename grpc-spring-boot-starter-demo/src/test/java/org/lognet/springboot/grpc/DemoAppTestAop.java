@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.demo.DemoAppConfiguration.CalculatorService;
 import org.lognet.springboot.grpc.demo.GreeterService;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class DemoAppTestAop extends GrpcServerTestBase{
     private GreeterService greeterService;
 
     @Autowired
-    private DemoApp.CalculatorService calculatorService;
+    private CalculatorService calculatorService;
 
     @Rule
     public OutputCapture outputCapture = new OutputCapture();

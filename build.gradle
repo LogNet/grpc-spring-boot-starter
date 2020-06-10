@@ -2,7 +2,7 @@ buildscript {
     ext {
         springBoot_1_X_Version = '1.5.13.RELEASE'
         springBoot_2_X_Version = '2.1.3.RELEASE'
-        grpcVersion = '1.29.0'
+        grpcVersion = '1.30.0'
     }
     repositories {
         mavenCentral()

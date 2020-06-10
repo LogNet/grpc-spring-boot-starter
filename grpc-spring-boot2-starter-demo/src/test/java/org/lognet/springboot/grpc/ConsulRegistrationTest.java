@@ -1,5 +1,9 @@
 package org.lognet.springboot.grpc;
 
+import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.QueryParams;
+import com.ecwid.consul.v1.health.model.Check;
+import com.ecwid.consul.v1.health.model.HealthService;
 import com.pszymczyk.consul.junit.ConsulResource;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -18,11 +22,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.SocketUtils;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -55,7 +59,11 @@ public class ConsulRegistrationTest {
 
     @Test
     public void contextLoads() throws ExecutionException, InterruptedException {
-        List<ServiceInstance> instances = discoveryClient.getInstances("grpc-grpc-demo");
+        final String serviceId = "grpc-grpc-demo";
+        final ConsulClient consulClient = new ConsulClient("localhost", Integer.parseInt(System.getProperty("spring.cloud.consul.port")));
+
+
+        List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
         assertFalse(instances.isEmpty());
 
         ServiceInstance serviceInstance = instances.get(0);
@@ -67,6 +75,21 @@ public class ConsulRegistrationTest {
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
         assertNotNull("Replay should not be null",reply);
+
+        boolean isHealthy = false;
+        for(int i=0;i<5; ++i){
+            final List<HealthService> healthServices = consulClient.getHealthServices(serviceId, true, QueryParams.DEFAULT).getValue();
+            isHealthy =healthServices
+                    .stream()
+                    .flatMap(h->h.getChecks().stream())
+                    .anyMatch(c-> Check.CheckStatus.PASSING.equals(c.getStatus())&& c.getCheckId().contains(serviceId));
+            if(isHealthy){
+                break;
+            }else{
+                Thread.sleep(Duration.ofSeconds(10).toMillis());
+            }
+        }
+        assertTrue(isHealthy);
         applicationContext.stop();
     }
 }
