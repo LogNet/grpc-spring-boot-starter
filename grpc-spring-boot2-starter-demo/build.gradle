@@ -13,42 +13,54 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 
-project.sourceSets.test{
-    java{
-        srcDir "${project(':grpc-spring-boot-starter-demo').getProjectDir()}/src/test/java"
-    }
-}
-ext {
-	set('springCloudVersion', "Greenwich.SR1")
-}
+//project.sourceSets.test{
+//    java{
+//        srcDir "${project(':grpc-spring-boot-starter-demo').getProjectDir()}/src/test/java"
+//    }
+//}
+def junit4Version   = '4.13'
+def junit5Version = '5.4.2'
+
 dependencies {
 
 
-    compile project(':grpc-spring-boot-starter-demo')
-
-	testCompile project(':grpc-spring-boot-starter-demo').sourceSets.test.output
 
 
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile 'org.springframework.boot:spring-boot-starter-aop'
-	testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
 
-    testRuntime('org.springframework.boot:spring-boot-starter-actuator')
-    testRuntime('org.springframework.boot:spring-boot-starter-web')
 	
 	
-    testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-    runtime('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-	testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
 
-	testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
-	testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"
 
+
+
+
+
+
+
+
+
+
+		// JUnit Jupiter API and TestEngine implementation
+	testCompile("org.junit.jupiter:junit-jupiter:${junit5Version}")
+	testCompile("org.junit.jupiter:junit-jupiter-api:${junit5Version}")
+	testCompile("junit:junit:${junit4Version}")
+
+		testRuntime ("org.junit.vintage:junit-vintage-engine:${junit5Version}") {
+			because 'allows JUnit 3 and JUnit 4 tests to run'
+		}
+		testRuntime "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+
+
+
+
+
+//:5.1.4.RELEASE
+
+
+	//testCompile 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure'
 }
-dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
-}
 
-bootJar.enabled  =false
+test {
+	useJUnitPlatform()
+}
+bootJar.enabled  =true

@@ -1,3 +1,17 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_2_X_Version}")
+        classpath "io.franzbecker:gradle-lombok:4.0.0"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: "de.marcphilipp.nexus-publish"
@@ -9,6 +23,9 @@ task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
     for (srcDir in project.sourceSets.main.java.srcDirs) {
         inputs.dir(srcDir)
         args(srcDir, "-d", outputDir)
+    }
+    doFirst {
+        outputDir.deleteDir()
     }
 }
 
@@ -32,7 +49,6 @@ signing {
 }
 
 
-
 nexusPublishing {
     clientTimeout = java.time.Duration.ofMinutes(7)
     repositories {
@@ -40,34 +56,40 @@ nexusPublishing {
     }
 
 }
+jar {
+    enabled = true
+}
 
+bootJar {
+    enabled = false
+}
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            pom{
+            pom {
                 name = 'grpc-spring-boot-starter'
-                description  = 'grpc-spring-boot-starter'
-                url  = 'https://github.com/LogNet/grpc-spring-boot-starter'
+                description = 'grpc-spring-boot-starter'
+                url = 'https://github.com/LogNet/grpc-spring-boot-starter'
 
                 scm {
                     url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-                    connection ='scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-                    developerConnection ='scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+                    connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+                    developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
                 }
 
                 licenses {
                     license {
-                        name= 'The Apache Software License, Version 2.0'
-                        url ='http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution ='repo'
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
                     }
                 }
 
                 developers {
                     developer {
                         id = 'jvmlet'
-                        name ='Furer Alexander'
-                        email ='furer.alexander@gmail.com'
+                        name = 'Furer Alexander'
+                        email = 'furer.alexander@gmail.com'
                     }
                 }
 
@@ -95,25 +117,18 @@ signing {
     }
     sign publishing.publications
 }
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
-        classpath "io.franzbecker:gradle-lombok:4.0.0"
-    }
-}
+
 
 dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
-    compile (group: 'org.springframework.boot', name: 'spring-boot-starter', version: springBoot_1_X_Version )
-    compile  'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
+    compile(group: 'org.springframework.boot', name: 'spring-boot-starter')
+    compile 'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
 
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springBoot_1_X_Version}")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
+    compileOnly("org.springframework.boot:spring-boot-starter-security")
+    compileOnly "org.springframework.security:spring-security-oauth2-resource-server"
     compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: '2.1.1.RELEASE'
 
 

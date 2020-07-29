@@ -4,15 +4,11 @@ import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DemoAppConfiguration {
-    @Bean
-    public GreeterService greeterService() {
-        return new GreeterService();
-    }
+
 
     @GRpcService(interceptors = NotSpringBeanInterceptor.class)
     public static class CalculatorService extends CalculatorGrpc.CalculatorImplBase{

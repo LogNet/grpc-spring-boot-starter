@@ -1,0 +1,61 @@
+{
+  "realm": "test-realm",
+  "enabled": true,
+  "sslRequired": "external",
+  "clients": [
+    {
+      "id": "9b60057a-9bb1-44dd-8851-2794de9369ab",
+      "clientId": "any-client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "08f64721-7fef-4d8b-a0fc-8f940a621451",
+      "redirectUris": [
+        "http://localhost:443"
+      ],
+      "bearerOnly": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true
+    }
+  ],
+  "roles": {
+    "client": {
+      "any-client": [
+        {
+          "id": "533c059c-f83f-44e4-9e75-022d2b5bc5a2",
+          "name": "reader",
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab"
+        },
+        {
+          "id": "48a4aed6-e19e-4059-94cb-f7c7aaf1a386",
+          "name": "writer",
+          "clientRole": true,
+          "containerId": "9b60057a-9bb1-44dd-8851-2794de9369ab"
+        }
+      ]
+    }
+  },
+  "users": [
+    {
+      "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
+      "username": "keycloak-test",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123Start!"
+        }
+      ],
+      "clientRoles": {
+        "any-client": [
+          "reader",
+          "writer"
+        ]
+      }
+    }
+  ],
+  "keycloakVersion": "8.0.1"
+}

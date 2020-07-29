@@ -4,13 +4,14 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.health.model.Check;
 import com.ecwid.consul.v1.health.model.HealthService;
-import com.pszymczyk.consul.junit.ConsulResource;
+import com.pszymczyk.consul.ConsulProcess;
+import com.pszymczyk.consul.ConsulStarterBuilder;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import org.junit.AfterClass;
-import org.junit.ClassRule;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -29,23 +30,30 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.*;
 
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest(classes = DemoApp.class, properties = {"spring.cloud.config.enabled:false",
         "spring.cloud.consul.discovery.enabled=true",
+        "spring.cloud.consul.enabled=true",
         "spring.cloud.service-registry.auto-registration.enabled=true",
         "grpc.shutdownGrace=1"})
-
+@RunWith(SpringRunner.class)
 public class ConsulRegistrationTest {
-    @ClassRule
-    public static final ConsulResource consul(){
+    private  static ConsulProcess consul;
+
+    @BeforeClass
+    public static void startConsul(){
         int port = SocketUtils.findAvailableTcpPort();
-        ConsulResource consulResource = new ConsulResource(port);
+
+
+        consul = ConsulStarterBuilder.consulStarter().withHttpPort(port).build().start();
         System.setProperty("spring.cloud.consul.port",String.valueOf(port));
-        return consulResource;
+
     }
     @AfterClass
     public  static void clear(){
         System.clearProperty("spring.cloud.consul.port");
+        consul.close();
+
     }
 
 

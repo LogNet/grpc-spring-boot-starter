@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
- org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration,\
-org.lognet.springboot.grpc.autoconfigure.consul.ConsulGrpcAutoConfiguration
+org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration,\
+org.lognet.springboot.grpc.autoconfigure.consul.ConsulGrpcAutoConfiguration,\
+org.lognet.springboot.grpc.autoconfigure.security.SecurityAutoConfiguration
 

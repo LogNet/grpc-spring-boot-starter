@@ -4,16 +4,25 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_1_X_Version}")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBoot_2_X_Version}")
     }
 }
+apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+ext {
+    set('springCloudVersion', "Hoxton.SR6")
 
+}
 dependencies {
 
     compile "org.springframework.boot:spring-boot-starter-actuator"
     compile 'org.springframework.boot:spring-boot-starter-web'
+
+    compile "org.springframework.security:spring-security-config"
+    compile "org.springframework.security:spring-security-oauth2-jose"
+    compile "org.springframework.security:spring-security-oauth2-resource-server"
 
 
     compile project(':grpc-spring-boot-starter')
@@ -21,6 +30,24 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-aop'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
+    testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
+    testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
+
+    testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
+    testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"
+    testCompile "com.playtika.testcontainers:embedded-keycloak:1.76"
+    testRuntime "org.springframework.cloud:spring-cloud-starter"
+
+
+
+    testImplementation 'org.hamcrest:hamcrest:2.1'
+
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+
+
+
+    //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
+
 }
 sourceSets {
     main {
@@ -63,14 +90,14 @@ task cleanProtoGen{
     }
 }
 clean.dependsOn cleanProtoGen
-bootRepackage.enabled  =false
+
 
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBoot_1_X_Version}"
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBoot_2_X_Version}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
-
 
 
 

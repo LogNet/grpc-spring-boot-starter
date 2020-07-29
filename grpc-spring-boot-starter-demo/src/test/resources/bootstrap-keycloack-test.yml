@@ -1,0 +1,12 @@
+embedded:
+  keycloak:
+    enabled: true
+    import-file: 'test-realm.json'
+  containers:
+    enabled: true
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${embedded.keycloak.auth-server-url}/realms/test-realm

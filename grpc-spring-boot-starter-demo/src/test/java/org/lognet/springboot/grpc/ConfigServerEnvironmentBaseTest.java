@@ -5,9 +5,12 @@ import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
+import org.lognet.springboot.grpc.autoconfigure.security.SecurityAutoConfiguration;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -35,6 +38,7 @@ import java.util.stream.Stream;
                 "spring.cloud.service-registry.auto-registration.enabled=false",
                 "grpc.shutdownGrace=1",
 })
+
 public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase{
 
 
@@ -48,7 +52,7 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
 
 
 
-    public static void startConfigServer(Properties properties) throws IOException, URISyntaxException {
+    public static void startConfigServer(Properties properties ) throws IOException, URISyntaxException {
         int configPort = SocketUtils.findAvailableTcpPort();
         File cfgFile = temporaryFolder.newFile("grpc-demo.properties");
         try(OutputStream os = new FileOutputStream(cfgFile)) {
@@ -58,7 +62,11 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
 
         server = SpringApplication.run(org.springframework.cloud.config.server.ConfigServerApplication.class,
                 "--server.port=" + configPort,
-                "--spring.autoconfigure.exclude="+Stream.of(GRpcAutoConfiguration.class)
+                "--spring.autoconfigure.exclude="+Stream.of(GRpcAutoConfiguration.class,
+                        OAuth2ResourceServerAutoConfiguration.class,
+                        ManagementWebSecurityAutoConfiguration.class,
+                                SecurityAutoConfiguration.class
+                )
                         .map(Class::getName).collect(Collectors.joining(",")),
                 "--spring.cloud.consul.discovery.enabled=false",
                 "--spring.cloud.service-registry.enabled=false",
