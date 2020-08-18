@@ -129,6 +129,7 @@ dependencies {
 
     compileOnly("org.springframework.boot:spring-boot-starter-security")
     compileOnly "org.springframework.security:spring-security-oauth2-resource-server"
+    compileOnly "org.springframework.security:spring-security-oauth2-jose"
     compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: '2.1.1.RELEASE'
 
 

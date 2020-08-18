@@ -58,8 +58,21 @@ public class GrpcServiceAuthorizationConfigurer
             GrpcServiceAuthorizationConfigurer.this.REGISTRY.map(methods);
             return GrpcServiceAuthorizationConfigurer.this.REGISTRY;
         }
-        public GrpcServiceAuthorizationConfigurer.Registry hasRole(String role) {
-            GrpcServiceAuthorizationConfigurer.this.REGISTRY.map(role,methods);
+        public GrpcServiceAuthorizationConfigurer.Registry hasAnyRole(String... roles) {
+            String rolePrefix="ROLE_";
+            for(String role:roles){
+                if (role.startsWith(rolePrefix)) {
+                    throw new IllegalArgumentException(
+                            "role should not start with 'ROLE_' since it is automatically inserted. Got '"
+                                    + role + "'");
+                }
+            }
+            return hasAnyAuthority(Arrays.stream(roles).map(rolePrefix::concat).toArray(String[]::new));
+        }
+        public GrpcServiceAuthorizationConfigurer.Registry hasAnyAuthority(String... authorities) {
+            for(String auth :authorities) {
+                GrpcServiceAuthorizationConfigurer.this.REGISTRY.map(auth, methods);
+            }
             return GrpcServiceAuthorizationConfigurer.this.REGISTRY;
         }
 

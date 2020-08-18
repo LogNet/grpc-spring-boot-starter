@@ -2,13 +2,14 @@ package org.lognet.springboot.grpc;
 
 
 import io.grpc.*;
-import net.minidev.json.JSONNavi;
-import net.minidev.json.JSONObject;
+import io.grpc.examples.GreeterGrpc;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
+import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -17,11 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
@@ -31,15 +28,13 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingExcept
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
-@Import({JwtTest.TestCfg.class})
-public class JwtTest extends GrpcServerTestBase {
+@Import({JwtRoleTest.TestCfg.class})
+public class JwtRoleTest extends GrpcServerTestBase {
 
 
     @Value("${embedded.keycloak.auth-server-url:}")
@@ -52,41 +47,27 @@ public class JwtTest extends GrpcServerTestBase {
         @EnableGrpcSecurity
         public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
 
-            @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-            private String issuerUri;
+            @Autowired
+            private JwtDecoder jwtDecoder;
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
 
                 super.configure(builder);
-                builder.authorizeRequests().anyMethod().hasRole("ROLE_reader")
+                builder.authorizeRequests()
+                        .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
+                        //.methods(CalculatorGrpc.getCalculateMethod()).hasAnyAuthority("SCOPE_email")
                         .and()
-                        .authenticationProvider(customJwt());
+                        .authenticationProvider(JwtAuthProviderFactory.withRoles(jwtDecoder));
 
             }
 
-            private AuthenticationProvider customJwt() {
-                final JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
-                authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-                    JSONObject resourceAccess = jwt.getClaim("resource_access");
-                    final JSONNavi<?> roles = JSONNavi.newInstanceArray()
-                            .add(resourceAccess)
-                            .at(0)
-                            .at(jwt.getClaimAsString("azp"))
-                            .at("roles");
 
-                    return IntStream.range(0, roles.getSize())
-                            .mapToObj(k ->  new SimpleGrantedAuthority("ROLE_" + roles.get(k).toString()))
-                            .collect(Collectors.toList());
-
-                });
-                final JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(JwtDecoders.fromOidcIssuerLocation(issuerUri));
-                authenticationProvider.setJwtAuthenticationConverter(authenticationConverter);
-                return authenticationProvider;
-            }
         }
 
     }
+
+
 
     @Override
     protected Channel getChannel() {
