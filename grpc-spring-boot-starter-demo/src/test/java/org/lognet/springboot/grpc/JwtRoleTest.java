@@ -2,7 +2,11 @@ package org.lognet.springboot.grpc;
 
 
 import io.grpc.*;
+import io.grpc.examples.CalculatorGrpc;
+import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
@@ -28,6 +32,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingExcept
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 
 @SpringBootTest(classes = DemoApp.class)
@@ -56,7 +63,7 @@ public class JwtRoleTest extends GrpcServerTestBase {
                 super.configure(builder);
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
-                        //.methods(CalculatorGrpc.getCalculateMethod()).hasAnyAuthority("SCOPE_email")
+                        .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
                         .and()
                         .authenticationProvider(JwtAuthProviderFactory.withRoles(jwtDecoder));
 
@@ -68,6 +75,21 @@ public class JwtRoleTest extends GrpcServerTestBase {
     }
 
 
+
+    @Test
+    public void shouldFail() {
+
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
+            CalculatorGrpc.newBlockingStub(selectedChanel).calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                    .setNumber1(1)
+                    .setNumber2(1)
+                    .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                    .build());
+        });
+        assertThat(statusRuntimeException.getMessage(),Matchers.containsString("UNAUTHENTICATED"));
+
+
+    }
 
     @Override
     protected Channel getChannel() {
