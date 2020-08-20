@@ -31,7 +31,12 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -75,6 +80,70 @@ public class JwtRoleTest extends GrpcServerTestBase {
     }
 
 
+    @Test
+    public void concurrencyTest() throws InterruptedException, ExecutionException {
+        int concurrency = 501;
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(concurrency);
+        final CyclicBarrier barrier = new CyclicBarrier(concurrency);
+        final CountDownLatch endCountDownLatch = new CountDownLatch(concurrency);
+
+        AtomicInteger shouldSucceed  = new AtomicInteger();
+        AtomicInteger shouldFail  = new AtomicInteger();
+
+        final   List<Future<Boolean>> result = Stream.iterate(0, i -> i + 1)
+                .limit(concurrency)
+                .map(i ->
+                        new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() throws Exception {
+                                System.out.println("About to start call  "+i);
+                                barrier.await();
+                                System.out.println("Start call  "+i);
+                                try {
+                                    if (i % 2 == 0) {
+                                        shouldSucceed.incrementAndGet();
+                                        simpleGreeting(); //should succeed
+                                    } else { //should fail
+                                        shouldFail.incrementAndGet();
+                                        CalculatorGrpc.newBlockingStub(selectedChanel).calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                                                .setNumber1(1)
+                                                .setNumber2(1)
+                                                .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                                                .build());
+                                    }
+                                    return true;
+                                } catch (Exception e) {
+                                    return false;
+                                }finally {
+                                    System.out.println("Call  "+i+" finished");
+                                    endCountDownLatch.countDown();
+                                }
+                            }
+                        })
+                .map(executorService::submit)
+                .collect(Collectors.toList());
+
+
+        endCountDownLatch.await();
+        int failed=0, succeeded=0;
+        for(Future<Boolean> res: result ){
+            if(res.get()){
+                ++succeeded;
+            }else {
+                ++failed;
+            }
+        }
+        assertThat(succeeded,Matchers.is(shouldSucceed.get()));
+        assertThat(failed,Matchers.is(shouldFail.get()));
+
+
+
+
+
+
+
+    }
 
     @Test
     public void shouldFail() {
@@ -86,7 +155,7 @@ public class JwtRoleTest extends GrpcServerTestBase {
                     .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
                     .build());
         });
-        assertThat(statusRuntimeException.getMessage(),Matchers.containsString("UNAUTHENTICATED"));
+        assertThat(statusRuntimeException.getMessage(), Matchers.containsString("UNAUTHENTICATED"));
 
 
     }
