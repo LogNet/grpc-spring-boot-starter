@@ -32,6 +32,10 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     public void init(GrpcSecurity builder) throws Exception {
         builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext()));
         builder.setSharedObject(AuthenticationManagerBuilder.class,authenticationManagerBuilder);
+        final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
+        authenticationSchemeService.register(new BasicAuthSchemeSelector());
+        authenticationSchemeService.register(new BearerTokenAuthSchemeSelector());
+        builder.setSharedObject(AuthenticationSchemeService.class, authenticationSchemeService);
 
     }
 

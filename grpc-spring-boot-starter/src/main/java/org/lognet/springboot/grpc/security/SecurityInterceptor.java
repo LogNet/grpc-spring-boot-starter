@@ -5,24 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
-import org.springframework.security.oauth2.server.resource.BearerTokenError;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.springframework.security.oauth2.server.resource.BearerTokenErrors.invalidToken;
 
 @Slf4j
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements ServerInterceptor, Ordered {
 
     class SecurityServerCallListener<ReqT, RespT> extends ServerCall.Listener<ReqT> {
-        private  InterceptorStatusToken token = null;
-        private  Optional<ServerCall.Listener<ReqT>> listener;
+        private InterceptorStatusToken token = null;
+        private Optional<ServerCall.Listener<ReqT>> listener;
 
         protected SecurityServerCallListener(ServerCall<ReqT, RespT> call,
                                              Metadata headers,
@@ -30,8 +24,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             try {
                 token = SecurityInterceptor.this.beforeInvocation(call.getMethodDescriptor());
                 listener = Optional.of(next.startCall(call, headers));
-            }catch (Exception e){
-                call.close(Status.UNAUTHENTICATED.withDescription(e.getMessage()),new Metadata());
+            } catch (Exception e) {
+                call.close(Status.UNAUTHENTICATED.withDescription(e.getMessage()), new Metadata());
                 listener = Optional.empty();
             }
 
@@ -58,7 +52,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
         @Override
         public void onMessage(ReqT message) {
-            listener.ifPresent(l->l.onMessage(message));
+            listener.ifPresent(l -> l.onMessage(message));
 
         }
 
@@ -67,22 +61,19 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             listener.ifPresent(ServerCall.Listener::onReady);
         }
 
-        private void tearDown(){
+        private void tearDown() {
             SecurityInterceptor.this.finallyInvocation(token);
-            SecurityInterceptor.this.afterInvocation(token,null);
+            SecurityInterceptor.this.afterInvocation(token, null);
         }
     }
 
 
-
-    private static final Pattern authorizationPattern = Pattern.compile(
-            "^Bearer (?<token>[a-zA-Z0-9-._~+/]+)=*$",
-            Pattern.CASE_INSENSITIVE);
-
     private GrpcSecurityMetadataSource securedMethods;
+    private AuthenticationSchemeSelector schemeSelector;
 
-    public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods) {
+    public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods, AuthenticationSchemeSelector schemeSelector) {
         this.securedMethods = securedMethods;
+        this.schemeSelector = schemeSelector;
     }
 
     @Override
@@ -108,30 +99,16 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
         final String authorization = headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER));
 
-        Matcher matcher = authorizationPattern.matcher(authorization);
-
-        if (!matcher.matches()) {
-            BearerTokenError error = invalidToken("Bearer token is malformed");
-            throw new OAuth2AuthenticationException(error);
-        }
-
-        String token = matcher.group("token");
+        final Authentication authentication = schemeSelector.getAuthScheme(authorization)
+                .orElseThrow(()->new RuntimeException("Can't get authentication from authorization header"));
 
 
-        BearerTokenAuthenticationToken authenticationRequest = new BearerTokenAuthenticationToken(token);
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
 
 
-
-
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authenticationRequest);
-            SecurityContextHolder.setContext(context);
-
-
-
-            return new SecurityServerCallListener<>(call, headers, next) ;
-
-
+        return new SecurityServerCallListener<>(call, headers, next);
 
 
     }
