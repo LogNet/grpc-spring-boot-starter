@@ -3,23 +3,31 @@ package org.lognet.springboot.grpc.security;
 import io.grpc.CallCredentials;
 import io.grpc.Metadata;
 import io.grpc.Status;
+import lombok.Builder;
 
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
-import static io.grpc.Metadata.ASCII_STRING_MARSHALLER;
-
 /**
- * Adds Authorization header with Bearer token supplied by tokeSupplier
+ * Adds Authorization header with configured configured authentication scheme token supplied by tokeSupplier
  */
-public class BearerAuthCallCredentials extends CallCredentials {
-    static final Metadata.Key<String> AUTHORIZATION_METADATA_KEY = Metadata.Key.of("Authorization", ASCII_STRING_MARSHALLER);
+@Builder
+public class AuthCallCredentials extends CallCredentials {
+    private final Supplier<String> tokenSupplier;
+    private final String authScheme;
 
-    private Supplier<String> tokenSupplier;
+    public static class AuthCallCredentialsBuilder {
 
-    public BearerAuthCallCredentials(Supplier<String> tokenSupplier) {
-        this.tokenSupplier = tokenSupplier;
+        public AuthCallCredentials.AuthCallCredentialsBuilder  bearer() {
+            return authScheme(Constants.BEARER_AUTH_SCHEME);
+        }
+        public AuthCallCredentials.AuthCallCredentialsBuilder basic() {
+            return  authScheme(Constants.BASIC_AUTH_SCHEME);
+        }
+
+
     }
+
 
     @Override
     public void applyRequestMetadata(RequestInfo requestInfo, Executor appExecutor, MetadataApplier metadataApplier) {
@@ -27,7 +35,7 @@ public class BearerAuthCallCredentials extends CallCredentials {
         appExecutor.execute(()->{
                 try {
                     Metadata headers = new Metadata();
-                    headers.put(AUTHORIZATION_METADATA_KEY,String.format("Bearer %s", tokenSupplier.get()));
+                    headers.put(Constants.AUTH_HEADER_KEY,String.format("%s %s",authScheme, tokenSupplier.get()));
                     metadataApplier.apply(headers);
                 } catch (Throwable e) {
                     metadataApplier.fail(Status.UNAUTHENTICATED.withCause(e));

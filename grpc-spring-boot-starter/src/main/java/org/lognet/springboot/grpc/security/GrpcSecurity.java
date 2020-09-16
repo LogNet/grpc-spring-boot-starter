@@ -70,7 +70,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
         securityInterceptor.setAuthenticationManager(getSharedObject(AuthenticationManagerBuilder.class).build());
         final RoleVoter scopeVoter = new RoleVoter();
         scopeVoter.setRolePrefix("SCOPE_");
-        securityInterceptor.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter(),scopeVoter)));
+        securityInterceptor.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter(),scopeVoter, new AuthenticatedAttributeVoter())));
         return securityInterceptor;
     }
     @SuppressWarnings("unchecked")

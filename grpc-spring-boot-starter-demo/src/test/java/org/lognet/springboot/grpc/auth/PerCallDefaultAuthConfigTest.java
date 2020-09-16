@@ -8,7 +8,7 @@ import io.grpc.examples.SecuredGreeterGrpc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
-import org.lognet.springboot.grpc.security.BearerAuthCallCredentials;
+import org.lognet.springboot.grpc.security.AuthCallCredentials;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,10 +28,10 @@ import static org.junit.Assert.assertTrue;
 @Import({PerCallDefaultAuthConfigTest.TestCfg.class})
 public class PerCallDefaultAuthConfigTest extends JwtAuthBaseTest {
 
-    private BearerAuthCallCredentials callCredentials;
+    private AuthCallCredentials callCredentials;
     public PerCallDefaultAuthConfigTest() {
         super(false);
-        callCredentials = new BearerAuthCallCredentials(this::generateToken);
+        callCredentials = AuthCallCredentials.builder().bearer().tokenSupplier(this::generateToken).build();
     }
 
     @TestConfiguration

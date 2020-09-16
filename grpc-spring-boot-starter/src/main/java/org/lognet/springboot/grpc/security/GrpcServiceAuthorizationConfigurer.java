@@ -44,46 +44,6 @@ public class GrpcServiceAuthorizationConfigurer
     public class AuthorizedMethod {
         private List<MethodDescriptor<?, ?>> methods;
 
-        //    public void setServices(Collection<BindableService> services){
-//
-//        for (BindableService s : services) {
-//            final Secured securedAnn = AnnotationUtils.findAnnotation(s.getClass(), Secured.class);
-//            final ServerServiceDefinition serverServiceDefinition = s.bindService();
-//            if (null != securedAnn) {
-//                serverServiceDefinition.getMethods().forEach(m -> securedMethods.compute(m.getMethodDescriptor(), (k, v) -> {
-//                            Set<String> roles = new HashSet<>(Arrays.asList(securedAnn.value()));
-//                            if (null != v) {
-//                                roles.addAll(v);
-//                            }
-//                            return roles;
-//
-//                        }
-//                ));
-//            }
-//
-//            serverServiceDefinition.getMethods().forEach(methodDefinition -> {
-//                final Optional<Method> method = Stream.of(s.getClass().getMethods())
-//
-//                        .filter(m -> {
-//                            final String methodName = methodDefinition.getMethodDescriptor().getFullMethodName().substring(methodDefinition.getMethodDescriptor().getServiceName().length()+1);
-//                            return methodName.equalsIgnoreCase(m.getName());
-//                        })
-//                        .findFirst();
-//
-//                method.ifPresent(m -> {
-//                    final Secured securedMethodAnn = AnnotationUtils.findAnnotation(m, Secured.class);
-//                    if (null != securedMethodAnn) {
-//                        securedMethods.compute(methodDefinition.getMethodDescriptor(), (k, v) ->
-//                                new HashSet<>(Arrays.asList(securedMethodAnn.value()))
-//                        );
-//                    }
-//                });
-//
-//            });
-//        }
-//
-//    }
-
         private AuthorizedMethod(MethodDescriptor<?, ?>... methodDescriptor) {
             methods = Arrays.asList(methodDescriptor);
         }
@@ -186,7 +146,7 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         void map(List<MethodDescriptor<?, ?>> methods) {
-            methods.forEach(m -> securedMethods.addAll(m, Collections.<ConfigAttribute>emptyList()));
+            methods.forEach(m -> securedMethods.addAll(m, Collections.singletonList(new AuthenticatedConfigAttribute())));
 
         }
 

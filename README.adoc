@@ -194,9 +194,15 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 }
 ----
 
+=== Spring security support
+
+The starter  provides built-in support for authenticating  and  authorizing users  leveraging integration with https://spring.io/projects/spring-security[Spring Security framework]. +
+Please refer to the sections on <<Spring Security Integration>> for details on how to configure and supported authentication providers.
+
+
 === Transport Security (TLS)
 
-The transport security can be configured using root certificate and it's private key paths:
+The transport security can be configured using root certificate together with its private key path:
 
 [source,yaml]
 ----
@@ -257,6 +263,77 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
 If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance of configurer. +
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
+
+== Spring Security Integration
+
+=== Setup
+
+.Dependencies to implement authentiction scheme
+[cols="a,a"]
+|===
+|Scheme |Dependencies
+
+|Basic
+|
+* `org.springframework.security:spring-security-config`
+
+
+|Bearer
+|
+* `org.springframework.security:spring-security-config`
+* `org.springframework.security:spring-security-oauth2-jose`
+* `org.springframework.security:spring-security-oauth2-resource-server`
+
+
+|_Custom_
+|
+* `org.springframework.security:spring-security-config`
+* `your.custom.lib`
+
+|===
+
+
+=== Configuration
+
+==== Default
+Defining bean with type `GrpcSecurityConfigurerAdapter` is sufficient to secure you GRPC services and/or methods :
+
+[source,java]
+----
+
+    @EnableGrpcSecurity
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+
+    }
+
+----
+
+This default configuration secures methods/services annotated with `org.springframework.security.access.annotation.@Secured`  annotation. +
+If `JwtDecoder` bean exists in your context, it will also register `JwtAuthenticationProvider` to handle the validation of authentication claim.
+
+
+==== Custom
+
+[source,java]
+----
+@EnableGrpcSecurity
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+        @Autowired
+        private JwtDecoder jwtDecoder;
+
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+
+            builder.authorizeRequests()
+                    .methods(GreeterGrpc.getSayHelloMethod()).hasAnyAuthority("SCOPE_email")
+                    .and()
+                    .authenticationProvider(JwtAuthProviderFactory.withAuthorities(jwtDecoder));
+        }
+    }
+
+
+----
+
 
 == Consul Integration
 

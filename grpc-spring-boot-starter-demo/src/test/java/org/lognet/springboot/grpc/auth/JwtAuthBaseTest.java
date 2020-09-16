@@ -4,7 +4,7 @@ package org.lognet.springboot.grpc.auth;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
-import org.lognet.springboot.grpc.security.BearerAuthClientInterceptor;
+import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +34,9 @@ public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
     @Override
     protected Channel getChannel() {
-        return globalSecuredChannel  ? ClientInterceptors.intercept(super.getChannel(), new BearerAuthClientInterceptor(this::generateToken))
+        final AuthClientInterceptor clientInterceptor = AuthClientInterceptor.builder().bearer().tokenSupplier(this::generateToken)
+                .build();
+        return globalSecuredChannel  ? ClientInterceptors.intercept(super.getChannel(), clientInterceptor)
                 :super.getChannel();
     }
 

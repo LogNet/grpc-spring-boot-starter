@@ -1,13 +1,8 @@
 package org.lognet.springboot.grpc.auth;
 
 
-import io.grpc.CallOptions;
 import io.grpc.Channel;
-import io.grpc.ClientCall;
-import io.grpc.ClientInterceptor;
 import io.grpc.ClientInterceptors;
-import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
@@ -17,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
@@ -109,18 +105,11 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     protected Channel getChannel() {
         String token = Base64.getEncoder().encodeToString(String.format("%s:%s", user.getUsername(), TestCfg.DemoGrpcSecurityConfig.pwd).getBytes());
 
-        return ClientInterceptors.intercept(super.getChannel(), new ClientInterceptor() {
-            @Override
-            public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> methodDescriptor, CallOptions callOptions, Channel next) {
-                return new ClientInterceptors.CheckedForwardingClientCall<ReqT, RespT>(next.newCall(methodDescriptor, callOptions)) {
-                    @Override
-                    protected void checkedStart(Listener<RespT> responseListener, Metadata headers) throws Exception {
-                        headers.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Basic " + token);
-                        delegate().start(responseListener, headers);
-                    }
-                };
-            }
-        });
+        final AuthClientInterceptor interceptor = AuthClientInterceptor.builder()
+                .basic()
+                .tokenSupplier(() -> token)
+                .build();
+        return ClientInterceptors.intercept(super.getChannel(), interceptor);
     }
 
 

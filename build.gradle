@@ -70,7 +70,8 @@ subprojects {
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
-    sourceSets project('grpc-spring-boot-starter').sourceSets.main
+    sourceSets (project('grpc-spring-boot-starter').sourceSets.main
+            ,project('grpc-client-spring-boot-starter').sourceSets.main)
 
     //subprojects.each {
     //sourceSets it.sourceSets.main
@@ -79,7 +80,7 @@ task codeCoverageReport(type: JacocoReport) {
     reports {
         xml.enabled true
         xml.destination  = new File(buildDir,"reports/jacoco/report.xml")
-        html.enabled false
+        html.enabled true
         csv.enabled false
     }
 }

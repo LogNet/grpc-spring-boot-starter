@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc.security;
 
+import lombok.Getter;
 import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -12,6 +13,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
     private AuthenticationConfiguration authenticationConfiguration;
     private AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Getter
     private ApplicationContext context;
 
     protected GrpcSecurityConfigurerAdapter() {
