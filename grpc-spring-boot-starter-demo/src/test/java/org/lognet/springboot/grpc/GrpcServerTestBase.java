@@ -106,8 +106,8 @@ public abstract class GrpcServerTestBase {
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(selectedChanel);
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
         final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertNotNull("Replay should not be null",reply);
-        assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
+        assertNotNull("Reply should not be null",reply);
+        assertTrue(String.format("Reply should contain name '%s'",name),reply.contains(name));
         afterGreeting();
 
     }

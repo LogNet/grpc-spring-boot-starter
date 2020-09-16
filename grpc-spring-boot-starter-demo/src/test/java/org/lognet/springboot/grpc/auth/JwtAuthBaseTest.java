@@ -1,26 +1,19 @@
-package org.lognet.springboot.grpc;
+package org.lognet.springboot.grpc.auth;
 
 
-import io.grpc.*;
-import io.grpc.examples.GreeterGrpc;
-import org.junit.runner.RunWith;
-import org.lognet.springboot.grpc.demo.DemoApp;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
-import org.lognet.springboot.grpc.security.GrpcSecurity;
-import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
-import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.grpc.CallOptions;
+import io.grpc.Channel;
+import io.grpc.ClientCall;
+import io.grpc.ClientInterceptor;
+import io.grpc.ClientInterceptors;
+import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
+import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -29,44 +22,11 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
-
-@SpringBootTest(classes = DemoApp.class)
-@ActiveProfiles("keycloack-test")
-@RunWith(SpringRunner.class)
-@Import({JwtAuthorityTest.TestCfg.class})
-public class JwtAuthorityTest extends GrpcServerTestBase {
+public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
 
     @Value("${embedded.keycloak.auth-server-url:}")
     private String authServerUrl;
-
-
-    @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
-
-            @Autowired
-            private JwtDecoder jwtDecoder;
-
-            @Override
-            public void configure(GrpcSecurity builder) throws Exception {
-
-                super.configure(builder);
-                builder.authorizeRequests()
-                        .methods(GreeterGrpc.getSayHelloMethod()).hasAnyAuthority("SCOPE_email")
-                        .and()
-                        .authenticationProvider(JwtAuthProviderFactory.withAuthorities(jwtDecoder));
-
-            }
-
-
-        }
-
-    }
-
-
 
     @Override
     protected Channel getChannel() {
@@ -86,6 +46,8 @@ public class JwtAuthorityTest extends GrpcServerTestBase {
         });
     }
 
+    protected final static String USER_NAME="keycloak-test";
+
 
     private String generateToken() {
         if (authServerUrl.isEmpty()) {
@@ -98,7 +60,7 @@ public class JwtAuthorityTest extends GrpcServerTestBase {
         req.add("client_id", "any-client");
         req.add("client_secret", "08f64721-7fef-4d8b-a0fc-8f940a621451");
         req.add("grant_type", "password");
-        req.add("username", "keycloak-test");
+        req.add("username", USER_NAME);
         req.add("password", "123Start!");
 
 

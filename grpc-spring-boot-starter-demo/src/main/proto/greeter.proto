@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+import "google/protobuf/empty.proto";
 option java_package = "io.grpc.examples";
 
 
@@ -8,6 +8,11 @@ option java_package = "io.grpc.examples";
 service Greeter {
     // Sends a greeting
     rpc SayHello ( HelloRequest) returns (  HelloReply) {}
+    rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
+
+}
+service SecuredGreeter {
+    rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
 
 }
 

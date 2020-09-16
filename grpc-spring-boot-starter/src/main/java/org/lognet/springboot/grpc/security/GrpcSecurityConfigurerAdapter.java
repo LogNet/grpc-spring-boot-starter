@@ -1,15 +1,18 @@
 package org.lognet.springboot.grpc.security;
 
+import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigurer<GrpcSecurity> {
 
     private AuthenticationConfiguration authenticationConfiguration;
     private AuthenticationManagerBuilder authenticationManagerBuilder;
+    private ApplicationContext context;
 
     protected GrpcSecurityConfigurerAdapter() {
     }
@@ -22,10 +25,11 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
         ObjectPostProcessor<Object> objectPostProcessor = context.getBean(ObjectPostProcessor.class);
         this.authenticationConfiguration = context.getBean(AuthenticationConfiguration.class);
 
-        authenticationManagerBuilder = authenticationConfiguration.authenticationManagerBuilder(objectPostProcessor,context)
-        .parentAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
+        authenticationManagerBuilder = authenticationConfiguration
+                .authenticationManagerBuilder(objectPostProcessor,context)
+                .parentAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
 
-
+        this.context = context;
     }
 
     @Override
@@ -41,6 +45,16 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
-
+        try {
+            final Class<?> jwtDecoderClass = Class.forName("org.springframework.security.oauth2.jwt.JwtDecoder");
+            final String[] beanNames = context.getBeanNamesForType(jwtDecoderClass);
+            if (1==beanNames.length){
+                builder.authenticationProvider(JwtAuthProviderFactory.withAuthorities(context.getBean(beanNames[0],JwtDecoder.class)));
+            }
+        }catch (ClassNotFoundException e){
+            //swallow
+        }
+        builder.authorizeRequests()
+                .withSecuredAnnotation();
     }
 }
