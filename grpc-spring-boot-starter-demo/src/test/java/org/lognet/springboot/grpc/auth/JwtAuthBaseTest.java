@@ -1,14 +1,10 @@
 package org.lognet.springboot.grpc.auth;
 
 
-import io.grpc.CallOptions;
 import io.grpc.Channel;
-import io.grpc.ClientCall;
-import io.grpc.ClientInterceptor;
 import io.grpc.ClientInterceptors;
-import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
+import org.lognet.springboot.grpc.security.BearerAuthClientInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,32 +20,28 @@ import java.util.UUID;
 
 public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
+    private boolean globalSecuredChannel = false;
+
+    public JwtAuthBaseTest(boolean globalSecuredChannel) {
+        this.globalSecuredChannel = globalSecuredChannel;
+    }
+    public JwtAuthBaseTest() {
+        this.globalSecuredChannel = true;
+    }
 
     @Value("${embedded.keycloak.auth-server-url:}")
     private String authServerUrl;
 
     @Override
     protected Channel getChannel() {
-        String token = generateToken();
-
-        return ClientInterceptors.intercept(super.getChannel(), new ClientInterceptor() {
-            @Override
-            public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> methodDescriptor, CallOptions callOptions, Channel next) {
-                return new ClientInterceptors.CheckedForwardingClientCall<ReqT, RespT>(next.newCall(methodDescriptor, callOptions)) {
-                    @Override
-                    protected void checkedStart(Listener<RespT> responseListener, Metadata headers) throws Exception {
-                        headers.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + token);
-                        delegate().start(responseListener, headers);
-                    }
-                };
-            }
-        });
+        return globalSecuredChannel  ? ClientInterceptors.intercept(super.getChannel(), new BearerAuthClientInterceptor(this::generateToken))
+                :super.getChannel();
     }
 
     protected final static String USER_NAME="keycloak-test";
 
 
-    private String generateToken() {
+    protected String generateToken() {
         if (authServerUrl.isEmpty()) {
             return UUID.randomUUID().toString();
         }

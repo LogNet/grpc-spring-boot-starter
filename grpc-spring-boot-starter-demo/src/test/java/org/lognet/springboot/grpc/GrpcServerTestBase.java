@@ -101,19 +101,19 @@ public abstract class GrpcServerTestBase {
     @Test
     public void simpleGreeting() throws ExecutionException, InterruptedException {
 
-        beforeGreeting();
+
         String name ="John";
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(selectedChanel);
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
-        final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
+        final String reply = beforeGreeting(greeterFutureStub).sayHello(helloRequest).get().getMessage();
         assertNotNull("Reply should not be null",reply);
         assertTrue(String.format("Reply should contain name '%s'",name),reply.contains(name));
         afterGreeting();
 
     }
 
-    protected void beforeGreeting() {
-
+    protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
+        return  stub;
     }
 
     protected void afterGreeting(){

@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.examples.GreeterGrpc;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -24,8 +25,9 @@ public class DefaultGrpcPortTest extends GrpcServerTestBase {
     }
 
     @Override
-    protected void beforeGreeting() {
+    protected GreeterGrpc.GreeterFutureStub  beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
         assertThat( gRpcServerProperties.getPort(), CoreMatchers.nullValue(Integer.class));
         Assert.assertEquals(GRpcServerProperties.DEFAULT_GRPC_PORT, runningPort);
+        return stub;
     }
 }

@@ -26,6 +26,7 @@ dependencies {
 
 
     compile project(':grpc-spring-boot-starter')
+    compile project(':grpc-client-spring-boot-starter')
 
     testCompile 'org.springframework.boot:spring-boot-starter-aop'
     testCompile 'org.springframework.boot:spring-boot-starter-test'

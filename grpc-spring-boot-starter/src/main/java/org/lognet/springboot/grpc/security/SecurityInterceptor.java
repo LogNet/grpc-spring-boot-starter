@@ -104,7 +104,9 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
         final String authorization = headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER));
 
-        final Authentication authentication = schemeSelector.getAuthScheme(authorization)
+
+        final Authentication authentication = null==authorization?null:
+                schemeSelector.getAuthScheme(authorization)
                 .orElseThrow(()->new RuntimeException("Can't get authentication from authorization header"));
 
 
