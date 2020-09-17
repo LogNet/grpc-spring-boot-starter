@@ -16,11 +16,12 @@ public class BearerTokenAuthSchemeSelector implements AuthenticationSchemeSelect
     private static final Pattern authorizationPattern = Pattern.compile(
             "^Bearer (?<token>[a-zA-Z0-9-._~+/]+)=*$",
             Pattern.CASE_INSENSITIVE);
+    private static final String PREFIX ="Bearer";
 
     @Override
-    public Optional<Authentication> getAuthScheme(String authorization) {
+    public Optional<Authentication> getAuthScheme(CharSequence authorization) {
 
-        if(authorization.startsWith("Bearer")) {
+        if(authorization.subSequence(0, PREFIX.length()).toString().equalsIgnoreCase(PREFIX)) {
             Matcher matcher = authorizationPattern.matcher(authorization);
 
             if (!matcher.matches()) {

@@ -40,7 +40,7 @@ public class JwtAuthorityTest extends JwtAuthBaseTest {
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyAuthority("SCOPE_email")
                         .and()
-                        .authenticationProvider(JwtAuthProviderFactory.withAuthorities(jwtDecoder));
+                        .authenticationProvider(JwtAuthProviderFactory.forAuthorities(jwtDecoder));
             }
         }
     }

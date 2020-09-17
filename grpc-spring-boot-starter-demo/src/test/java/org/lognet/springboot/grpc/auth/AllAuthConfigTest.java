@@ -29,24 +29,25 @@ public class AllAuthConfigTest extends JwtAuthBaseTest {
 
     @TestConfiguration
     @EnableGrpcSecurity
-    static class TestCfg  extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg extends GrpcSecurityConfigurerAdapter {
         @Override
         public void configure(GrpcSecurity builder) throws Exception {
+
             builder.authorizeRequests()
                     .anyMethod().authenticated()
-            .and()
-            .authenticationProvider(JwtAuthProviderFactory.withAuthorities(getContext().getBean(JwtDecoder.class)));
+                    .and()
+                    .authenticationProvider(JwtAuthProviderFactory.forAuthorities(getContext().getBean(JwtDecoder.class)));
         }
     }
 
     @Test
     public void securedServiceTest() {
 
-        final SecuredGreeterGrpc.SecuredGreeterBlockingStub   securedFutureStub = SecuredGreeterGrpc.newBlockingStub(selectedChanel);
+        final SecuredGreeterGrpc.SecuredGreeterBlockingStub securedFutureStub = SecuredGreeterGrpc.newBlockingStub(selectedChanel);
 
         final String reply = securedFutureStub.sayAuthHello(Empty.getDefaultInstance()).getMessage();
-        assertNotNull("Reply should not be null",reply);
-        assertTrue(String.format("Reply should contain name '%s'",USER_NAME),reply.contains(USER_NAME));
+        assertNotNull("Reply should not be null", reply);
+        assertTrue(String.format("Reply should contain name '%s'", USER_NAME), reply.contains(USER_NAME));
 
     }
 }

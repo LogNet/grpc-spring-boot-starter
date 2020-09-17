@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -102,11 +104,11 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             Metadata headers,
             ServerCallHandler<ReqT, RespT> next) {
 
-        final String authorization = headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER));
+        final byte[] authorization = headers.get(Metadata.Key.of("Authorization"+Metadata.BINARY_HEADER_SUFFIX, Metadata.BINARY_BYTE_MARSHALLER));
 
 
         final Authentication authentication = null==authorization?null:
-                schemeSelector.getAuthScheme(authorization)
+                schemeSelector.getAuthScheme(StandardCharsets.UTF_8.decode(ByteBuffer.wrap(authorization)))
                 .orElseThrow(()->new RuntimeException("Can't get authentication from authorization header"));
 
 

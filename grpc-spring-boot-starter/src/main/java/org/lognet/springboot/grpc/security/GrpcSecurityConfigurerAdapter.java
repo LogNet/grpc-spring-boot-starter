@@ -51,7 +51,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
             final Class<?> jwtDecoderClass = Class.forName("org.springframework.security.oauth2.jwt.JwtDecoder");
             final String[] beanNames = context.getBeanNamesForType(jwtDecoderClass);
             if (1==beanNames.length){
-                builder.authenticationProvider(JwtAuthProviderFactory.withAuthorities(context.getBean(beanNames[0],JwtDecoder.class)));
+                builder.authenticationProvider(JwtAuthProviderFactory.forAuthorities(context.getBean(beanNames[0],JwtDecoder.class)));
             }
         }catch (ClassNotFoundException e){
             //swallow

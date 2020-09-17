@@ -14,7 +14,7 @@ class AuthenticationSchemeService implements AuthenticationSchemeRegistry, Authe
 
     private  List<AuthenticationSchemeSelector> selectors = new ArrayList<>();
     @Override
-    public Optional<Authentication> getAuthScheme(String authorization) {
+    public Optional<Authentication> getAuthScheme(CharSequence authorization) {
         final List<Authentication> auth = selectors
                 .stream()
                 .map(selector -> selector.getAuthScheme(authorization))

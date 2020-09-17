@@ -15,10 +15,12 @@ public class BasicAuthSchemeSelector implements AuthenticationSchemeSelector{
 
 
     @Override
-    public Optional<Authentication> getAuthScheme(java.lang.String authorization) {
+    public Optional<Authentication> getAuthScheme(CharSequence authorization) {
 
-            if (authorization.startsWith(prefix)) {
-                String token = new String(Base64.getDecoder().decode(authorization.substring(prefix.length()).getBytes()));
+
+            if (authorization.subSequence(0,prefix.length()).toString().equalsIgnoreCase(prefix)) {
+
+                String token = new String(Base64.getDecoder().decode(authorization.subSequence(prefix.length(),authorization.length()).toString()));
                 int delim = token.indexOf(":");
                 if (delim == -1) {
                     throw new BadCredentialsException("Invalid basic authentication token");

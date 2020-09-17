@@ -5,8 +5,6 @@ embedded:
   containers:
     enabled: true
 spring:
-  profiles:
-    active: "enable-security"
   security:
     oauth2:
       resourceserver:

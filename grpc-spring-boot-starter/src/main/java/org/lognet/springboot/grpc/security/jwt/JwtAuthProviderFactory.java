@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc.security.jwt;
 
 import net.minidev.json.JSONNavi;
 import net.minidev.json.JSONObject;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -13,7 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class JwtAuthProviderFactory {
-    public static JwtAuthenticationProvider withRoles(JwtDecoder jwtDecoder){
+    /**
+     * Creates  {@link JwtAuthenticationProvider} that emits <b>roles</b> from JWT token clain as {@link GrantedAuthority}
+     * @param jwtDecoder JWT token decoder
+     * @return JwtAuthenticationProvider
+     */
+    public static JwtAuthenticationProvider forRoles(JwtDecoder jwtDecoder){
         final JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
         authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             final String claim = Optional.ofNullable(jwt.getClaimAsString("aud"))
@@ -36,7 +42,13 @@ public class JwtAuthProviderFactory {
         authenticationProvider.setJwtAuthenticationConverter(authenticationConverter);
         return authenticationProvider;
     }
-    public static JwtAuthenticationProvider withAuthorities(JwtDecoder jwtDecoder){
+
+    /**
+     * Creates  {@link JwtAuthenticationProvider} that emits <b>authorities</b> from JWT token claim as {@link GrantedAuthority}
+     * @param jwtDecoder JWT token decoder
+     * @return JwtAuthenticationProvider
+     */
+    public static JwtAuthenticationProvider forAuthorities(JwtDecoder jwtDecoder){
         return  new  JwtAuthenticationProvider(jwtDecoder);
     }
 }

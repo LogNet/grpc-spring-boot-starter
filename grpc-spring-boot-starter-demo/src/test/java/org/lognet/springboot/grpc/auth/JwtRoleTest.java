@@ -64,7 +64,7 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
                         .and()
-                        .authenticationProvider(JwtAuthProviderFactory.withRoles(jwtDecoder));
+                        .authenticationProvider(JwtAuthProviderFactory.forRoles(jwtDecoder));
 
             }
 

@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthCallCredentials;
+import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +32,7 @@ public class PerCallDefaultAuthConfigTest extends JwtAuthBaseTest {
     private AuthCallCredentials callCredentials;
     public PerCallDefaultAuthConfigTest() {
         super(false);
-        callCredentials = AuthCallCredentials.builder().bearer().tokenSupplier(this::generateToken).build();
+        callCredentials = new AuthCallCredentials(AuthHeader.builder().bearer().tokenSupplier(this::generateToken));
     }
 
     @TestConfiguration

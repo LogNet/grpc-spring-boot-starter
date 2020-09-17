@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
+import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
@@ -28,8 +29,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Base64;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -103,12 +102,10 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     @Override
     protected Channel getChannel() {
-        String token = Base64.getEncoder().encodeToString(String.format("%s:%s", user.getUsername(), TestCfg.DemoGrpcSecurityConfig.pwd).getBytes());
 
-        final AuthClientInterceptor interceptor = AuthClientInterceptor.builder()
-                .basic()
-                .tokenSupplier(() -> token)
-                .build();
+        final AuthClientInterceptor interceptor = new AuthClientInterceptor(AuthHeader.builder()
+                .basic(user.getUsername(),TestCfg.DemoGrpcSecurityConfig.pwd.getBytes())
+                );
         return ClientInterceptors.intercept(super.getChannel(), interceptor);
     }
 
