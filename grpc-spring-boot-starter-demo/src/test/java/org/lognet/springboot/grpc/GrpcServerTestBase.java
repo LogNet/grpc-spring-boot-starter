@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.examples.GreeterGrpc;
@@ -37,6 +38,7 @@ public abstract class GrpcServerTestBase {
 
     protected ManagedChannel channel;
     protected ManagedChannel inProcChannel;
+    protected Channel selectedChanel;
 
     @LocalRunningGrpcPort
     protected  int runningPort;
@@ -48,7 +50,7 @@ public abstract class GrpcServerTestBase {
     protected GRpcServerProperties gRpcServerProperties;
 
     @Before
-    public final void setupChannels() throws IOException {
+    public   void setupChannels() throws IOException {
         if(gRpcServerProperties.isEnabled()) {
             ManagedChannelBuilder<?> channelBuilder = ManagedChannelBuilder.forAddress("localhost", getPort());
             Resource certChain = Optional.ofNullable(gRpcServerProperties.getSecurity())
@@ -72,6 +74,11 @@ public abstract class GrpcServerTestBase {
                             ).build();
 
         }
+        selectedChanel = getChannel();
+    }
+
+    protected  Channel getChannel(){
+       return Optional.ofNullable(channel).orElse(inProcChannel);
     }
     protected int getPort(){
         return runningPort;
@@ -86,27 +93,27 @@ public abstract class GrpcServerTestBase {
     }
 
     @After
-    public final void shutdownChannels() {
+    public void shutdownChannels() {
         Optional.ofNullable(channel).ifPresent(ManagedChannel::shutdownNow);
         Optional.ofNullable(inProcChannel).ifPresent(ManagedChannel::shutdownNow);
     }
 
     @Test
-    final public void simpleGreeting() throws ExecutionException, InterruptedException {
+    public void simpleGreeting() throws ExecutionException, InterruptedException {
 
-        beforeGreeting();
+
         String name ="John";
-        final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(Optional.ofNullable(channel).orElse(inProcChannel));
+        final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(selectedChanel);
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
-        final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertNotNull("Replay should not be null",reply);
-        assertTrue(String.format("Replay should contain name '%s'",name),reply.contains(name));
+        final String reply = beforeGreeting(greeterFutureStub).sayHello(helloRequest).get().getMessage();
+        assertNotNull("Reply should not be null",reply);
+        assertTrue(String.format("Reply should contain name '%s'",name),reply.contains(name));
         afterGreeting();
 
     }
 
-    protected void beforeGreeting() {
-
+    protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
+        return  stub;
     }
 
     protected void afterGreeting(){

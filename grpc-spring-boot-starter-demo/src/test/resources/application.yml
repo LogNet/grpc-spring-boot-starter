@@ -1,0 +1,19 @@
+management:
+  endpoints:
+    web:
+      base-path: "/"
+      exposure:
+        include: "*"
+
+
+spring:
+  profiles:
+    active: disable-security
+  cloud:
+    consul:
+      discovery:
+        enabled: false
+      enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false

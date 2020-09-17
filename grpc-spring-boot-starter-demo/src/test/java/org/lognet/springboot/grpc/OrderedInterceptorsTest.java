@@ -5,6 +5,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCall.Listener;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
+import io.grpc.examples.GreeterGrpc;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -46,9 +47,10 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
   }
 
   @Override
-  protected void beforeGreeting() {
+  protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
     Assert.assertEquals(7778, runningPort);
     Assert.assertEquals(getPort(), runningPort);
+    return stub;
   }
 
   @Override

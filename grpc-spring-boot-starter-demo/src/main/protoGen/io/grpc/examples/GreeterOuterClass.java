@@ -1099,10 +1099,14 @@ public final class GreeterOuterClass {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rgreeter.proto\"\034\n\014HelloRequest\022\014\n\004name\030" +
-      "\001 \001(\t\"\035\n\nHelloReply\022\017\n\007message\030\001 \001(\t23\n\007" +
-      "Greeter\022(\n\010SayHello\022\r.HelloRequest\032\013.Hel" +
-      "loReply\"\000B\022\n\020io.grpc.examplesb\006proto3"
+      "\n\rgreeter.proto\032\033google/protobuf/empty.p" +
+      "roto\"\034\n\014HelloRequest\022\014\n\004name\030\001 \001(\t\"\035\n\nHe" +
+      "lloReply\022\017\n\007message\030\001 \001(\t2j\n\007Greeter\022(\n\010" +
+      "SayHello\022\r.HelloRequest\032\013.HelloReply\"\000\0225" +
+      "\n\014SayAuthHello\022\026.google.protobuf.Empty\032\013" +
+      ".HelloReply\"\0002G\n\016SecuredGreeter\0225\n\014SayAu" +
+      "thHello\022\026.google.protobuf.Empty\032\013.HelloR" +
+      "eply\"\000B\022\n\020io.grpc.examplesb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1115,6 +1119,7 @@ public final class GreeterOuterClass {
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          com.google.protobuf.EmptyProto.getDescriptor(),
         }, assigner);
     internal_static_HelloRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -1128,6 +1133,7 @@ public final class GreeterOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HelloReply_descriptor,
         new java.lang.String[] { "Message", });
+    com.google.protobuf.EmptyProto.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

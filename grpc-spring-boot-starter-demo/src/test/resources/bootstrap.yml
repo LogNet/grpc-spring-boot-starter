@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: grpc-demo
+  cloud:
+    config:
+      uri: http://localhost:${config.port:8888}
+embedded:
+  keycloak:
+    enabled: false
+  containers:
+    enabled: false

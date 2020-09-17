@@ -3,19 +3,20 @@
 
 image:https://img.shields.io/maven-central/v/io.github.lognet/grpc-spring-boot-starter.svg?label=Maven%20Central[link=https://search.maven.org/search?q=g:%22io.github.lognet%22%20AND%20a:%22grpc-spring-boot-starter%22]
 image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
-image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"]
+image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov",link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"]
 
 :toc:
 :source-highlighter: prettify
 :numbered:
 :icons: font
 
-
-
 == Features
+
 Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application. +
 
-The starter can be used both by *1.5.X* and *2.X.X* spring boot applications.
+[IMPORTANT]
+Starting from release `4.0.0` the starter is compiled and tested against Spring Boot *2.3.X* only, +
+*1.5.X* Spring boot version support is dropped to allow tight Spring Boot Security framework integration.
 
 == Setup
 
@@ -37,10 +38,6 @@ dependencies {
 Starting from release `3.0.0` the artifacts are published to *maven central*.
 Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
-
-
-
-
 [NOTE]
 The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[here^]
 
@@ -48,13 +45,15 @@ The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[
 
 * Start by https://github.com/google/protobuf-gradle-plugin[generating] stub and server interface(s) from your `.proto` file(s).
 * Annotate your server interface implementation(s) with `@org.lognet.springboot.grpc.GRpcService`
-* Optionally configure the server port in your `application.yml/properties`. Default port is `6565`.
+* Optionally configure the server port in your `application.yml/properties`.
+Default port is `6565`.
 
 [source,yaml]
 ----
  grpc:
     port: 6565
 ----
+
 [NOTE]
 A random port can be defined by setting the port to `0`. +
 The actual port being used can then be retrieved by using `@LocalRunningGrpcPort` annotation on `int` field which will inject the running port (explicitly configured or randomly selected)
@@ -67,7 +66,10 @@ The actual port being used can then be retrieved by using `@LocalRunningGrpcPort
     enableReflection: true
 ----
 
-* Optionally set the number of seconds to wait for preexisting calls to finish during graceful server shutdown. New calls will be rejected during this time. A negative value is equivalent to an infinite grace period. Default value is `0` (means don't wait).
+* Optionally set the number of seconds to wait for preexisting calls to finish during graceful server shutdown.
+New calls will be rejected during this time.
+A negative value is equivalent to an infinite grace period.
+Default value is `0` (means don't wait).
 
 [source,yaml]
 ----
@@ -89,15 +91,14 @@ The starter supports also the `in-process server`, which should be used for test
 [NOTE]
 If you enable both the `NettyServer` and `in-process` server, they will both share the same instance of `HealthStatusManager` and `GRpcServerBuilderConfigurer` (see <<Custom gRPC Server Configuration>>).
 
-
-
 == Show case
 
 In the `grpc-spring-boot-starter-demo` project you can find fully functional examples with integration tests. +
-The `grpc-spring-boot2-starter-demo` project runs the same demo services and tests with *spring boot 2*.
 
 === Service implementation
+
 The service definition from `.proto` file looks like this :
+
 [source,proto]
 ----
 service Greeter {
@@ -123,7 +124,8 @@ All you need to do is to annotate your service implementation with `@org.lognet.
 ----
 
 === Interceptors support
-The starter supports the registration of two kinds of interceptors: _Global_  and _Per Service_. +
+
+The starter supports the registration of two kinds of interceptors: _Global_ and _Per Service_. +
 In both cases the interceptor has to implement `io.grpc.ServerInterceptor` interface.
 
 - Per service
@@ -135,6 +137,7 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
     // ommited
 }
 ----
+
 `LogInterceptor` will be instantiated via spring factory if there is bean of type `LogInterceptor`, or via no-args constructor otherwise.
 
 - Global
@@ -166,7 +169,9 @@ The annotation on java config factory method is also supported :
      }
  }
 ----
-Global interceptors can be ordered using Spring's `@Ordered` or `@Priority` annotations. Following Spring's ordering semantics, lower order values have higher priority and will be executed first in the interceptor chain.
+
+Global interceptors can be ordered using Spring's `@Ordered` or `@Priority` annotations.
+Following Spring's ordering semantics, lower order values have higher priority and will be executed first in the interceptor chain.
 
 [source,java]
 ----
@@ -183,7 +188,6 @@ public  class B implements ServerInterceptor{
 }
 ----
 
-
 The particular service also has the opportunity to disable the global interceptors :
 
 [source,java]
@@ -194,9 +198,14 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
 }
 ----
 
+=== Spring security support
+
+The starter provides built-in support for authenticating and authorizing users leveraging integration with https://spring.io/projects/spring-security[Spring Security framework]. +
+Please refer to the sections on <<Spring Security Integration>> for details on  supported authentication providers and configuration options.
+
 === Transport Security (TLS)
 
-The transport security can be configured using root certificate and it's private key paths:
+The transport security can be configured using root certificate together with its private key path:
 
 [source,yaml]
 ----
@@ -218,14 +227,14 @@ The client side should be configured accordingly :
 ----
 
 This starter will pull the `io.netty:netty-tcnative-boringssl-static` dependency by default to support SSL. +
-If  you need another SSL/TLS support, please exclude this dependency and follow https://github.com/grpc/grpc-java/blob/master/SECURITY.md[Security Guide].
+If you need another SSL/TLS support, please exclude this dependency and follow https://github.com/grpc/grpc-java/blob/master/SECURITY.md[Security Guide].
 
 [NOTE]
 If the more detailed tuning is needed for security setup, please use custom configurer described in <<Custom gRPC Server Configuration>>
 
 === Custom gRPC Server Configuration
 
-To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context  and override the `configure` method. +
+To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context and override the `configure` method. +
 By the time of invocation of `configure` method, all discovered services, including theirs interceptors, had been added to the passed builder. +
 In your implementation of `configure` method, you can add your custom configuration:
 
@@ -258,10 +267,190 @@ If you enable both `NettyServer` and `in-process` servers, the `configure` metho
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
 
+== Spring Security Integration
+
+=== Setup
+
+.Dependencies to implement authentiction scheme (to be added to server-side project)
+[cols="a,a"]
+|===
+|Scheme |Dependencies
+
+|Basic
+|
+* `org.springframework.security:spring-security-config`
+
+
+|Bearer
+|
+* `org.springframework.security:spring-security-config`
+* `org.springframework.security:spring-security-oauth2-jose`
+* `org.springframework.security:spring-security-oauth2-resource-server`
+
+
+|_Custom_
+|
+* `org.springframework.security:spring-security-config`
+* `your.custom.lib`
+
+|===
+
+=== Server side configuration
+
+GRPC security configuration follows the same principals and APIs as Spring WEB security configuration.
+
+==== Default
+
+Defining bean with type `GrpcSecurityConfigurerAdapter` annotated with `@EnableGrpcSecurity` is sufficient to secure you GRPC services and/or methods :
+
+[source,java]
+----
+
+    @EnableGrpcSecurity
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+
+    }
+
+----
+
+This default configuration secures GRPC methods/services annotated with `org.springframework.security.access.annotation.@Secured`  annotation. +
+If `JwtDecoder` bean exists in your context, it will also register `JwtAuthenticationProvider` to handle the validation of authentication claim.
+
+==== Custom
+
+Various configuration examples and test scenarios are link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth[here].
+
+[source,java]
+----
+    @EnableGrpcSecurity
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+        @Autowired
+        private JwtDecoder jwtDecoder;
+
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+
+            builder.authorizeRequests()<1>
+                    .methods(GreeterGrpc.getSayHelloMethod()).hasAnyAuthority("SCOPE_profile")<2>
+            .and()
+                    .authenticationProvider(JwtAuthProviderFactory.withAuthorities(jwtDecoder));<3>
+        }
+    }
+----
+<1> Get hold of authorization configuration object
+<2> `MethodDefinition` of `sayHello` method is allowed for authenticated users with `SCOPE_profile` authority.
+<3> Use `JwtAuthenticationProvider` to validate user claim (`BEARER` token) against resource server configured with `spring.security.oauth2.resourceserver.jwt.issuer-uri` property.
+
+==== DIY
+
+One is possible to plug in your own bespoke authentication provider by implementing `AuthenticationSchemeSelector` interface.
+
+[source,java]
+----
+@EnableGrpcSecurity
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+    @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+        builder.authorizeRequests()
+                    .anyMethod().authenticated()<1>
+                    .and()
+                    .authenticationSchemeSelector(new AuthenticationSchemeSelector() { <2>
+                            @Override
+                            public Optional<Authentication> getAuthScheme(CharSequence authorization) {
+                                return new MyAuthenticationObject(); <3>
+                            }
+                        })
+                    .authenticationProvider(new AuthenticationProvider() { <4>
+                        @Override
+                        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                            MyAuthenticationObject myAuth= (MyAuthenticationObject)authentication;
+                            //validate myAuth
+                            return MyValidatedAuthenticationObject(withAuthorities);<5>
+                        }
+
+                        @Override
+                        public boolean supports(Class<?> authentication) {
+                            return MyAuthenticationObject.class.isInstance(authentication);
+                        }
+                    });
+ }
+ }
+----
+<1> Secure all services methods.
+<2> Register your own `AuthenticationSchemeSelector`.
+<3> Based on provided authorization header - return `Authentication` object as a claim (not authenticated yet)
+<4> Register your own `AuthenticationProvider` that supports validation of `MyAuthenticationObject`
+<5> Validate provided `authentication` and return validated and *authenticated* `Authentication` object
+
+<<Client side configuration support>> section explains how to pass custom authorization scheme and claim from GRPC client.
+
+=== Client side configuration support
+
+By adding `io.github.lognet:grpc-client-spring-boot-starter` dependency to your *java grpc client* application you can easily configure per-channel or per-call credentials :
+
+* Per-channel :
+
+[source,java]
+----
+class MyClient{
+    public void doWork(){
+        final AuthClientInterceptor clientInterceptor = new AuthClientInterceptor(<1>
+                AuthHeader.builder()
+                    .bearer()
+                    .tokenSupplier(this::generateToken)<3>
+        );
+
+        Channel authenticatedChannel = ClientInterceptors.intercept(
+                ManagedChannelBuilder.forAddress("host", 6565), clientInterceptor <2>
+        );
+        // use authenticatedChannel to invoke GRPC service
+    }
+
+     private ByteBuffer generateToken(){ <3>
+         // generate bearer token against your resource server
+     }
+ }
+----
+<1> Create client interceptor
+<2> Intercept channel
+<3> Provide token generator function (Please refer to link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtAuthBaseTest.java[for example].)
+
+* Per-call :
+
+[source,java]
+----
+class MyClient{
+    public void doWork(){
+        AuthCallCredentials callCredentials = new AuthCallCredentials( <1>
+                AuthHeader.builder().basic("user","pwd".getBytes())
+        );
+
+        final SecuredGreeterGrpc.SecuredGreeterBlockingStub securedFutureStub = SecuredGreeterGrpc.newBlockingStub(ManagedChannelBuilder.forAddress("host", 6565));<2>
+
+        final String reply = securedFutureStub
+                .withCallCredentials(callCredentials)<3>
+                .sayAuthHello(Empty.getDefaultInstance()).getMessage();
+
+    }
+ }
+----
+<1> Create call credentials with basic scheme
+<2> Create service stub
+<3> Attach call credentials to the call
+
+`AuthHeader` could also be built with bespoke authorization scheme :
+
+[source,java]
+----
+ AuthHeader
+   .builder()
+   .authScheme("myCustomAuthScheme")
+   .tokenSupplier(()->generateMyCustomToken())
+----
+
 == Consul Integration
 
-Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry
-if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath and
+Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath and
 `spring.cloud.service-registry.auto-registration.enabled` is *NOT* set to `false`. +
 
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
@@ -270,7 +459,7 @@ Setting `spring.cloud.consul.discovery.register-health-check` to true will regis
 
 Tags could be set by defining `spring.cloud.consul.discovery.tags` property.
 
-You can find the test that demonstrates the feature link:grpc-spring-boot2-starter-demo/src/test/java/org/lognet/springboot/grpc/ConsulRegistrationTest.java[here].
+You can find the test that demonstrates the feature link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/ConsulRegistrationTest.java[here].
 
 == Eureka Integration
 
@@ -285,7 +474,7 @@ Below are the essential parts of configurations for both server and client proje
 
 * Add eureka starter as dependency of your server project together with generated classes from `proto` files:
 
-[source, gradle]
+[source,gradle]
 .build.gradle
 ----
  dependencies {
@@ -294,11 +483,9 @@ Below are the essential parts of configurations for both server and client proje
  }
 ----
 
-
 * Configure gRPC server to register itself with Eureka.
 
-
-[source, yaml]
+[source,yaml]
 .bootstrap.yaml
 ----
 spring:
@@ -321,12 +508,12 @@ eureka:
 ----
 <1> Specify the port number the gRPC is listening on.
 <2> Register the eureka service port to be the same as `grpc.port` so client will know where to send the requests to.
-<3> Specify the  registry URL, so the service will register itself with.
+<3> Specify the registry URL, so the service will register itself with.
 
 
 * Expose the gRPC service as part of Spring Boot Application.
 
-[source, java]
+[source,java]
 .EurekaGrpcServiceApp.java
 ----
  @SpringBootApplication
@@ -351,7 +538,7 @@ eureka:
 
 * Add eureka starter as dependency of your client project together with generated classes from `proto` files:
 
-[source, gradle]
+[source,gradle]
 .build.gradle
 ----
  dependencies {
@@ -371,9 +558,8 @@ eureka:
     service-url:
       defaultZone: http://${eureka.host:localhost}:${eureka.port:8761}/eureka/ <2>
 ----
-<1> `false` if this project is not meant to act as  a service to another client.
-<2>  Specify the  registry URL, so this client  will know where to look up the required service.
-
+<1> `false` if this project is not meant to act as a service to another client.
+<2>  Specify the registry URL, so this client will know where to look up the required service.
 
 [source,java]
 .GreeterServiceConsumerApplication.java
@@ -413,8 +599,6 @@ public class GreeterServiceConsumer {
 <2> Build `channel` accordingly.
 <3> Create stub using the `channel`.
 <4> Invoke the service.
-
-
 
 == License
 

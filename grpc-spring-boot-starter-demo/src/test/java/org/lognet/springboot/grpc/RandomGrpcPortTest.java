@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.examples.GreeterGrpc;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -13,8 +14,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class RandomGrpcPortTest extends GrpcServerTestBase {
 
     @Override
-    protected void beforeGreeting() {
+    protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
         Assert.assertEquals(0,gRpcServerProperties.getPort().intValue());
+        return stub;
 
     }
 }
