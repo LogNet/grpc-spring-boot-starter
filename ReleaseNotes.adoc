@@ -1,6 +1,6 @@
 == Version 4.1.0
 * gRPC version upgraded to 1.31.2
-* Fixed the issue with  obtaining `Authentication` details in secured object implementation.
+* Fixed the issue with  obtaining `Authentication` details in secured method implementation.
 * Fixed the issue with providing client-side user credentials.
 
 == Version 4.0.0
