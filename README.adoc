@@ -387,6 +387,17 @@ One is possible to plug in your own bespoke authentication provider by implement
 
 <<Client side configuration support>> section explains how to pass custom authorization scheme and claim from GRPC client.
 
+=== Obtaining Authentication details
+
+To obtain  `Authentication` object in the implementation of *secured method*, please use below snippet
+
+[source,java]
+----
+final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
+----
+
+
+
 === Client side configuration support
 
 By adding `io.github.lognet:grpc-client-spring-boot-starter` dependency to your *java grpc client* application you can easily configure per-channel or per-call credentials :

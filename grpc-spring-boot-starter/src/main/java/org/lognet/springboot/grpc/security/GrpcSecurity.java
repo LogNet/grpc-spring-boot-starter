@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc.security;
 
+import io.grpc.Context;
 import io.grpc.ServerInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Arrays;
@@ -21,6 +23,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
 
     private  ApplicationContext applicationContext;
 
+    public static final Context.Key<Authentication> AUTHENTICATION_CONTEXT_KEY =  Context.key("AUTHENTICATION");
     public GrpcSecurity(ObjectPostProcessor<Object> objectPostProcessor) {
         super(objectPostProcessor);
 

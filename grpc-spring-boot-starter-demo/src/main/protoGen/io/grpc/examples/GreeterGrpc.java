@@ -13,7 +13,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.32.1)",
+    value = "by gRPC proto compiler (version 1.32.2)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 

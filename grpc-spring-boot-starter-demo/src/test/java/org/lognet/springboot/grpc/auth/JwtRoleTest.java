@@ -44,9 +44,6 @@ import static org.junit.Assert.assertThrows;
 public class JwtRoleTest extends JwtAuthBaseTest {
 
 
-
-
-
     @TestConfiguration
     static class TestCfg {
 
@@ -82,18 +79,18 @@ public class JwtRoleTest extends JwtAuthBaseTest {
         final CyclicBarrier barrier = new CyclicBarrier(concurrency);
         final CountDownLatch endCountDownLatch = new CountDownLatch(concurrency);
 
-        AtomicInteger shouldSucceed  = new AtomicInteger();
-        AtomicInteger shouldFail  = new AtomicInteger();
+        AtomicInteger shouldSucceed = new AtomicInteger();
+        AtomicInteger shouldFail = new AtomicInteger();
 
-        final   List<Future<Boolean>> result = Stream.iterate(0, i -> i + 1)
+        final List<Future<Boolean>> result = Stream.iterate(0, i -> i + 1)
                 .limit(concurrency)
                 .map(i ->
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() throws Exception {
-                                System.out.println("About to start call  "+i);
+                                System.out.println("About to start call  " + i);
                                 barrier.await();
-                                System.out.println("Start call  "+i);
+                                System.out.println("Start call  " + i);
                                 try {
                                     if (i % 2 == 0) {
                                         shouldSucceed.incrementAndGet();
@@ -109,8 +106,8 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                                     return true;
                                 } catch (Exception e) {
                                     return false;
-                                }finally {
-                                    System.out.println("Call  "+i+" finished");
+                                } finally {
+                                    System.out.println("Call  " + i + " finished");
                                     endCountDownLatch.countDown();
                                 }
                             }
@@ -120,21 +117,16 @@ public class JwtRoleTest extends JwtAuthBaseTest {
 
 
         endCountDownLatch.await();
-        int failed=0, succeeded=0;
-        for(Future<Boolean> res: result ){
-            if(res.get()){
+        int failed = 0, succeeded = 0;
+        for (Future<Boolean> res : result) {
+            if (res.get()) {
                 ++succeeded;
-            }else {
+            } else {
                 ++failed;
             }
         }
-        assertThat(succeeded,Matchers.is(shouldSucceed.get()));
-        assertThat(failed,Matchers.is(shouldFail.get()));
-
-
-
-
-
+        assertThat(succeeded, Matchers.is(shouldSucceed.get()));
+        assertThat(failed, Matchers.is(shouldFail.get()));
 
 
     }
