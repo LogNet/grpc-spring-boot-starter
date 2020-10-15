@@ -38,8 +38,8 @@ public class AuthHeader implements Constants {
 
     }
     public Metadata attach(Metadata metadataHeader){
-        byte[] token = tokenSupplier.get().array();
-        final byte[] header = ByteBuffer.allocate(authScheme.length() + token.length + 1)
+        ByteBuffer token = tokenSupplier.get();
+        final byte[] header = ByteBuffer.allocate(authScheme.length() + token.remaining() + 1)
                 .put(authScheme.getBytes())
                 .put((byte) ' ')
                 .put(token)
