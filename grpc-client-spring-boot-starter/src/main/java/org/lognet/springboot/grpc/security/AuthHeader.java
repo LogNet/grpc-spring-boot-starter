@@ -28,11 +28,9 @@ public class AuthHeader implements Constants {
                     .put(password);
             buffer.rewind();
             ByteBuffer token = Base64.getEncoder().encode(buffer);
+            token.rewind();
             return authScheme(Constants.BASIC_AUTH_SCHEME)
-                    .tokenSupplier(() -> {
-                        token.rewind();
-                        return token;
-                    });
+                    .tokenSupplier( token::duplicate);
         }
 
 
@@ -41,7 +39,7 @@ public class AuthHeader implements Constants {
         ByteBuffer token = tokenSupplier.get();
         final byte[] header = ByteBuffer.allocate(authScheme.length() + token.remaining() + 1)
                 .put(authScheme.getBytes())
-                .put((byte) ' ')
+                .put((byte)' ')
                 .put(token)
                 .array();
         metadataHeader.put(Constants.AUTH_HEADER_KEY,header);
