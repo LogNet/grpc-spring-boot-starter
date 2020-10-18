@@ -55,8 +55,6 @@ public class JwtRoleTest extends JwtAuthBaseTest {
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
-
-                super.configure(builder);
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
@@ -145,5 +143,6 @@ public class JwtRoleTest extends JwtAuthBaseTest {
 
 
     }
+
 
 }

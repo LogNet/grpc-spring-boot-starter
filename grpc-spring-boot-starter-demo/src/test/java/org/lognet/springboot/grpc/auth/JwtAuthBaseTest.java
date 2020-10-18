@@ -37,14 +37,21 @@ public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
     @Override
     protected Channel getChannel() {
-        final AuthClientInterceptor clientInterceptor = new AuthClientInterceptor(
-                AuthHeader.builder().bearer().tokenSupplier(this::generateToken));
-        return globalSecuredChannel ? ClientInterceptors.intercept(super.getChannel(), clientInterceptor)
-                : super.getChannel();
-    }
+        return getChannel(globalSecuredChannel);
 
+    }
+    protected Channel getChannel(boolean authenticated){
+            return authenticated ? ClientInterceptors.intercept(super.getChannel(), getAuthClientInterceptor())
+                    : super.getChannel();
+
+    }
     protected final static String USER_NAME = "keycloak-test";
 
+
+    protected   AuthClientInterceptor getAuthClientInterceptor() {
+        return new AuthClientInterceptor(
+                AuthHeader.builder().bearer().tokenSupplier(this::generateToken));
+    }
 
     protected ByteBuffer generateToken() {
         if (authServerUrl.isEmpty()) {

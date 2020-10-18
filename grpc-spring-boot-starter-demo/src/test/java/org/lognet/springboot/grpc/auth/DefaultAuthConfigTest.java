@@ -30,10 +30,14 @@ public class DefaultAuthConfigTest extends JwtAuthBaseTest {
 
     }
 
+    public DefaultAuthConfigTest() {
+        super(false);
+    }
+
     @Test
     public void securedServiceTest() {
 
-        final SecuredGreeterGrpc.SecuredGreeterBlockingStub   securedFutureStub = SecuredGreeterGrpc.newBlockingStub(selectedChanel);
+        final SecuredGreeterGrpc.SecuredGreeterBlockingStub   securedFutureStub = SecuredGreeterGrpc.newBlockingStub(getChannel(true));
 
         final String reply = securedFutureStub.sayAuthHello(Empty.getDefaultInstance()).getMessage();
         assertNotNull("Reply should not be null",reply);

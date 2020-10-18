@@ -3,6 +3,7 @@ package org.lognet.springboot.grpc.security;
 import io.grpc.BindableService;
 import io.grpc.MethodDescriptor;
 import io.grpc.ServerInterceptor;
+import io.grpc.ServerMethodDefinition;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.ServiceDescriptor;
 import org.springframework.context.ApplicationContext;
@@ -115,24 +116,17 @@ public class GrpcServiceAuthorizationConfigurer
                     }
                 }
                 // method level security
-                serverServiceDefinition.getMethods()
-                        .stream()
-                        .map(methodDefinition -> Stream.of(service.getClass().getMethods()) // get method from methodDefinition
-                                .filter(m -> {
-                                    final String methodName = methodDefinition.getMethodDescriptor().getFullMethodName().substring(methodDefinition.getMethodDescriptor().getServiceName().length() + 1);
-                                    return methodName.equalsIgnoreCase(m.getName());
-                                })
-                                .findFirst()
-                        )
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .map(m ->Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
-                        .filter(Optional::isPresent)
-                        .forEach(secured ->
-                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor())
-                                        .hasAnyAuthority(secured.get().value())
+                for(ServerMethodDefinition<?,?> methodDefinition :serverServiceDefinition.getMethods()){
+                     Stream.of(service.getClass().getMethods()) // get method from methodDefinition
+                            .filter(m -> {
+                                final String methodName = methodDefinition.getMethodDescriptor().getFullMethodName().substring(methodDefinition.getMethodDescriptor().getServiceName().length() + 1);
+                                return methodName.equalsIgnoreCase(m.getName());
+                            })
+                            .findFirst()
+                            .flatMap(m->Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
+                            .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()) .hasAnyAuthority(secured.value()));
 
-                        );
+                }
             }
             return and();
         }
