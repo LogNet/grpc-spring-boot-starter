@@ -1,5 +1,9 @@
+== Version 4.2.0
+* gRPC version upgraded to 1.33.0
+* Fixed the issue with default method-level `@Secured` annotation (see #159)
+
 == Version 4.1.0
-* gRPC version upgraded to 1.31.2
+* gRPC version upgraded to 1.32.2
 * Fixed the issue with  obtaining `Authentication` details in secured method implementation.
 * Fixed the issue with providing client-side user credentials.
 

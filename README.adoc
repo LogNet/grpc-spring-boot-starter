@@ -23,7 +23,7 @@ Starting from release `4.0.0` the starter is compiled and tested against Spring 
 
 == Setup
 
-[source,gradle]
+[source,groovy]
 ----
 repositories {
     mavenCentral()
@@ -31,10 +31,24 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.1.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.2.0'
 }
 
 
+----
+
+If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
+In  this case you'll need to forcibly and implicitly set the  `grpc` version to use (see link:ReleaseNotes.adoc[version matrix here^] ):
+
+[source,groovy]
+----
+configurations.all {
+ resolutionStrategy.eachDependency { details ->
+    if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
+        details.useVersion "1.33.0"
+        }
+    }
+}
 ----
 
 [IMPORTANT]

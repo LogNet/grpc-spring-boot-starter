@@ -18,7 +18,9 @@ import org.springframework.util.MultiValueMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -118,10 +120,7 @@ public class GrpcServiceAuthorizationConfigurer
                 // method level security
                 for(ServerMethodDefinition<?,?> methodDefinition :serverServiceDefinition.getMethods()){
                      Stream.of(service.getClass().getMethods()) // get method from methodDefinition
-                            .filter(m -> {
-                                final String methodName = methodDefinition.getMethodDescriptor().getFullMethodName().substring(methodDefinition.getMethodDescriptor().getServiceName().length() + 1);
-                                return methodName.equalsIgnoreCase(m.getName());
-                            })
+                            .filter(m -> 0==Objects.compare(methodDefinition.getMethodDescriptor().getBareMethodName(),m.getName(), Comparator.naturalOrder()))
                             .findFirst()
                             .flatMap(m->Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
                             .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()) .hasAnyAuthority(secured.value()));
