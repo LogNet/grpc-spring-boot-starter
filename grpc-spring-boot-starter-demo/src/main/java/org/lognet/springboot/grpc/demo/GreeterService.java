@@ -29,12 +29,15 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
 
         final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
-        String user = auth.getName();
-        if(auth instanceof JwtAuthenticationToken){
-            user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
+        if(null!=auth) {
+            String user = auth.getName();
+            if (auth instanceof JwtAuthenticationToken) {
+                user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
+            }
+            responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage(user).build());
+        }else{
+            responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello").build());
         }
-
-        responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage(user).build());
         responseObserver.onCompleted();
     }
 }

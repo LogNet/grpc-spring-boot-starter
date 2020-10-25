@@ -28,19 +28,20 @@ import java.util.stream.Stream;
 public class GrpcServiceAuthorizationConfigurer
         extends SecurityConfigurerAdapter<ServerInterceptor, GrpcSecurity> {
 
-    private final GrpcServiceAuthorizationConfigurer.Registry REGISTRY;
+    private final GrpcServiceAuthorizationConfigurer.Registry registry;
 
     public GrpcServiceAuthorizationConfigurer(ApplicationContext context) {
-        this.REGISTRY = new GrpcServiceAuthorizationConfigurer.Registry(context);
+        this.registry = new GrpcServiceAuthorizationConfigurer.Registry(context);
     }
 
     public Registry getRegistry() {
-        return REGISTRY;
+        return registry;
     }
 
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
-        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(REGISTRY.securedMethods));
+        registry.processSecuredAnnotation();
+        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.securedMethods));
     }
 
 
@@ -58,8 +59,8 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry authenticated() {
-            GrpcServiceAuthorizationConfigurer.this.REGISTRY.map(methods);
-            return GrpcServiceAuthorizationConfigurer.this.REGISTRY;
+            GrpcServiceAuthorizationConfigurer.this.registry.map(methods);
+            return GrpcServiceAuthorizationConfigurer.this.registry;
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry hasAnyRole(String... roles) {
@@ -76,9 +77,9 @@ public class GrpcServiceAuthorizationConfigurer
 
         public GrpcServiceAuthorizationConfigurer.Registry hasAnyAuthority(String... authorities) {
             for (String auth : authorities) {
-                GrpcServiceAuthorizationConfigurer.this.REGISTRY.map(auth, methods);
+                GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
             }
-            return GrpcServiceAuthorizationConfigurer.this.REGISTRY;
+            return GrpcServiceAuthorizationConfigurer.this.registry;
         }
 
 
@@ -88,6 +89,7 @@ public class GrpcServiceAuthorizationConfigurer
 
         private MultiValueMap<MethodDescriptor<?, ?>, ConfigAttribute> securedMethods = new LinkedMultiValueMap<>();
         private ApplicationContext context;
+        private boolean withSecuredAnnotation = true;
 
         Registry(ApplicationContext context) {
             this.context = context;
@@ -104,30 +106,48 @@ public class GrpcServiceAuthorizationConfigurer
 
         }
 
+        public GrpcSecurity withoutSecuredAnnotation() {
+            return withSecuredAnnotation(false);
+        }
+
+        /**
+         * Same as  {@code withSecuredAnnotation(true)}
+         * @return GrpcSecurity configuration
+         */
         public GrpcSecurity withSecuredAnnotation() {
-            final Collection<BindableService> services = context.getBeansOfType(BindableService.class).values();
+            return withSecuredAnnotation(true);
+        }
+        public GrpcSecurity withSecuredAnnotation(boolean withSecuredAnnotation) {
+            this.withSecuredAnnotation = withSecuredAnnotation;
+            return and();
+        }
 
-            for (BindableService service : services) {
-                final ServerServiceDefinition serverServiceDefinition = service.bindService();
-                // service level security
-                {
-                    final Secured securedAnn = AnnotationUtils.findAnnotation(service.getClass(), Secured.class);
+        private void processSecuredAnnotation() {
+            if (withSecuredAnnotation) {
+                final Collection<BindableService> services = context.getBeansOfType(BindableService.class).values();
 
-                    if (null != securedAnn) {
-                        new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(securedAnn.value());
+                for (BindableService service : services) {
+                    final ServerServiceDefinition serverServiceDefinition = service.bindService();
+                    // service level security
+                    {
+                        final Secured securedAnn = AnnotationUtils.findAnnotation(service.getClass(), Secured.class);
+
+                        if (null != securedAnn) {
+                            new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(securedAnn.value());
+                        }
+                    }
+                    // method level security
+                    for (ServerMethodDefinition<?, ?> methodDefinition : serverServiceDefinition.getMethods()) {
+                        Stream.of(service.getClass().getMethods()) // get method from methodDefinition
+                                .filter(m -> 0 == Objects.compare(methodDefinition.getMethodDescriptor().getBareMethodName(), m.getName(), Comparator.naturalOrder()))
+                                .findFirst()
+                                .flatMap(m -> Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
+                                .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value()));
+
                     }
                 }
-                // method level security
-                for(ServerMethodDefinition<?,?> methodDefinition :serverServiceDefinition.getMethods()){
-                     Stream.of(service.getClass().getMethods()) // get method from methodDefinition
-                            .filter(m -> 0==Objects.compare(methodDefinition.getMethodDescriptor().getBareMethodName(),m.getName(), Comparator.naturalOrder()))
-                            .findFirst()
-                            .flatMap(m->Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
-                            .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()) .hasAnyAuthority(secured.value()));
-
-                }
             }
-            return and();
+
         }
 
         public AuthorizedMethod methods(MethodDescriptor<?, ?>... methodDescriptor) {
