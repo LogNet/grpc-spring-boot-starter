@@ -1,5 +1,11 @@
 == Version 4.2.1-SNAPSHOT
+
 * When overriding default GRPC security configuration, `@Secured` annotation is enabled by default.
+
+### Breaking changes
+
+* The starter brings now `io.grpc:grpc-netty-shaded` instead of `io.grpc:grpc-netty` as transitive dependency (fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/108[108]). +
+This  means that  all classes from `io.grpc.netty` package should be imported from `io.grpc.netty.shaded.io.grpc.netty`
 
 == Version 4.2.0
 * gRPC version upgraded to 1.33.0

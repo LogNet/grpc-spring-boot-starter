@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
+  - oraclejdk11
 #sudo: false
 dist: trusty
 before_cache:
@@ -16,7 +16,7 @@ after_success:
 # - ./gradlew bintrayUpload artifactoryPublish
  - bash <(curl -s https://codecov.io/bash)
 script:
- - ./gradlew build
- - ./gradlew codeCoverageReport
+ - ./gradlew build codeCoverageReport
+
 
 

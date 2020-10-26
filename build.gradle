@@ -10,7 +10,6 @@ buildscript {
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.11'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
-        classpath 'com.palantir:jacoco-coverage:0.4.0'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
         classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
     }
@@ -24,7 +23,6 @@ allprojects { pr ->
 
 }
 apply plugin: 'idea'
-apply plugin: 'com.palantir.jacoco-full-report'
 apply plugin: 'jacoco'
 apply from: "${rootDir}/publishSonatype.gradle"
 
@@ -47,6 +45,7 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
     test {
         forkEvery = 1
         testLogging {
@@ -84,3 +83,5 @@ task codeCoverageReport(type: JacocoReport) {
 codeCoverageReport.dependsOn {
     subprojects*.test
 }
+
+
