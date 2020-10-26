@@ -44,6 +44,7 @@ public class GRpcAutoConfiguration {
     @Bean
     @ConditionalOnExpression("#{environment.getProperty('grpc.inProcessServerName','')!=''}")
     public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator){
+
         return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
     }
 

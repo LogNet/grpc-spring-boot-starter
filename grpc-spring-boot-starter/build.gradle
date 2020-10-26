@@ -120,7 +120,7 @@ signing {
 
 
 dependencies {
-    compile "io.grpc:grpc-netty:${grpcVersion}"
+    compile "io.grpc:grpc-netty-shaded:${grpcVersion}"
     compile "io.grpc:grpc-services:${grpcVersion}"
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter')
     compile 'io.netty:netty-tcnative-boringssl-static:2.0.25.Final'
