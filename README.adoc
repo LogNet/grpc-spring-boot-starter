@@ -111,7 +111,7 @@ grpc:
 ----
 <1> `Duration` type properties can be configured with string value format described https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/convert/DurationStyle.java[here].
 <2> `DataSize` type properties can be configured with string value described  https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/unit/DataSize.html#parse-java.lang.CharSequence-[here]
-<3> Exposed on external network IP with custom port.
+<3> Exposed on external network IP with custom port. +
 `SocketAddress` type properties string value format:
 * `host:port` (if `port` value is less than 1, uses random value)
 * `host:`  (uses default grpc port, `6565` )

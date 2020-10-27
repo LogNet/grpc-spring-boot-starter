@@ -1,6 +1,6 @@
 == Version 4.2.1
 
-* Configure bind address (fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/82[82])
+* Configure bind address and other netty settings (fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/82[82])
 * When overriding default GRPC security configuration, `@Secured` annotation is enabled by default.
 
 #### Breaking changes
