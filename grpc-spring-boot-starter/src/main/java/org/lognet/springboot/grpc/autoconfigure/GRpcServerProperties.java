@@ -6,7 +6,12 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.util.SocketUtils;
+import org.springframework.util.unit.DataSize;
 
+import javax.annotation.PostConstruct;
+import java.net.InetSocketAddress;
+import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,16 +19,18 @@ import java.util.Optional;
  */
 
 @ConfigurationProperties("grpc")
-@Getter @Setter
+@Getter
+@Setter
 public class GRpcServerProperties {
     public static final int DEFAULT_GRPC_PORT = 6565;
     /**
      * gRPC server port
-     *
      */
     private Integer port = null;
 
-    private SecurityProperties security ;
+    private SecurityProperties security;
+
+    private NettyServerProperties nettyServer;
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -38,7 +45,6 @@ public class GRpcServerProperties {
     /**
      * In process server name.
      * If  the value is not empty, the embedded in-process server will be created and started.
-     *
      */
     private String inProcessServerName;
 
@@ -68,9 +74,49 @@ public class GRpcServerProperties {
 
     }
 
-    @Getter @Setter
-    public static class SecurityProperties{
+    @Getter
+    @Setter
+    public static class SecurityProperties {
         private Resource certChain;
         private Resource privateKey;
+    }
+
+    @Getter
+    @Setter
+    public static class NettyServerProperties {
+        private Integer flowControlWindow;
+        private Integer initialFlowControlWindow;
+
+        private Integer maxConcurrentCallsPerConnection;
+
+        private Duration keepAliveTime;
+        private Duration keepAliveTimeout;
+
+        private Duration maxConnectionAge;
+        private Duration maxConnectionAgeGrace;
+        private Duration maxConnectionIdle;
+        private Duration permitKeepAliveTime;
+
+        private DataSize maxInboundMessageSize;
+        private DataSize maxInboundMetadataSize;
+
+        private Boolean permitKeepAliveWithoutCalls;
+        /**
+         *  grpc listen address. <P>If configured, takes precedence over {@code grpc.port} property value.</p>
+         *  Supported format:
+         *  <li>{@code host:port} (if port is less than 1, uses random value)
+         *  <li>{@code host:}  (uses default grpc port, 6565 )
+         */
+        private InetSocketAddress primaryListenAddress;
+
+        private List<InetSocketAddress> additionalListenAddresses;
+    }
+
+    @PostConstruct
+    public void init(){
+        Optional.ofNullable(nettyServer)
+                .map(NettyServerProperties::getPrimaryListenAddress)
+                .ifPresent(a->port = a.getPort());
+
     }
 }

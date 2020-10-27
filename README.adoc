@@ -94,6 +94,29 @@ Default value is `0` (means don't wait).
     shutdownGrace: 30
 ----
 
+* link:grpc-spring-boot-starter/src/main/java/org/lognet/springboot/grpc/autoconfigure/GRpcServerProperties.java[Netty-specific server properties] can be specified under `grpc.netty-server` prefix. +
+By configuring one of the `grpc.netty-server.xxxx` values you are implicitly setting transport to be Netty-based.
+
+[source,yaml]
+----
+grpc:
+  netty-server:
+    keep-alive-time: 30s <1>
+    max-inbound-message-size: 10MB <2>
+    primary-listen-address: 10.10.15.23:0 <3>
+    additional-listen-addresses:
+      - 192.168.0.100:6767 <4>
+
+
+----
+<1> `Duration` type properties can be configured with string value format described https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/convert/DurationStyle.java[here].
+<2> `DataSize` type properties can be configured with string value described  https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/unit/DataSize.html#parse-java.lang.CharSequence-[here]
+<3> Exposed on external network IP with custom port.
+`SocketAddress` type properties string value format:
+* `host:port` (if `port` value is less than 1, uses random value)
+* `host:`  (uses default grpc port, `6565` )
+<4> Exposed on internal network IP as well with predefined port `6767`.
+
 The starter supports also the `in-process server`, which should be used for testing purposes :
 
 [source,yaml]
