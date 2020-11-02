@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc.auth;
 
 
 import com.google.protobuf.Empty;
+import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.SecuredGreeterGrpc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,16 @@ public class DefaultAuthConfigTest extends JwtAuthBaseTest {
     public void securedServiceTest() {
 
         final SecuredGreeterGrpc.SecuredGreeterBlockingStub   securedFutureStub = SecuredGreeterGrpc.newBlockingStub(getChannel(true));
+
+        final String reply = securedFutureStub.sayAuthHello(Empty.getDefaultInstance()).getMessage();
+        assertNotNull("Reply should not be null",reply);
+        assertTrue(String.format("Reply should contain name '%s'",USER_NAME),reply.contains(USER_NAME));
+
+    }
+    @Test
+    public void securedServiceMethodTest() {
+
+        final GreeterGrpc.GreeterBlockingStub   securedFutureStub = GreeterGrpc.newBlockingStub(getChannel(true));
 
         final String reply = securedFutureStub.sayAuthHello(Empty.getDefaultInstance()).getMessage();
         assertNotNull("Reply should not be null",reply);
