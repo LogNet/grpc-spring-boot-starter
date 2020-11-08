@@ -74,8 +74,13 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry hasAnyAuthority(String... authorities) {
-            for (String auth : authorities) {
-                GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
+            if (authorities.length == 0) {
+                // Authenticate request
+                GrpcServiceAuthorizationConfigurer.this.registry.map(methods);
+            } else {
+                for (String auth : authorities) {
+                    GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
+                }
             }
             return GrpcServiceAuthorizationConfigurer.this.registry;
         }
