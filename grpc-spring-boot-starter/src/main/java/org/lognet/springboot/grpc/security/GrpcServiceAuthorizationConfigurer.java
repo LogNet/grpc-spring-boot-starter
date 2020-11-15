@@ -74,13 +74,8 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry hasAnyAuthority(String... authorities) {
-            if (authorities.length == 0) {
-                // Authenticate request
-                GrpcServiceAuthorizationConfigurer.this.registry.map(methods);
-            } else {
-                for (String auth : authorities) {
-                    GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
-                }
+            for (String auth : authorities) {
+                GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
             }
             return GrpcServiceAuthorizationConfigurer.this.registry;
         }
@@ -145,7 +140,13 @@ public class GrpcServiceAuthorizationConfigurer
                                 .filter(m ->   m.getName().equalsIgnoreCase(methodDefinition.getMethodDescriptor().getBareMethodName()))
                                 .findFirst()
                                 .flatMap(m -> Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
-                                .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value()));
+                                .ifPresent(secured -> {
+                                    if (secured.value().length == 0) {
+                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).authenticated();
+                                    } else {
+                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value());
+                                    }
+                                });
 
                     }
                 }
