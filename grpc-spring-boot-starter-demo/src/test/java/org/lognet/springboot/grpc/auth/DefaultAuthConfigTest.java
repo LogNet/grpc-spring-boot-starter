@@ -55,4 +55,14 @@ public class DefaultAuthConfigTest extends JwtAuthBaseTest {
         assertTrue(String.format("Reply should contain name '%s'",USER_NAME),reply.contains(USER_NAME));
 
     }
+    @Test
+    public void securedAuthOnlyServiceMethodTest() {
+
+        final GreeterGrpc.GreeterBlockingStub   securedFutureStub = GreeterGrpc.newBlockingStub(getChannel(true));
+
+        final String reply = securedFutureStub.sayAuthOnlyHello(Empty.getDefaultInstance()).getMessage();
+        assertNotNull("Reply should not be null",reply);
+        assertTrue(String.format("Reply should contain name '%s'",USER_NAME),reply.contains(USER_NAME));
+
+    }
 }
