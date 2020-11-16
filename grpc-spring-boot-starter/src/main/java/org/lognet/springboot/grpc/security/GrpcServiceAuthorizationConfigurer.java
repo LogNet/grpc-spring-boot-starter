@@ -140,7 +140,13 @@ public class GrpcServiceAuthorizationConfigurer
                                 .filter(m ->   m.getName().equalsIgnoreCase(methodDefinition.getMethodDescriptor().getBareMethodName()))
                                 .findFirst()
                                 .flatMap(m -> Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
-                                .ifPresent(secured -> new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value()));
+                                .ifPresent(secured -> {
+                                    if (secured.value().length == 0) {
+                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).authenticated();
+                                    } else {
+                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value());
+                                    }
+                                });
 
                     }
                 }

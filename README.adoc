@@ -354,6 +354,7 @@ Defining bean with type `GrpcSecurityConfigurerAdapter` annotated with `@EnableG
 ----
 
 This default configuration secures GRPC methods/services annotated with `org.springframework.security.access.annotation.@Secured`  annotation. +
+The value passed to the Annotation can be left empty in which case only authentication will be performed. +
 If `JwtDecoder` bean exists in your context, it will also register `JwtAuthenticationProvider` to handle the validation of authentication claim.
 
 ==== Custom

@@ -40,4 +40,22 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
         }
         responseObserver.onCompleted();
     }
+
+    @Override
+    @Secured({})
+    public void sayAuthOnlyHello(Empty request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+
+
+        final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
+        if(null!=auth) {
+            String user = auth.getName();
+            if (auth instanceof JwtAuthenticationToken) {
+                user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
+            }
+            responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage(user).build());
+        }else{
+            responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello").build());
+        }
+        responseObserver.onCompleted();
+    }
 }

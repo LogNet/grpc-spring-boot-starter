@@ -1,10 +1,18 @@
 package io.grpc.examples;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
+import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ClientCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
+import static io.grpc.stub.ClientCalls.blockingServerStreamingCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 import static io.grpc.stub.ClientCalls.futureUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncBidiStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncClientStreamingCall;
+import static io.grpc.stub.ServerCalls.asyncServerStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
+import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
@@ -84,6 +92,37 @@ public final class GreeterGrpc {
     return getSayAuthHelloMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthOnlyHelloMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "SayAuthOnlyHello",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = io.grpc.examples.GreeterOuterClass.HelloReply.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthOnlyHelloMethod() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthOnlyHelloMethod;
+    if ((getSayAuthOnlyHelloMethod = GreeterGrpc.getSayAuthOnlyHelloMethod) == null) {
+      synchronized (GreeterGrpc.class) {
+        if ((getSayAuthOnlyHelloMethod = GreeterGrpc.getSayAuthOnlyHelloMethod) == null) {
+          GreeterGrpc.getSayAuthOnlyHelloMethod = getSayAuthOnlyHelloMethod =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, io.grpc.examples.GreeterOuterClass.HelloReply>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SayAuthOnlyHello"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
+              .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("SayAuthOnlyHello"))
+              .build();
+        }
+      }
+    }
+    return getSayAuthOnlyHelloMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -152,6 +191,13 @@ public final class GreeterGrpc {
       asyncUnimplementedUnaryCall(getSayAuthHelloMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void sayAuthOnlyHello(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
+      asyncUnimplementedUnaryCall(getSayAuthOnlyHelloMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -168,6 +214,13 @@ public final class GreeterGrpc {
                 com.google.protobuf.Empty,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_AUTH_HELLO)))
+          .addMethod(
+            getSayAuthOnlyHelloMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                io.grpc.examples.GreeterOuterClass.HelloReply>(
+                  this, METHODID_SAY_AUTH_ONLY_HELLO)))
           .build();
     }
   }
@@ -207,6 +260,14 @@ public final class GreeterGrpc {
       asyncUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void sayAuthOnlyHello(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -241,6 +302,13 @@ public final class GreeterGrpc {
     public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthHello(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getSayAuthHelloMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthOnlyHello(com.google.protobuf.Empty request) {
+      return blockingUnaryCall(
+          getChannel(), getSayAuthOnlyHelloMethod(), getCallOptions(), request);
     }
   }
 
@@ -279,10 +347,19 @@ public final class GreeterGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayAuthOnlyHello(
+        com.google.protobuf.Empty request) {
+      return futureUnaryCall(
+          getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_SAY_HELLO = 0;
   private static final int METHODID_SAY_AUTH_HELLO = 1;
+  private static final int METHODID_SAY_AUTH_ONLY_HELLO = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -307,6 +384,10 @@ public final class GreeterGrpc {
           break;
         case METHODID_SAY_AUTH_HELLO:
           serviceImpl.sayAuthHello((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply>) responseObserver);
+          break;
+        case METHODID_SAY_AUTH_ONLY_HELLO:
+          serviceImpl.sayAuthOnlyHello((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply>) responseObserver);
           break;
         default:
@@ -372,6 +453,7 @@ public final class GreeterGrpc {
               .setSchemaDescriptor(new GreeterFileDescriptorSupplier())
               .addMethod(getSayHelloMethod())
               .addMethod(getSayAuthHelloMethod())
+              .addMethod(getSayAuthOnlyHelloMethod())
               .build();
         }
       }
