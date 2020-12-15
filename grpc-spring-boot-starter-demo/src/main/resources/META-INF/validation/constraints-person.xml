@@ -37,7 +37,7 @@
                 <element name="value">120</element>
             </constraint>
         </getter>
-        <getter name="address">
+        <getter name="address"> <!-- invokes hasAddress() method, not getAddress(), hence AssertTrue -->
             <constraint annotation="javax.validation.constraints.AssertTrue"/>
         </getter>
 

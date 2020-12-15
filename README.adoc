@@ -31,7 +31,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.2.2'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.2.4'
 }
 
 
@@ -317,7 +317,7 @@ Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration su
 provide the constraints for generated classes instead of instrumenting the generated messages with custom `protoc` compiler.
 
 . Add `org.springframework.boot:spring-boot-starter-validation` dependency to your project.
-. Create `META-INF/validation.xml` and constraints declarations file(s). +
+. Create `META-INF/validation.xml` and constraints declarations file(s). (IntelliJ IDEA has great auto-complete support for authorizing bean validation constraints xml files )+
 See also https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=6.1#chapter-xml-configuration[samples] from `Hibernate` validator documentation
 
 You can find  link:grpc-spring-boot-starter-demo/src/main/resources/META-INF/validation/constraints-message-to-validate.xml[demo configuration] and corresponding tests
