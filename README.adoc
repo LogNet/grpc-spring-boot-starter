@@ -313,8 +313,8 @@ This is the current limitation.
 
 == Implementing message validation
 
-Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration support via https://beanvalidation.org/2.0/spec/#xml[XML deployment] descriptor, one it's possible to
-provide the constraints for generated classes instead of instrumenting the generated messages with custom `protoc` compiler.
+Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration support via https://beanvalidation.org/2.0/spec/#xml[XML deployment descriptor] , it's possible to
+provide the constraints for generated classes via XML instead of instrumenting the generated messages with custom `protoc` compiler.
 
 . Add `org.springframework.boot:spring-boot-starter-validation` dependency to your project.
 . Create `META-INF/validation.xml` and constraints declarations file(s). (IntelliJ IDEA has great auto-complete support for authorizing bean validation constraints xml files )+
