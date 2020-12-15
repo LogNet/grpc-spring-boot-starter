@@ -1,5 +1,6 @@
-== Version 4.2.4
+== Version 4.3.0
 * Spring Validation (Java Beans) support
+* gRPC version upgraded to 1.34.1
 
 == Version 4.2.3
 * gRPC version upgraded to 1.33.1
