@@ -48,4 +48,22 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
         sayAuthHello(request,responseObserver);
     }
+
+    @Override
+    public void helloPersonValidResponse(GreeterOuterClass.Person request, StreamObserver<GreeterOuterClass.Person> responseObserver) {
+        responseObserver.onNext(GreeterOuterClass.Person.newBuilder(request)
+                .setNickName(request.getName().toLowerCase())
+                .build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void helloPersonInvalidResponse(GreeterOuterClass.Person request, StreamObserver<GreeterOuterClass.Person> responseObserver) {
+        responseObserver.onNext(GreeterOuterClass.Person.newBuilder(request)
+                .clearNickName()
+                .build());
+        responseObserver.onCompleted();
+    }
+
+
 }

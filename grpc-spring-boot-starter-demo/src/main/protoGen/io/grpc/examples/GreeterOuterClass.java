@@ -14,6 +14,1450 @@ public final class GreeterOuterClass {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+  public interface PersonOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Person)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>uint32 age = 2;</code>
+     */
+    int getAge();
+
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    boolean hasAddress();
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    io.grpc.examples.GreeterOuterClass.Address getAddress();
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    io.grpc.examples.GreeterOuterClass.AddressOrBuilder getAddressOrBuilder();
+
+    /**
+     * <code>string nickName = 4;</code>
+     */
+    java.lang.String getNickName();
+    /**
+     * <code>string nickName = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getNickNameBytes();
+  }
+  /**
+   * Protobuf type {@code Person}
+   */
+  public  static final class Person extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:Person)
+      PersonOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Person.newBuilder() to construct.
+    private Person(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Person() {
+      name_ = "";
+      age_ = 0;
+      nickName_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Person(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 16: {
+
+              age_ = input.readUInt32();
+              break;
+            }
+            case 26: {
+              io.grpc.examples.GreeterOuterClass.Address.Builder subBuilder = null;
+              if (address_ != null) {
+                subBuilder = address_.toBuilder();
+              }
+              address_ = input.readMessage(io.grpc.examples.GreeterOuterClass.Address.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(address_);
+                address_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              nickName_ = s;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return io.grpc.examples.GreeterOuterClass.internal_static_Person_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return io.grpc.examples.GreeterOuterClass.internal_static_Person_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.grpc.examples.GreeterOuterClass.Person.class, io.grpc.examples.GreeterOuterClass.Person.Builder.class);
+    }
+
+    public static final int NAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object name_;
+    /**
+     * <code>string name = 1;</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string name = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int AGE_FIELD_NUMBER = 2;
+    private int age_;
+    /**
+     * <code>uint32 age = 2;</code>
+     */
+    public int getAge() {
+      return age_;
+    }
+
+    public static final int ADDRESS_FIELD_NUMBER = 3;
+    private io.grpc.examples.GreeterOuterClass.Address address_;
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    public boolean hasAddress() {
+      return address_ != null;
+    }
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    public io.grpc.examples.GreeterOuterClass.Address getAddress() {
+      return address_ == null ? io.grpc.examples.GreeterOuterClass.Address.getDefaultInstance() : address_;
+    }
+    /**
+     * <code>.Address address = 3;</code>
+     */
+    public io.grpc.examples.GreeterOuterClass.AddressOrBuilder getAddressOrBuilder() {
+      return getAddress();
+    }
+
+    public static final int NICKNAME_FIELD_NUMBER = 4;
+    private volatile java.lang.Object nickName_;
+    /**
+     * <code>string nickName = 4;</code>
+     */
+    public java.lang.String getNickName() {
+      java.lang.Object ref = nickName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        nickName_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string nickName = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNickNameBytes() {
+      java.lang.Object ref = nickName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        nickName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (age_ != 0) {
+        output.writeUInt32(2, age_);
+      }
+      if (address_ != null) {
+        output.writeMessage(3, getAddress());
+      }
+      if (!getNickNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, nickName_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      if (age_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, age_);
+      }
+      if (address_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getAddress());
+      }
+      if (!getNickNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, nickName_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof io.grpc.examples.GreeterOuterClass.Person)) {
+        return super.equals(obj);
+      }
+      io.grpc.examples.GreeterOuterClass.Person other = (io.grpc.examples.GreeterOuterClass.Person) obj;
+
+      boolean result = true;
+      result = result && getName()
+          .equals(other.getName());
+      result = result && (getAge()
+          == other.getAge());
+      result = result && (hasAddress() == other.hasAddress());
+      if (hasAddress()) {
+        result = result && getAddress()
+            .equals(other.getAddress());
+      }
+      result = result && getNickName()
+          .equals(other.getNickName());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + AGE_FIELD_NUMBER;
+      hash = (53 * hash) + getAge();
+      if (hasAddress()) {
+        hash = (37 * hash) + ADDRESS_FIELD_NUMBER;
+        hash = (53 * hash) + getAddress().hashCode();
+      }
+      hash = (37 * hash) + NICKNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getNickName().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Person parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(io.grpc.examples.GreeterOuterClass.Person prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Person}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Person)
+        io.grpc.examples.GreeterOuterClass.PersonOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Person_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Person_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.grpc.examples.GreeterOuterClass.Person.class, io.grpc.examples.GreeterOuterClass.Person.Builder.class);
+      }
+
+      // Construct using io.grpc.examples.GreeterOuterClass.Person.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        age_ = 0;
+
+        if (addressBuilder_ == null) {
+          address_ = null;
+        } else {
+          address_ = null;
+          addressBuilder_ = null;
+        }
+        nickName_ = "";
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Person_descriptor;
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Person getDefaultInstanceForType() {
+        return io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance();
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Person build() {
+        io.grpc.examples.GreeterOuterClass.Person result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Person buildPartial() {
+        io.grpc.examples.GreeterOuterClass.Person result = new io.grpc.examples.GreeterOuterClass.Person(this);
+        result.name_ = name_;
+        result.age_ = age_;
+        if (addressBuilder_ == null) {
+          result.address_ = address_;
+        } else {
+          result.address_ = addressBuilder_.build();
+        }
+        result.nickName_ = nickName_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.grpc.examples.GreeterOuterClass.Person) {
+          return mergeFrom((io.grpc.examples.GreeterOuterClass.Person)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.grpc.examples.GreeterOuterClass.Person other) {
+        if (other == io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (other.getAge() != 0) {
+          setAge(other.getAge());
+        }
+        if (other.hasAddress()) {
+          mergeAddress(other.getAddress());
+        }
+        if (!other.getNickName().isEmpty()) {
+          nickName_ = other.nickName_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        io.grpc.examples.GreeterOuterClass.Person parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.grpc.examples.GreeterOuterClass.Person) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+      /**
+       * <code>string name = 1;</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder clearName() {
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int age_ ;
+      /**
+       * <code>uint32 age = 2;</code>
+       */
+      public int getAge() {
+        return age_;
+      }
+      /**
+       * <code>uint32 age = 2;</code>
+       */
+      public Builder setAge(int value) {
+        
+        age_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 age = 2;</code>
+       */
+      public Builder clearAge() {
+        
+        age_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private io.grpc.examples.GreeterOuterClass.Address address_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          io.grpc.examples.GreeterOuterClass.Address, io.grpc.examples.GreeterOuterClass.Address.Builder, io.grpc.examples.GreeterOuterClass.AddressOrBuilder> addressBuilder_;
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public boolean hasAddress() {
+        return addressBuilder_ != null || address_ != null;
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public io.grpc.examples.GreeterOuterClass.Address getAddress() {
+        if (addressBuilder_ == null) {
+          return address_ == null ? io.grpc.examples.GreeterOuterClass.Address.getDefaultInstance() : address_;
+        } else {
+          return addressBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public Builder setAddress(io.grpc.examples.GreeterOuterClass.Address value) {
+        if (addressBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          address_ = value;
+          onChanged();
+        } else {
+          addressBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public Builder setAddress(
+          io.grpc.examples.GreeterOuterClass.Address.Builder builderForValue) {
+        if (addressBuilder_ == null) {
+          address_ = builderForValue.build();
+          onChanged();
+        } else {
+          addressBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public Builder mergeAddress(io.grpc.examples.GreeterOuterClass.Address value) {
+        if (addressBuilder_ == null) {
+          if (address_ != null) {
+            address_ =
+              io.grpc.examples.GreeterOuterClass.Address.newBuilder(address_).mergeFrom(value).buildPartial();
+          } else {
+            address_ = value;
+          }
+          onChanged();
+        } else {
+          addressBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public Builder clearAddress() {
+        if (addressBuilder_ == null) {
+          address_ = null;
+          onChanged();
+        } else {
+          address_ = null;
+          addressBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public io.grpc.examples.GreeterOuterClass.Address.Builder getAddressBuilder() {
+        
+        onChanged();
+        return getAddressFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      public io.grpc.examples.GreeterOuterClass.AddressOrBuilder getAddressOrBuilder() {
+        if (addressBuilder_ != null) {
+          return addressBuilder_.getMessageOrBuilder();
+        } else {
+          return address_ == null ?
+              io.grpc.examples.GreeterOuterClass.Address.getDefaultInstance() : address_;
+        }
+      }
+      /**
+       * <code>.Address address = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          io.grpc.examples.GreeterOuterClass.Address, io.grpc.examples.GreeterOuterClass.Address.Builder, io.grpc.examples.GreeterOuterClass.AddressOrBuilder> 
+          getAddressFieldBuilder() {
+        if (addressBuilder_ == null) {
+          addressBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              io.grpc.examples.GreeterOuterClass.Address, io.grpc.examples.GreeterOuterClass.Address.Builder, io.grpc.examples.GreeterOuterClass.AddressOrBuilder>(
+                  getAddress(),
+                  getParentForChildren(),
+                  isClean());
+          address_ = null;
+        }
+        return addressBuilder_;
+      }
+
+      private java.lang.Object nickName_ = "";
+      /**
+       * <code>string nickName = 4;</code>
+       */
+      public java.lang.String getNickName() {
+        java.lang.Object ref = nickName_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          nickName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string nickName = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNickNameBytes() {
+        java.lang.Object ref = nickName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          nickName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string nickName = 4;</code>
+       */
+      public Builder setNickName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        nickName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string nickName = 4;</code>
+       */
+      public Builder clearNickName() {
+        
+        nickName_ = getDefaultInstance().getNickName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string nickName = 4;</code>
+       */
+      public Builder setNickNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        nickName_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:Person)
+    }
+
+    // @@protoc_insertion_point(class_scope:Person)
+    private static final io.grpc.examples.GreeterOuterClass.Person DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.grpc.examples.GreeterOuterClass.Person();
+    }
+
+    public static io.grpc.examples.GreeterOuterClass.Person getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Person>
+        PARSER = new com.google.protobuf.AbstractParser<Person>() {
+      public Person parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Person(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Person> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Person> getParserForType() {
+      return PARSER;
+    }
+
+    public io.grpc.examples.GreeterOuterClass.Person getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface AddressOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:Address)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string city = 1;</code>
+     */
+    java.lang.String getCity();
+    /**
+     * <code>string city = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getCityBytes();
+  }
+  /**
+   * Protobuf type {@code Address}
+   */
+  public  static final class Address extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:Address)
+      AddressOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Address.newBuilder() to construct.
+    private Address(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Address() {
+      city_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Address(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              city_ = s;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return io.grpc.examples.GreeterOuterClass.internal_static_Address_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return io.grpc.examples.GreeterOuterClass.internal_static_Address_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              io.grpc.examples.GreeterOuterClass.Address.class, io.grpc.examples.GreeterOuterClass.Address.Builder.class);
+    }
+
+    public static final int CITY_FIELD_NUMBER = 1;
+    private volatile java.lang.Object city_;
+    /**
+     * <code>string city = 1;</code>
+     */
+    public java.lang.String getCity() {
+      java.lang.Object ref = city_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        city_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string city = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCityBytes() {
+      java.lang.Object ref = city_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        city_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getCityBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, city_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getCityBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, city_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof io.grpc.examples.GreeterOuterClass.Address)) {
+        return super.equals(obj);
+      }
+      io.grpc.examples.GreeterOuterClass.Address other = (io.grpc.examples.GreeterOuterClass.Address) obj;
+
+      boolean result = true;
+      result = result && getCity()
+          .equals(other.getCity());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + CITY_FIELD_NUMBER;
+      hash = (53 * hash) + getCity().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static io.grpc.examples.GreeterOuterClass.Address parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(io.grpc.examples.GreeterOuterClass.Address prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code Address}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:Address)
+        io.grpc.examples.GreeterOuterClass.AddressOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Address_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Address_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                io.grpc.examples.GreeterOuterClass.Address.class, io.grpc.examples.GreeterOuterClass.Address.Builder.class);
+      }
+
+      // Construct using io.grpc.examples.GreeterOuterClass.Address.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        city_ = "";
+
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return io.grpc.examples.GreeterOuterClass.internal_static_Address_descriptor;
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Address getDefaultInstanceForType() {
+        return io.grpc.examples.GreeterOuterClass.Address.getDefaultInstance();
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Address build() {
+        io.grpc.examples.GreeterOuterClass.Address result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public io.grpc.examples.GreeterOuterClass.Address buildPartial() {
+        io.grpc.examples.GreeterOuterClass.Address result = new io.grpc.examples.GreeterOuterClass.Address(this);
+        result.city_ = city_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof io.grpc.examples.GreeterOuterClass.Address) {
+          return mergeFrom((io.grpc.examples.GreeterOuterClass.Address)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(io.grpc.examples.GreeterOuterClass.Address other) {
+        if (other == io.grpc.examples.GreeterOuterClass.Address.getDefaultInstance()) return this;
+        if (!other.getCity().isEmpty()) {
+          city_ = other.city_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        io.grpc.examples.GreeterOuterClass.Address parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (io.grpc.examples.GreeterOuterClass.Address) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object city_ = "";
+      /**
+       * <code>string city = 1;</code>
+       */
+      public java.lang.String getCity() {
+        java.lang.Object ref = city_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          city_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string city = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCityBytes() {
+        java.lang.Object ref = city_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          city_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string city = 1;</code>
+       */
+      public Builder setCity(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        city_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string city = 1;</code>
+       */
+      public Builder clearCity() {
+        
+        city_ = getDefaultInstance().getCity();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string city = 1;</code>
+       */
+      public Builder setCityBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        city_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:Address)
+    }
+
+    // @@protoc_insertion_point(class_scope:Address)
+    private static final io.grpc.examples.GreeterOuterClass.Address DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new io.grpc.examples.GreeterOuterClass.Address();
+    }
+
+    public static io.grpc.examples.GreeterOuterClass.Address getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Address>
+        PARSER = new com.google.protobuf.AbstractParser<Address>() {
+      public Address parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Address(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Address> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Address> getParserForType() {
+      return PARSER;
+    }
+
+    public io.grpc.examples.GreeterOuterClass.Address getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface HelloRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:HelloRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -1081,6 +2525,16 @@ public final class GreeterOuterClass {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Person_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_Person_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_Address_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_Address_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_HelloRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -1100,15 +2554,20 @@ public final class GreeterOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n\rgreeter.proto\032\033google/protobuf/empty.p" +
-      "roto\"\034\n\014HelloRequest\022\014\n\004name\030\001 \001(\t\"\035\n\nHe" +
-      "lloReply\022\017\n\007message\030\001 \001(\t2\245\001\n\007Greeter\022(\n" +
-      "\010SayHello\022\r.HelloRequest\032\013.HelloReply\"\000\022" +
-      "5\n\014SayAuthHello\022\026.google.protobuf.Empty\032" +
-      "\013.HelloReply\"\000\0229\n\020SayAuthOnlyHello\022\026.goo" +
-      "gle.protobuf.Empty\032\013.HelloReply\"\0002G\n\016Sec" +
-      "uredGreeter\0225\n\014SayAuthHello\022\026.google.pro" +
-      "tobuf.Empty\032\013.HelloReply\"\000B\022\n\020io.grpc.ex" +
-      "amplesb\006proto3"
+      "roto\"P\n\006Person\022\014\n\004name\030\001 \001(\t\022\013\n\003age\030\002 \001(" +
+      "\r\022\031\n\007address\030\003 \001(\0132\010.Address\022\020\n\010nickName" +
+      "\030\004 \001(\t\"\027\n\007Address\022\014\n\004city\030\001 \001(\t\"\034\n\014Hello" +
+      "Request\022\014\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007m" +
+      "essage\030\001 \001(\t2\207\002\n\007Greeter\022(\n\010SayHello\022\r.H" +
+      "elloRequest\032\013.HelloReply\"\000\0225\n\014SayAuthHel" +
+      "lo\022\026.google.protobuf.Empty\032\013.HelloReply\"" +
+      "\000\0229\n\020SayAuthOnlyHello\022\026.google.protobuf." +
+      "Empty\032\013.HelloReply\"\000\022.\n\030HelloPersonValid" +
+      "Response\022\007.Person\032\007.Person\"\000\0220\n\032HelloPer" +
+      "sonInvalidResponse\022\007.Person\032\007.Person\"\0002G" +
+      "\n\016SecuredGreeter\0225\n\014SayAuthHello\022\026.googl" +
+      "e.protobuf.Empty\032\013.HelloReply\"\000B\022\n\020io.gr" +
+      "pc.examplesb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1123,14 +2582,26 @@ public final class GreeterOuterClass {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.EmptyProto.getDescriptor(),
         }, assigner);
-    internal_static_HelloRequest_descriptor =
+    internal_static_Person_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_Person_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_Person_descriptor,
+        new java.lang.String[] { "Name", "Age", "Address", "NickName", });
+    internal_static_Address_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_Address_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_Address_descriptor,
+        new java.lang.String[] { "City", });
+    internal_static_HelloRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_HelloRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HelloRequest_descriptor,
         new java.lang.String[] { "Name", });
     internal_static_HelloReply_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_HelloReply_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HelloReply_descriptor,

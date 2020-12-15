@@ -5,23 +5,30 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
+import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.validation.ValidatingInterceptor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.SocketUtils;
 
+import javax.validation.Validator;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Optional;
@@ -33,6 +40,7 @@ import java.util.function.Consumer;
  */
 
 @AutoConfigureOrder
+@AutoConfigureAfter(ValidationAutoConfiguration.class)
 @ConditionalOnBean(annotation = GRpcService.class)
 @EnableConfigurationProperties(GRpcServerProperties.class)
 @Slf4j
@@ -167,6 +175,14 @@ public class GRpcAutoConfiguration {
                 return new InetSocketAddress(chunks[0], port);
             }
         };
+    }
+
+    @Bean
+    @ConditionalOnClass(Validator.class)
+    @ConditionalOnBean(Validator.class)
+    @GRpcGlobalInterceptor
+    public ValidatingInterceptor validatingInterceptor(@Lazy Validator validator){
+        return  new ValidatingInterceptor(validator);
     }
 
 

@@ -237,6 +237,10 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
     // ommited
 }
 ----
+=== Spring Validation support
+
+The starter can be  auto-configured to validate request/response gRPC service messages.
+Please continue to <<Implementing message validation>> for configuration details.
 
 === Spring security support
 
@@ -306,6 +310,64 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
 If you enable both `NettyServer` and `in-process` servers, the `configure` method will be invoked on the same instance of configurer. +
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
+
+== Implementing message validation
+
+Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration support via https://beanvalidation.org/2.0/spec/#xml[XML deployment] descriptor, one it's possible to
+provide the constraints for generated classes instead of instrumenting the generated messages with custom `protoc` compiler.
+
+. Add `org.springframework.boot:spring-boot-starter-validation` dependency to your project.
+. Create `META-INF/validation.xml` and constraints declarations file(s). +
+See also https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/?v=6.1#chapter-xml-configuration[samples] from `Hibernate` validator documentation
+
+You can find  link:grpc-spring-boot-starter-demo/src/main/resources/META-INF/validation/constraints-message-to-validate.xml[demo configuration] and corresponding tests
+link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/ValidationTest.java[here]
+
+Note, that both `request` and *response* messages are being validated.
+
+If your gRPC method uses the same request and response message type, you can use `org.lognet.springboot.grpc.validation.group.RequestMessage` and
+`org.lognet.springboot.grpc.validation.group.ResponseMessage` validation groups to apply different validation logic  :
+
+[source,xml]
+----
+...
+<getter name="someField">
+
+            <!--should be empty for request message-->
+            <constraint annotation="javax.validation.constraints.Size">
+                <groups>
+                    <value>org.lognet.springboot.grpc.validation.group.RequestMessage</value> <1>
+                </groups>
+                <element name="min">0</element>
+                <element name="max">0</element>
+
+            </constraint>
+
+            <!--should NOT  be empty for response message-->
+            <constraint annotation="javax.validation.constraints.NotEmpty">
+                <groups>
+                    <value>org.lognet.springboot.grpc.validation.group.ResponseMessage</value> <2>
+                </groups>
+            </constraint>
+        </getter>
+...
+----
+<1> Apply this constraint only for `request` message
+<2> Apply this constraint only for `response` message
+
+
+Note also custom cross-field link:grpc-spring-boot-starter-demo/src/main/java/org/lognet/springboot/grpc/demo/PersonConstraint.java[constraint] and its usage :
+
+[source,xml]
+----
+ <bean class="io.grpc.examples.GreeterOuterClass$Person">
+        <class>
+            <constraint annotation="org.lognet.springboot.grpc.demo.PersonConstraint"/>
+        </class>
+...
+
+</bean>
+----
 
 == Spring Security Integration
 

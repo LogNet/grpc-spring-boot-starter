@@ -10,6 +10,8 @@ service Greeter {
     rpc SayHello ( HelloRequest) returns (  HelloReply) {}
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc SayAuthOnlyHello ( google.protobuf.Empty) returns (  HelloReply) {}
+    rpc HelloPersonValidResponse ( Person) returns (  Person) {}
+    rpc HelloPersonInvalidResponse ( Person) returns (  Person) {}
 
 }
 service SecuredGreeter {
@@ -17,7 +19,16 @@ service SecuredGreeter {
 
 }
 
+message Person {
+    string name = 1;
+    uint32 age =2;
+    Address address =3;
+    string nickName=4;
+}
 
+message Address{
+    string city =1;
+}
 // The request message containing the user's name.
 message HelloRequest {
     string name = 1;

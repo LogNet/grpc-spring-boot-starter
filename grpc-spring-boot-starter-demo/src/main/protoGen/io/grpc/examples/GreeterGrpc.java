@@ -115,6 +115,68 @@ public final class GreeterGrpc {
     return getSayAuthOnlyHelloMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person,
+      io.grpc.examples.GreeterOuterClass.Person> getHelloPersonValidResponseMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "HelloPersonValidResponse",
+      requestType = io.grpc.examples.GreeterOuterClass.Person.class,
+      responseType = io.grpc.examples.GreeterOuterClass.Person.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person,
+      io.grpc.examples.GreeterOuterClass.Person> getHelloPersonValidResponseMethod() {
+    io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person, io.grpc.examples.GreeterOuterClass.Person> getHelloPersonValidResponseMethod;
+    if ((getHelloPersonValidResponseMethod = GreeterGrpc.getHelloPersonValidResponseMethod) == null) {
+      synchronized (GreeterGrpc.class) {
+        if ((getHelloPersonValidResponseMethod = GreeterGrpc.getHelloPersonValidResponseMethod) == null) {
+          GreeterGrpc.getHelloPersonValidResponseMethod = getHelloPersonValidResponseMethod =
+              io.grpc.MethodDescriptor.<io.grpc.examples.GreeterOuterClass.Person, io.grpc.examples.GreeterOuterClass.Person>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "HelloPersonValidResponse"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance()))
+              .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("HelloPersonValidResponse"))
+              .build();
+        }
+      }
+    }
+    return getHelloPersonValidResponseMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person,
+      io.grpc.examples.GreeterOuterClass.Person> getHelloPersonInvalidResponseMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "HelloPersonInvalidResponse",
+      requestType = io.grpc.examples.GreeterOuterClass.Person.class,
+      responseType = io.grpc.examples.GreeterOuterClass.Person.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person,
+      io.grpc.examples.GreeterOuterClass.Person> getHelloPersonInvalidResponseMethod() {
+    io.grpc.MethodDescriptor<io.grpc.examples.GreeterOuterClass.Person, io.grpc.examples.GreeterOuterClass.Person> getHelloPersonInvalidResponseMethod;
+    if ((getHelloPersonInvalidResponseMethod = GreeterGrpc.getHelloPersonInvalidResponseMethod) == null) {
+      synchronized (GreeterGrpc.class) {
+        if ((getHelloPersonInvalidResponseMethod = GreeterGrpc.getHelloPersonInvalidResponseMethod) == null) {
+          GreeterGrpc.getHelloPersonInvalidResponseMethod = getHelloPersonInvalidResponseMethod =
+              io.grpc.MethodDescriptor.<io.grpc.examples.GreeterOuterClass.Person, io.grpc.examples.GreeterOuterClass.Person>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "HelloPersonInvalidResponse"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.Person.getDefaultInstance()))
+              .setSchemaDescriptor(new GreeterMethodDescriptorSupplier("HelloPersonInvalidResponse"))
+              .build();
+        }
+      }
+    }
+    return getHelloPersonInvalidResponseMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -190,6 +252,20 @@ public final class GreeterGrpc {
       asyncUnimplementedUnaryCall(getSayAuthOnlyHelloMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
+      asyncUnimplementedUnaryCall(getHelloPersonValidResponseMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
+      asyncUnimplementedUnaryCall(getHelloPersonInvalidResponseMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -213,6 +289,20 @@ public final class GreeterGrpc {
                 com.google.protobuf.Empty,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_AUTH_ONLY_HELLO)))
+          .addMethod(
+            getHelloPersonValidResponseMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                io.grpc.examples.GreeterOuterClass.Person,
+                io.grpc.examples.GreeterOuterClass.Person>(
+                  this, METHODID_HELLO_PERSON_VALID_RESPONSE)))
+          .addMethod(
+            getHelloPersonInvalidResponseMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                io.grpc.examples.GreeterOuterClass.Person,
+                io.grpc.examples.GreeterOuterClass.Person>(
+                  this, METHODID_HELLO_PERSON_INVALID_RESPONSE)))
           .build();
     }
   }
@@ -260,6 +350,22 @@ public final class GreeterGrpc {
       asyncUnaryCall(
           getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getHelloPersonValidResponseMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getHelloPersonInvalidResponseMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -301,6 +407,20 @@ public final class GreeterGrpc {
     public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthOnlyHello(com.google.protobuf.Empty request) {
       return blockingUnaryCall(
           getChannel(), getSayAuthOnlyHelloMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.grpc.examples.GreeterOuterClass.Person helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request) {
+      return blockingUnaryCall(
+          getChannel(), getHelloPersonValidResponseMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.grpc.examples.GreeterOuterClass.Person helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request) {
+      return blockingUnaryCall(
+          getChannel(), getHelloPersonInvalidResponseMethod(), getCallOptions(), request);
     }
   }
 
@@ -347,11 +467,29 @@ public final class GreeterGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.Person> helloPersonValidResponse(
+        io.grpc.examples.GreeterOuterClass.Person request) {
+      return futureUnaryCall(
+          getChannel().newCall(getHelloPersonValidResponseMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.Person> helloPersonInvalidResponse(
+        io.grpc.examples.GreeterOuterClass.Person request) {
+      return futureUnaryCall(
+          getChannel().newCall(getHelloPersonInvalidResponseMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_SAY_HELLO = 0;
   private static final int METHODID_SAY_AUTH_HELLO = 1;
   private static final int METHODID_SAY_AUTH_ONLY_HELLO = 2;
+  private static final int METHODID_HELLO_PERSON_VALID_RESPONSE = 3;
+  private static final int METHODID_HELLO_PERSON_INVALID_RESPONSE = 4;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -381,6 +519,14 @@ public final class GreeterGrpc {
         case METHODID_SAY_AUTH_ONLY_HELLO:
           serviceImpl.sayAuthOnlyHello((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply>) responseObserver);
+          break;
+        case METHODID_HELLO_PERSON_VALID_RESPONSE:
+          serviceImpl.helloPersonValidResponse((io.grpc.examples.GreeterOuterClass.Person) request,
+              (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person>) responseObserver);
+          break;
+        case METHODID_HELLO_PERSON_INVALID_RESPONSE:
+          serviceImpl.helloPersonInvalidResponse((io.grpc.examples.GreeterOuterClass.Person) request,
+              (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -446,6 +592,8 @@ public final class GreeterGrpc {
               .addMethod(getSayHelloMethod())
               .addMethod(getSayAuthHelloMethod())
               .addMethod(getSayAuthOnlyHelloMethod())
+              .addMethod(getHelloPersonValidResponseMethod())
+              .addMethod(getHelloPersonInvalidResponseMethod())
               .build();
         }
       }
