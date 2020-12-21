@@ -1,3 +1,6 @@
+== Version 4.4.0
+* gRPC server metrics support via https://micrometer.io[micrometer.io] integration
+
 == Version 4.3.1
 * Fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/169[169]
 
