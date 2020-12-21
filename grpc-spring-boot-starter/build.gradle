@@ -131,6 +131,7 @@ dependencies {
     compileOnly "org.springframework.security:spring-security-oauth2-resource-server"
     compileOnly "org.springframework.security:spring-security-oauth2-jose"
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly "org.springframework.boot:spring-boot-starter-actuator"
     compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: '2.1.1.RELEASE'
 
 

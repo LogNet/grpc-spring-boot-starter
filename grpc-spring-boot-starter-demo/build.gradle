@@ -39,6 +39,7 @@ dependencies {
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
     testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
     testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
+    testCompile 'org.awaitility:awaitility:4.0.3'
 
     testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
     testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"

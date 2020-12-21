@@ -1,4 +1,8 @@
 management:
+  metrics:
+    export:
+      simple:
+        enabled: false
   endpoints:
     web:
       base-path: "/"

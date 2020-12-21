@@ -1,0 +1,6 @@
+management:
+  metrics:
+    export:
+      simple:
+        step: 10s
+        enabled: true

@@ -237,7 +237,22 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
     // ommited
 }
 ----
-=== Spring Validation support
+
+=== GRPC server metrics (Micrometer.io integration)
+
+By including `org.springframework.boot:spring-boot-starter-actuator` dependency,
+the starter will collect gRPC server metrics , broken down by
+
+. gRPC service method FQN (Fully Qualified Name)
+. https://grpc.github.io/grpc-java/javadoc/io/grpc/Status.Code.html[Response status code]
+
+After configuring the exporter of your https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-metrics[choice],
+you should see the `timer` named `grpc.server.calls`.
+
+
+
+
+=== Spring Boot Validation support
 
 The starter can be  auto-configured to validate request/response gRPC service messages.
 Please continue to <<Implementing message validation>> for configuration details.
