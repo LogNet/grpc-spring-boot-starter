@@ -237,6 +237,11 @@ public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
     // ommited
 }
 ----
+=== Distributed tracing support (Spring Cloud Sleuth integration)
+
+This started is *natively* supported by `spring-cloud-sleuth` project. +
+Please continue to https://docs.spring.io/spring-cloud-sleuth/docs/current/reference/html/integrations.html#sleuth-rpc-grpc-integration[sleuth grpc integration].
+
 
 === GRPC server metrics (Micrometer.io integration)
 
