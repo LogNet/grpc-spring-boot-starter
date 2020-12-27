@@ -343,7 +343,7 @@ See also https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_
 You can find  link:grpc-spring-boot-starter-demo/src/main/resources/META-INF/validation/constraints-person.xml[demo configuration] and corresponding tests
 link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/ValidationTest.java[here]
 
-Note, that both `request` and *response* messages are being validated.
+Note, that both `request` and `response` messages are being validated.
 
 If your gRPC method uses the same request and response message type, you can use `org.lognet.springboot.grpc.validation.group.RequestMessage` and
 `org.lognet.springboot.grpc.validation.group.ResponseMessage` validation groups to apply different validation logic  :
@@ -523,7 +523,7 @@ final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
 By adding `io.github.lognet:grpc-client-spring-boot-starter` dependency to your *java grpc client* application you can easily configure per-channel or per-call credentials :
 
 * Per-channel :
-
++
 [source,java]
 ----
 class MyClient{
@@ -550,7 +550,7 @@ class MyClient{
 <3> Provide token generator function (Please refer to link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtAuthBaseTest.java[for example].)
 
 * Per-call :
-
++
 [source,java]
 ----
 class MyClient{
@@ -618,7 +618,7 @@ Below are the essential parts of configurations for both server and client proje
 ----
 
 * Configure gRPC server to register itself with Eureka.
-
++
 [source,yaml]
 .bootstrap.yaml
 ----
@@ -627,7 +627,7 @@ spring:
         name: my-service-name <1>
 ----
 <1> Eureka's `ServiceId` by default is the spring application name, provide it before the service registers itself with Eureka.
-
++
 [source,yaml]
 .application.yaml
 ----
@@ -646,7 +646,7 @@ eureka:
 
 
 * Expose the gRPC service as part of Spring Boot Application.
-
++
 [source,java]
 .EurekaGrpcServiceApp.java
 ----
