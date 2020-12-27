@@ -522,7 +522,7 @@ final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
 
 By adding `io.github.lognet:grpc-client-spring-boot-starter` dependency to your *java grpc client* application you can easily configure per-channel or per-call credentials :
 
-* Per-channel :
+Per-channel::
 +
 [source,java]
 ----
@@ -549,7 +549,7 @@ class MyClient{
 <2> Intercept channel
 <3> Provide token generator function (Please refer to link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtAuthBaseTest.java[for example].)
 
-* Per-call :
+Per-call::
 +
 [source,java]
 ----
@@ -571,9 +571,9 @@ class MyClient{
 <1> Create call credentials with basic scheme
 <2> Create service stub
 <3> Attach call credentials to the call
-
++
 `AuthHeader` could also be built with bespoke authorization scheme :
-
++
 [source,java]
 ----
  AuthHeader
