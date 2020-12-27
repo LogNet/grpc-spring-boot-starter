@@ -343,7 +343,7 @@ See also https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_
 You can find  link:grpc-spring-boot-starter-demo/src/main/resources/META-INF/validation/constraints-person.xml[demo configuration] and corresponding tests
 link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/ValidationTest.java[here]
 
-Note, that both `request` and *response* messages are being validated.
+Note, that both `request` and `response` messages are being validated.
 
 If your gRPC method uses the same request and response message type, you can use `org.lognet.springboot.grpc.validation.group.RequestMessage` and
 `org.lognet.springboot.grpc.validation.group.ResponseMessage` validation groups to apply different validation logic  :
