@@ -67,7 +67,8 @@ public class GRpcMetricsAutoConfiguration {
                     .tag("method", getMethodDescriptor().getFullMethodName())
                     .tag("result", status.getCode().name());
             if (addAddressTag){
-                Optional.ofNullable(delegate().getAttributes().get(Grpc.TRANSPORT_ATTR_LOCAL_ADDR))
+                Optional.ofNullable(delegate().getAttributes())
+                        .map(a->a.get(Grpc.TRANSPORT_ATTR_LOCAL_ADDR))
                         .map(SocketAddress::toString)
                         .ifPresent(a->timerBuilder.tag("address",a));
             }
