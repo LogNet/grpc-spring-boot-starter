@@ -1,11 +1,13 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.examples.GreeterGrpc;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +18,9 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
@@ -26,6 +30,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class GrpcMeterTest extends GrpcServerTestBase {
     @Autowired
     private MeterRegistry registry;
+
+    @LocalRunningGrpcPort
+    private int port;
 
     @Autowired
     private SimpleConfig registryConfig;
@@ -49,5 +56,14 @@ public class GrpcMeterTest extends GrpcServerTestBase {
         assertThat(timer.max(TimeUnit.MILLISECONDS),greaterThan(0d));
         assertThat(timer.mean(TimeUnit.MILLISECONDS),greaterThan(0d));
         assertThat(timer.totalTime(TimeUnit.MILLISECONDS),greaterThan(0d));
+
+
+        final String addressTag = timer.getId().getTag("address");
+        assertThat(addressTag,notNullValue());
+        assertThat(addressTag,containsString(String.valueOf(port)));
+
+        final String methodTag = timer.getId().getTag("method");
+        assertThat(methodTag,notNullValue());
+        assertThat(methodTag,is(GreeterGrpc.getSayHelloMethod().getFullMethodName()));
     }
 }

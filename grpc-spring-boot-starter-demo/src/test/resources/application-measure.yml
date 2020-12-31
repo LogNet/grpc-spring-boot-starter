@@ -4,3 +4,9 @@ management:
       simple:
         step: 10s
         enabled: true
+
+grpc:
+  netty-server:
+    primary-listen-address: localhost:0
+    additional-listen-addresses:
+      - localhost:0

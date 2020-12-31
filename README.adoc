@@ -248,8 +248,9 @@ Please continue to https://docs.spring.io/spring-cloud-sleuth/docs/current/refer
 By including `org.springframework.boot:spring-boot-starter-actuator` dependency,
 the starter will collect gRPC server metrics , broken down by
 
-. gRPC service method FQN (Fully Qualified Name)
-. https://grpc.github.io/grpc-java/javadoc/io/grpc/Status.Code.html[Response status code]
+. `method` - gRPC service method FQN (Fully Qualified Name)
+. `result` - https://grpc.github.io/grpc-java/javadoc/io/grpc/Status.Code.html[Response status code]
+. `address` - server local address (if you exposed additional  listen addresses, with `grpc.netty-server.additional-listen-addresses` property)
 
 After configuring the exporter of your https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-metrics[choice],
 you should see the `timer` named `grpc.server.calls`.

@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc.autoconfigure.metrics;
 
 import io.grpc.ForwardingServerCall;
+import io.grpc.Grpc;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
@@ -10,6 +11,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -20,6 +22,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+
+import java.net.SocketAddress;
+import java.util.Optional;
 
 @Configuration
 @AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class})
@@ -45,21 +50,28 @@ public class GRpcMetricsAutoConfiguration {
 
     static class MonitoringServerCall<ReqT, RespT> extends  ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT> {
 
+        private final boolean addAddressTag;
         private MeterRegistry registry;
         final Timer.Sample start;
-        protected MonitoringServerCall(ServerCall<ReqT, RespT> delegate, MeterRegistry registry) {
+        protected MonitoringServerCall(ServerCall<ReqT, RespT> delegate, MeterRegistry registry, boolean addAddressTag) {
             super(delegate);
             this.start = Timer.start(registry);
             this.registry = registry;
+            this.addAddressTag = addAddressTag;
 
 
         }
         @Override
         public void close(Status status, Metadata trailers) {
-            start.stop(Timer.builder("grpc.server.calls")
-                    .tag("method",getMethodDescriptor().getFullMethodName())
-                    .tag("result",status.getCode().name())
-                    .register(registry));
+            final Timer.Builder timerBuilder = Timer.builder("grpc.server.calls")
+                    .tag("method", getMethodDescriptor().getFullMethodName())
+                    .tag("result", status.getCode().name());
+            if (addAddressTag){
+                Optional.ofNullable(delegate().getAttributes().get(Grpc.TRANSPORT_ATTR_LOCAL_ADDR))
+                        .map(SocketAddress::toString)
+                        .ifPresent(a->timerBuilder.tag("address",a));
+            }
+            start.stop(timerBuilder.register(registry));
 
             super.close(status, trailers);
         }
@@ -69,14 +81,17 @@ public class GRpcMetricsAutoConfiguration {
 
 
         private MeterRegistry registry;
+        private boolean addAddressTag;
 
-        public MonitoringServerInterceptor(MeterRegistry registry) {
+
+        public MonitoringServerInterceptor(MeterRegistry registry,boolean addAddressTag) {
             this.registry = registry;
+            this.addAddressTag = addAddressTag;
         }
 
         @Override
         public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-            return next.startCall(new MonitoringServerCall<>(call,registry), headers);
+            return next.startCall(new MonitoringServerCall<>(call,registry,addAddressTag), headers);
 
         }
 
@@ -88,7 +103,11 @@ public class GRpcMetricsAutoConfiguration {
 
     @Bean
     @GRpcGlobalInterceptor
-    public ServerInterceptor measure(MeterRegistry registry){
-        return  new MonitoringServerInterceptor(registry);
+    public ServerInterceptor measure(MeterRegistry registry, GRpcServerProperties properties){
+        final Boolean hasMultipleAddresses = Optional.ofNullable(properties.getNettyServer())
+                .map(GRpcServerProperties.NettyServerProperties::getAdditionalListenAddresses)
+                .map(l -> !l.isEmpty())
+                .orElse(false);
+        return  new MonitoringServerInterceptor(registry,hasMultipleAddresses);
     }
 }
