@@ -1,3 +1,6 @@
+== Version 4.4.1
+* If more than 1 port is exposed, add `address` tag to Micrometer's `timer`
+
 == Version 4.4.0
 * gRPC server metrics support via https://micrometer.io[micrometer.io] integration
 
