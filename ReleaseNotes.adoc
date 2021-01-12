@@ -1,3 +1,7 @@
+== Version 4.4.2
+* Spring Boot `2.4.1`
+* Spring Cloud `2020.0.0`
+
 == Version 4.4.1
 * If more than 1 port is exposed, add `address` tag to Micrometer's `timer`
 

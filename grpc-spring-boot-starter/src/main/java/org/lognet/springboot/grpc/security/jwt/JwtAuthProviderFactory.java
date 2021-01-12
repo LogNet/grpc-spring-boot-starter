@@ -1,7 +1,8 @@
 package org.lognet.springboot.grpc.security.jwt;
 
-import net.minidev.json.JSONNavi;
-import net.minidev.json.JSONObject;
+
+import com.nimbusds.jose.shaded.json.JSONNavi;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -24,7 +25,8 @@ public class JwtAuthProviderFactory {
         authenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             final String claim = Optional.ofNullable(jwt.getClaimAsString("aud"))
                     .orElse(jwt.getClaimAsString("azp"));
-            Assert.hasText(claim,"Neither aud nor azp claims exist");
+            Assert.hasText(claim,"Neither 'aud' nor 'azp' claims exist");
+
             JSONObject resourceAccess = jwt.getClaim("resource_access");
 
             final JSONNavi<?> roles = JSONNavi.newInstanceArray()

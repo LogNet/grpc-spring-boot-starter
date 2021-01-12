@@ -17,6 +17,12 @@ apply plugin: 'signing'
 apply plugin: "de.marcphilipp.nexus-publish"
 apply plugin: 'io.franzbecker.gradle-lombok'
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
     def outputDir = file("$buildDir/delombok")
     outputs.dir(outputDir)
@@ -132,7 +138,7 @@ dependencies {
     compileOnly "org.springframework.security:spring-security-oauth2-jose"
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly "org.springframework.boot:spring-boot-starter-actuator"
-    compileOnly group: 'org.springframework.cloud', name: 'spring-cloud-starter-consul-discovery', version: '2.1.1.RELEASE'
+    compileOnly 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
 
 }

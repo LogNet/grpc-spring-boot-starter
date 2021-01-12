@@ -41,10 +41,12 @@ dependencies {
     testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
     testCompile 'org.awaitility:awaitility:4.0.3'
 
-    testCompile "org.springframework.cloud:spring-cloud-config-server:2.1.1.RELEASE"
-    testCompile "org.springframework.cloud:spring-cloud-config-client:2.1.1.RELEASE"
+
+
+    testCompile "org.springframework.cloud:spring-cloud-config-server"
+    testCompile "org.springframework.cloud:spring-cloud-config-client"
     testCompile "com.playtika.testcontainers:embedded-keycloak:1.76"
-    testRuntime "org.springframework.cloud:spring-cloud-starter"
+    testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
 
     testImplementation 'org.hamcrest:hamcrest:2.1'

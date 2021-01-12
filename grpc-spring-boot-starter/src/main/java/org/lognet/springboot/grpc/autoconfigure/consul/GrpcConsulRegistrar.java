@@ -12,7 +12,6 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.EventListener;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class GrpcConsulRegistrar implements SmartLifecycle {
 
@@ -45,12 +44,7 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
         String appName = "grpc-" + ConsulAutoRegistration.getAppName(consulProperties, applicationContext.getEnvironment());
         grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
         grpcService.setId("grpc-" + ConsulAutoRegistration.getInstanceId(consulProperties, applicationContext));
-        grpcService.setTags(ConsulAutoRegistration.createTags(consulProperties)
-                .stream()
-                .filter(t->!t.startsWith("secure="))
-                .collect(Collectors.toList())
-        );
-
+        grpcService.setTags(consulProperties.getTags());
 
         if(consulProperties.isRegisterHealthCheck()) {
             GRpcConsulHealthCheck health = GRpcConsulHealthCheck.builder()
