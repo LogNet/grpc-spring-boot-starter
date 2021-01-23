@@ -131,7 +131,11 @@ public class GrpcServiceAuthorizationConfigurer
                         final Secured securedAnn = AnnotationUtils.findAnnotation(service.getClass(), Secured.class);
 
                         if (null != securedAnn) {
-                            new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(securedAnn.value());
+                            if (securedAnn.value().length == 0) {
+                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).authenticated();
+                            } else {
+                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(securedAnn.value());
+                            }
                         }
                     }
                     // method level security
