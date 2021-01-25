@@ -1222,8 +1222,10 @@ public final class CalculatorOuterClass {
       "TRACT\020\001\022\014\n\010MULTIPLY\020\002\022\n\n\006DIVIDE\020\003\"$\n\022Cal" +
       "culatorResponse\022\016\n\006result\030\001 \001(\0012D\n\nCalcu" +
       "lator\0226\n\tCalculate\022\022.CalculatorRequest\032\023" +
-      ".CalculatorResponse\"\000B\022\n\020io.grpc.example" +
-      "sb\006proto3"
+      ".CalculatorResponse\"\0002K\n\021SecuredCalculat" +
+      "or\0226\n\tCalculate\022\022.CalculatorRequest\032\023.Ca" +
+      "lculatorResponse\"\000B\022\n\020io.grpc.examplesb\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

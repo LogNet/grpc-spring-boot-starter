@@ -24,4 +24,7 @@ message CalculatorResponse {
 service Calculator {
   rpc Calculate(CalculatorRequest) returns (CalculatorResponse) {}
 }
+service SecuredCalculator {
+  rpc Calculate(CalculatorRequest) returns (CalculatorResponse) {}
+}
 

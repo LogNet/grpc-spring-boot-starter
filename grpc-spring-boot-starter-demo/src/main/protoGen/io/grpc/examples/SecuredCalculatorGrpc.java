@@ -7,11 +7,11 @@ import static io.grpc.MethodDescriptor.generateFullMethodName;
 @javax.annotation.Generated(
     value = "by gRPC proto compiler (version 1.35.0)",
     comments = "Source: calculator.proto")
-public final class CalculatorGrpc {
+public final class SecuredCalculatorGrpc {
 
-  private CalculatorGrpc() {}
+  private SecuredCalculatorGrpc() {}
 
-  public static final String SERVICE_NAME = "Calculator";
+  public static final String SERVICE_NAME = "SecuredCalculator";
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
@@ -25,10 +25,10 @@ public final class CalculatorGrpc {
   public static io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest,
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod() {
     io.grpc.MethodDescriptor<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse> getCalculateMethod;
-    if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
-      synchronized (CalculatorGrpc.class) {
-        if ((getCalculateMethod = CalculatorGrpc.getCalculateMethod) == null) {
-          CalculatorGrpc.getCalculateMethod = getCalculateMethod =
+    if ((getCalculateMethod = SecuredCalculatorGrpc.getCalculateMethod) == null) {
+      synchronized (SecuredCalculatorGrpc.class) {
+        if ((getCalculateMethod = SecuredCalculatorGrpc.getCalculateMethod) == null) {
+          SecuredCalculatorGrpc.getCalculateMethod = getCalculateMethod =
               io.grpc.MethodDescriptor.<io.grpc.examples.CalculatorOuterClass.CalculatorRequest, io.grpc.examples.CalculatorOuterClass.CalculatorResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "Calculate"))
@@ -37,7 +37,7 @@ public final class CalculatorGrpc {
                   io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new CalculatorMethodDescriptorSupplier("Calculate"))
+              .setSchemaDescriptor(new SecuredCalculatorMethodDescriptorSupplier("Calculate"))
               .build();
         }
       }
@@ -48,50 +48,50 @@ public final class CalculatorGrpc {
   /**
    * Creates a new async stub that supports all call types for the service
    */
-  public static CalculatorStub newStub(io.grpc.Channel channel) {
-    io.grpc.stub.AbstractStub.StubFactory<CalculatorStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<CalculatorStub>() {
+  public static SecuredCalculatorStub newStub(io.grpc.Channel channel) {
+    io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorStub>() {
         @java.lang.Override
-        public CalculatorStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new CalculatorStub(channel, callOptions);
+        public SecuredCalculatorStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new SecuredCalculatorStub(channel, callOptions);
         }
       };
-    return CalculatorStub.newStub(factory, channel);
+    return SecuredCalculatorStub.newStub(factory, channel);
   }
 
   /**
    * Creates a new blocking-style stub that supports unary and streaming output calls on the service
    */
-  public static CalculatorBlockingStub newBlockingStub(
+  public static SecuredCalculatorBlockingStub newBlockingStub(
       io.grpc.Channel channel) {
-    io.grpc.stub.AbstractStub.StubFactory<CalculatorBlockingStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<CalculatorBlockingStub>() {
+    io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorBlockingStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorBlockingStub>() {
         @java.lang.Override
-        public CalculatorBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new CalculatorBlockingStub(channel, callOptions);
+        public SecuredCalculatorBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new SecuredCalculatorBlockingStub(channel, callOptions);
         }
       };
-    return CalculatorBlockingStub.newStub(factory, channel);
+    return SecuredCalculatorBlockingStub.newStub(factory, channel);
   }
 
   /**
    * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
-  public static CalculatorFutureStub newFutureStub(
+  public static SecuredCalculatorFutureStub newFutureStub(
       io.grpc.Channel channel) {
-    io.grpc.stub.AbstractStub.StubFactory<CalculatorFutureStub> factory =
-      new io.grpc.stub.AbstractStub.StubFactory<CalculatorFutureStub>() {
+    io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorFutureStub> factory =
+      new io.grpc.stub.AbstractStub.StubFactory<SecuredCalculatorFutureStub>() {
         @java.lang.Override
-        public CalculatorFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-          return new CalculatorFutureStub(channel, callOptions);
+        public SecuredCalculatorFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
+          return new SecuredCalculatorFutureStub(channel, callOptions);
         }
       };
-    return CalculatorFutureStub.newStub(factory, channel);
+    return SecuredCalculatorFutureStub.newStub(factory, channel);
   }
 
   /**
    */
-  public static abstract class CalculatorImplBase implements io.grpc.BindableService {
+  public static abstract class SecuredCalculatorImplBase implements io.grpc.BindableService {
 
     /**
      */
@@ -115,16 +115,16 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorStub extends io.grpc.stub.AbstractAsyncStub<CalculatorStub> {
-    private CalculatorStub(
+  public static final class SecuredCalculatorStub extends io.grpc.stub.AbstractAsyncStub<SecuredCalculatorStub> {
+    private SecuredCalculatorStub(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorStub build(
+    protected SecuredCalculatorStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new CalculatorStub(channel, callOptions);
+      return new SecuredCalculatorStub(channel, callOptions);
     }
 
     /**
@@ -138,16 +138,16 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorBlockingStub extends io.grpc.stub.AbstractBlockingStub<CalculatorBlockingStub> {
-    private CalculatorBlockingStub(
+  public static final class SecuredCalculatorBlockingStub extends io.grpc.stub.AbstractBlockingStub<SecuredCalculatorBlockingStub> {
+    private SecuredCalculatorBlockingStub(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorBlockingStub build(
+    protected SecuredCalculatorBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new CalculatorBlockingStub(channel, callOptions);
+      return new SecuredCalculatorBlockingStub(channel, callOptions);
     }
 
     /**
@@ -160,16 +160,16 @@ public final class CalculatorGrpc {
 
   /**
    */
-  public static final class CalculatorFutureStub extends io.grpc.stub.AbstractFutureStub<CalculatorFutureStub> {
-    private CalculatorFutureStub(
+  public static final class SecuredCalculatorFutureStub extends io.grpc.stub.AbstractFutureStub<SecuredCalculatorFutureStub> {
+    private SecuredCalculatorFutureStub(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       super(channel, callOptions);
     }
 
     @java.lang.Override
-    protected CalculatorFutureStub build(
+    protected SecuredCalculatorFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
-      return new CalculatorFutureStub(channel, callOptions);
+      return new SecuredCalculatorFutureStub(channel, callOptions);
     }
 
     /**
@@ -188,10 +188,10 @@ public final class CalculatorGrpc {
       io.grpc.stub.ServerCalls.ServerStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.ClientStreamingMethod<Req, Resp>,
       io.grpc.stub.ServerCalls.BidiStreamingMethod<Req, Resp> {
-    private final CalculatorImplBase serviceImpl;
+    private final SecuredCalculatorImplBase serviceImpl;
     private final int methodId;
 
-    MethodHandlers(CalculatorImplBase serviceImpl, int methodId) {
+    MethodHandlers(SecuredCalculatorImplBase serviceImpl, int methodId) {
       this.serviceImpl = serviceImpl;
       this.methodId = methodId;
     }
@@ -220,9 +220,9 @@ public final class CalculatorGrpc {
     }
   }
 
-  private static abstract class CalculatorBaseDescriptorSupplier
+  private static abstract class SecuredCalculatorBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
-    CalculatorBaseDescriptorSupplier() {}
+    SecuredCalculatorBaseDescriptorSupplier() {}
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
@@ -231,21 +231,21 @@ public final class CalculatorGrpc {
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
-      return getFileDescriptor().findServiceByName("Calculator");
+      return getFileDescriptor().findServiceByName("SecuredCalculator");
     }
   }
 
-  private static final class CalculatorFileDescriptorSupplier
-      extends CalculatorBaseDescriptorSupplier {
-    CalculatorFileDescriptorSupplier() {}
+  private static final class SecuredCalculatorFileDescriptorSupplier
+      extends SecuredCalculatorBaseDescriptorSupplier {
+    SecuredCalculatorFileDescriptorSupplier() {}
   }
 
-  private static final class CalculatorMethodDescriptorSupplier
-      extends CalculatorBaseDescriptorSupplier
+  private static final class SecuredCalculatorMethodDescriptorSupplier
+      extends SecuredCalculatorBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
     private final String methodName;
 
-    CalculatorMethodDescriptorSupplier(String methodName) {
+    SecuredCalculatorMethodDescriptorSupplier(String methodName) {
       this.methodName = methodName;
     }
 
@@ -260,11 +260,11 @@ public final class CalculatorGrpc {
   public static io.grpc.ServiceDescriptor getServiceDescriptor() {
     io.grpc.ServiceDescriptor result = serviceDescriptor;
     if (result == null) {
-      synchronized (CalculatorGrpc.class) {
+      synchronized (SecuredCalculatorGrpc.class) {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new CalculatorFileDescriptorSupplier())
+              .setSchemaDescriptor(new SecuredCalculatorFileDescriptorSupplier())
               .addMethod(getCalculateMethod())
               .build();
         }

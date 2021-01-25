@@ -128,11 +128,15 @@ public class GrpcServiceAuthorizationConfigurer
                     final ServerServiceDefinition serverServiceDefinition = service.bindService();
                     // service level security
                     {
-                        final Secured securedAnn = AnnotationUtils.findAnnotation(service.getClass(), Secured.class);
+                        Optional.ofNullable(AnnotationUtils.findAnnotation(service.getClass(), Secured.class))
+                        .ifPresent(secured -> {
+                            if (secured.value().length == 0) {
+                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).authenticated();
+                            } else {
+                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(secured.value());
+                            }
+                        });
 
-                        if (null != securedAnn) {
-                            new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(securedAnn.value());
-                        }
                     }
                     // method level security
                     for (ServerMethodDefinition<?, ?> methodDefinition : serverServiceDefinition.getMethods()) {

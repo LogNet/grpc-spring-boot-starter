@@ -1,11 +1,6 @@
 package io.grpc.examples;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
-import static io.grpc.stub.ClientCalls.asyncUnaryCall;
-import static io.grpc.stub.ClientCalls.blockingUnaryCall;
-import static io.grpc.stub.ClientCalls.futureUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
 /**
  * <pre>
@@ -13,7 +8,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
  * </pre>
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.34.1)",
+    value = "by gRPC proto compiler (version 1.35.0)",
     comments = "Source: greeter.proto")
 public final class GreeterGrpc {
 
@@ -235,70 +230,70 @@ public final class GreeterGrpc {
      */
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getSayHelloMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayHelloMethod(), responseObserver);
     }
 
     /**
      */
     public void sayAuthHello(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getSayAuthHelloMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayAuthHelloMethod(), responseObserver);
     }
 
     /**
      */
     public void sayAuthOnlyHello(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnimplementedUnaryCall(getSayAuthOnlyHelloMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayAuthOnlyHelloMethod(), responseObserver);
     }
 
     /**
      */
     public void helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
-      asyncUnimplementedUnaryCall(getHelloPersonValidResponseMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getHelloPersonValidResponseMethod(), responseObserver);
     }
 
     /**
      */
     public void helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
-      asyncUnimplementedUnaryCall(getHelloPersonInvalidResponseMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getHelloPersonInvalidResponseMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getSayHelloMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.GreeterOuterClass.HelloRequest,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_HELLO)))
           .addMethod(
             getSayAuthHelloMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_AUTH_HELLO)))
           .addMethod(
             getSayAuthOnlyHelloMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 com.google.protobuf.Empty,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_AUTH_ONLY_HELLO)))
           .addMethod(
             getHelloPersonValidResponseMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.GreeterOuterClass.Person,
                 io.grpc.examples.GreeterOuterClass.Person>(
                   this, METHODID_HELLO_PERSON_VALID_RESPONSE)))
           .addMethod(
             getHelloPersonInvalidResponseMethod(),
-            asyncUnaryCall(
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 io.grpc.examples.GreeterOuterClass.Person,
                 io.grpc.examples.GreeterOuterClass.Person>(
@@ -331,7 +326,7 @@ public final class GreeterGrpc {
      */
     public void sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSayHelloMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -339,7 +334,7 @@ public final class GreeterGrpc {
      */
     public void sayAuthHello(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -347,7 +342,7 @@ public final class GreeterGrpc {
      */
     public void sayAuthOnlyHello(com.google.protobuf.Empty request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -355,7 +350,7 @@ public final class GreeterGrpc {
      */
     public void helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getHelloPersonValidResponseMethod(), getCallOptions()), request, responseObserver);
     }
 
@@ -363,7 +358,7 @@ public final class GreeterGrpc {
      */
     public void helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request,
         io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.Person> responseObserver) {
-      asyncUnaryCall(
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getHelloPersonInvalidResponseMethod(), getCallOptions()), request, responseObserver);
     }
   }
@@ -391,35 +386,35 @@ public final class GreeterGrpc {
      * </pre>
      */
     public io.grpc.examples.GreeterOuterClass.HelloReply sayHello(io.grpc.examples.GreeterOuterClass.HelloRequest request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSayHelloMethod(), getCallOptions(), request);
     }
 
     /**
      */
     public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthHello(com.google.protobuf.Empty request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSayAuthHelloMethod(), getCallOptions(), request);
     }
 
     /**
      */
     public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthOnlyHello(com.google.protobuf.Empty request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSayAuthOnlyHelloMethod(), getCallOptions(), request);
     }
 
     /**
      */
     public io.grpc.examples.GreeterOuterClass.Person helloPersonValidResponse(io.grpc.examples.GreeterOuterClass.Person request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getHelloPersonValidResponseMethod(), getCallOptions(), request);
     }
 
     /**
      */
     public io.grpc.examples.GreeterOuterClass.Person helloPersonInvalidResponse(io.grpc.examples.GreeterOuterClass.Person request) {
-      return blockingUnaryCall(
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getHelloPersonInvalidResponseMethod(), getCallOptions(), request);
     }
   }
@@ -448,7 +443,7 @@ public final class GreeterGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayHello(
         io.grpc.examples.GreeterOuterClass.HelloRequest request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSayHelloMethod(), getCallOptions()), request);
     }
 
@@ -456,7 +451,7 @@ public final class GreeterGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayAuthHello(
         com.google.protobuf.Empty request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request);
     }
 
@@ -464,7 +459,7 @@ public final class GreeterGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayAuthOnlyHello(
         com.google.protobuf.Empty request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSayAuthOnlyHelloMethod(), getCallOptions()), request);
     }
 
@@ -472,7 +467,7 @@ public final class GreeterGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.Person> helloPersonValidResponse(
         io.grpc.examples.GreeterOuterClass.Person request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getHelloPersonValidResponseMethod(), getCallOptions()), request);
     }
 
@@ -480,7 +475,7 @@ public final class GreeterGrpc {
      */
     public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.Person> helloPersonInvalidResponse(
         io.grpc.examples.GreeterOuterClass.Person request) {
-      return futureUnaryCall(
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getHelloPersonInvalidResponseMethod(), getCallOptions()), request);
     }
   }

@@ -9,6 +9,7 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
+import io.grpc.examples.SecuredCalculatorGrpc;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,6 @@ import static org.junit.Assert.assertTrue;
 
 
 @SpringBootTest(classes = DemoApp.class)
-//@ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
 @Import({UserDetailsAuthTest.TestCfg.class})
 public class UserDetailsAuthTest extends GrpcServerTestBase {
@@ -77,7 +77,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
-                        .and()
+                        .withSecuredAnnotation()
                         .userDetailsService(new InMemoryUserDetailsManager(user()));
 
             }
@@ -105,16 +105,49 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     }
 
     @Test
-    public void shouldFail() {
+    public void shouldFailWithPermissionDenied() {
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
-            CalculatorGrpc.newBlockingStub(selectedChanel).calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+            CalculatorGrpc
+                    .newBlockingStub(selectedChanel) //auth channel
+                    .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
                     .setNumber1(1)
                     .setNumber2(1)
                     .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
                     .build());
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
+    }
+
+
+    @Test
+    public void serviceLevelSecurityAuthenticationWithoutAuthorization() {
+
+
+        final CalculatorOuterClass.CalculatorResponse response = SecuredCalculatorGrpc
+                .newBlockingStub(selectedChanel)//auth channel
+                .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                .setNumber1(1)
+                .setNumber2(1)
+                .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                .build());
+        assertThat(response.getResult(),Matchers.is(2d));
+
+    }
+
+    @Test
+    public void shouldFailWithUnauthenticated() {
+
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
+            SecuredCalculatorGrpc
+                    .newBlockingStub(super.getChannel()) // channel without auth
+                    .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                    .setNumber1(1)
+                    .setNumber2(1)
+                    .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                    .build());
+        });
+        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.UNAUTHENTICATED));
 
     }
 
