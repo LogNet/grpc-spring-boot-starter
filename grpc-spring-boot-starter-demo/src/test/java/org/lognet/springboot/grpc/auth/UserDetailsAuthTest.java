@@ -1,8 +1,10 @@
 package org.lognet.springboot.grpc.auth;
 
 
+import com.google.protobuf.Empty;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
+import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
@@ -27,15 +29,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.concurrent.ExecutionException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 @SpringBootTest(classes = DemoApp.class)
-@ActiveProfiles("keycloack-test")
+//@ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
 @Import({UserDetailsAuthTest.TestCfg.class})
 public class UserDetailsAuthTest extends GrpcServerTestBase {
@@ -70,6 +75,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
+                        .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
                         .and()
                         .userDetailsService(new InMemoryUserDetailsManager(user()));
@@ -86,6 +92,19 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
 
     @Test
+    public void simpleAuthHeaderFormat() throws ExecutionException, InterruptedException {
+
+
+
+        final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(getChannel(false));
+        final String reply = greeterFutureStub.sayAuthOnlyHello(Empty.newBuilder().build()).get().getMessage();
+        assertNotNull("Reply should not be null",reply);
+        assertTrue(String.format("Reply should contain name '%s'",user.getUsername()),reply.contains(user.getUsername()));
+
+
+    }
+
+    @Test
     public void shouldFail() {
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
@@ -95,17 +114,21 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
                     .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
                     .build());
         });
-        assertThat(statusRuntimeException.getMessage(), Matchers.containsString("UNAUTHENTICATED"));
-
+        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
 
     }
 
     @Override
     protected Channel getChannel() {
+       return getChannel(true);
+    }
+
+    protected Channel getChannel(boolean binaryFormat) {
 
         final AuthClientInterceptor interceptor = new AuthClientInterceptor(AuthHeader.builder()
                 .basic(user.getUsername(),TestCfg.DemoGrpcSecurityConfig.pwd.getBytes())
-                );
+                .binaryFormat(binaryFormat)
+        );
         return ClientInterceptors.intercept(super.getChannel(), interceptor);
     }
 

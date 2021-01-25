@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc.auth;
 
 
+import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
@@ -139,7 +140,7 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                     .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
                     .build());
         });
-        assertThat(statusRuntimeException.getMessage(), Matchers.containsString("UNAUTHENTICATED"));
+        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
 
 
     }

@@ -1,3 +1,7 @@
+== Version 4.4.3-SNAPSHOT
+* Fixes *178
+* gRPC response status set to `PERMISSION_DENIED` when user has insufficient privileges to invoke gRPC method.
+
 == Version 4.4.2
 * Spring Boot `2.4.1`
 * Spring Cloud `2020.0.0`

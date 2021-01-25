@@ -11,6 +11,8 @@ import java.util.function.Supplier;
 public class AuthHeader implements Constants {
     private final Supplier<ByteBuffer> tokenSupplier;
     private final String authScheme;
+    @Builder.Default
+    private final boolean binaryFormat = true;
 
     public static class AuthHeaderBuilder {
 
@@ -35,6 +37,7 @@ public class AuthHeader implements Constants {
 
 
     }
+
     public Metadata attach(Metadata metadataHeader){
         ByteBuffer token = tokenSupplier.get();
         final byte[] header = ByteBuffer.allocate(authScheme.length() + token.remaining() + 1)
@@ -42,7 +45,11 @@ public class AuthHeader implements Constants {
                 .put((byte)' ')
                 .put(token)
                 .array();
-        metadataHeader.put(Constants.AUTH_HEADER_KEY,header);
+        if(binaryFormat) {
+            metadataHeader.put(Constants.AUTH_HEADER_BIN_KEY, header);
+        }else{
+            metadataHeader.put(Constants.AUTH_HEADER_KEY, new String(header));
+        }
         return metadataHeader;
     }
 }
