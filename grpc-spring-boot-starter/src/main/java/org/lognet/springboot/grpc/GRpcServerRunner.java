@@ -1,6 +1,11 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.*;
+import io.grpc.BindableService;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
+import io.grpc.ServerServiceDefinition;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import io.grpc.services.HealthStatusManager;
@@ -11,20 +16,22 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,7 +97,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
 
         configurator.accept(serverBuilder);
         server = serverBuilder.build().start();
-        applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext,server));
+        applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
 
         log.info("gRPC Server started, listening on port {}.", server.getPort());
         startDaemonAwaitThread();
@@ -103,8 +110,7 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
                 .map(interceptorClass -> {
                     try {
                         return 0 < applicationContext.getBeanNamesForType(interceptorClass).length ?
-                                applicationContext.getBean(interceptorClass) :
-                                interceptorClass.newInstance();
+                                applicationContext.getBean(interceptorClass) : interceptorClass.newInstance();
                     } catch (Exception e) {
                         throw new BeanCreationException("Failed to create interceptor instance.", e);
                     }
@@ -120,26 +126,34 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     }
 
     private Comparator<Object> serverInterceptorOrderComparator() {
-        Function<Object,Boolean> isOrderAnnotated = obj->{
-            Order ann = obj instanceof Method ? AnnotationUtils.findAnnotation((Method) obj, Order.class) :
-                    AnnotationUtils.findAnnotation(obj.getClass(), Order.class);
-            return ann != null;
-        };
-        return AnnotationAwareOrderComparator.INSTANCE.thenComparing((o1, o2) -> {
-            boolean p1 = isOrderAnnotated.apply(o1);
-            boolean p2 = isOrderAnnotated.apply(o2);
-            return p1 && !p2 ? -1 : p2 && !p1 ? 1 : 0;
-        }).reversed();
+        return new AnnotationAwareOrderComparator()
+                .withSourceProvider(o -> {
+                    List<Object> sources = new ArrayList<>(2);
+                    final Optional<RootBeanDefinition> rootBeanDefinition = Stream.of(applicationContext.getBeanNamesForType(o.getClass()))
+                            .findFirst()
+                            .map(name -> applicationContext.getBeanFactory().getBeanDefinition(name))
+                            .filter(RootBeanDefinition.class::isInstance)
+                            .map(RootBeanDefinition.class::cast);
+
+                            rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
+                                    .ifPresent(sources::add);
+
+                            rootBeanDefinition.map(RootBeanDefinition::getTargetType)
+                                    .filter(t -> t != o.getClass())
+                                    .ifPresent(sources::add);
+
+                    return sources.toArray();
+                }).reversed();
     }
 
     private void startDaemonAwaitThread() {
-        Thread awaitThread = new Thread(()->{
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    log.error("gRPC server awaiter interrupted.", e);
-                }
-            });
+        Thread awaitThread = new Thread(() -> {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                log.error("gRPC server awaiter interrupted.", e);
+            }
+        });
         awaitThread.setName("grpc-server-awaiter");
         awaitThread.setDaemon(false);
         awaitThread.start();
@@ -148,9 +162,9 @@ public class GRpcServerRunner implements CommandLineRunner, DisposableBean {
     @Override
     public void destroy() throws Exception {
 
-        Optional.ofNullable(server).ifPresent(s->{
+        Optional.ofNullable(server).ifPresent(s -> {
             log.info("Shutting down gRPC server ...");
-            s.getServices().forEach(def->healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
+            s.getServices().forEach(def -> healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
             s.shutdown();
             int shutdownGrace = gRpcServerProperties.getShutdownGrace();
             try {

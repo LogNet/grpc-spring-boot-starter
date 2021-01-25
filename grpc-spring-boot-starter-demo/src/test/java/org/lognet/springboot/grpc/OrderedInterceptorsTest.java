@@ -14,8 +14,8 @@ import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -55,12 +55,12 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
   @Override
   protected void afterGreeting() {
-    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 10, 100);
+    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 7,10,10, 100);
   }
 
 
 
-  @Configuration
+  @TestConfiguration
   public static class TheConfiguration {
 
 
@@ -153,6 +153,34 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
         calledInterceptors.add(100);
         return next.startCall(call, headers);
       }
+    }
+
+    @Bean
+    @GRpcGlobalInterceptor
+    @Order(7)
+    public  ServerInterceptor mySeventhInterceptor(){
+      return  new ServerInterceptor() {
+        @Override
+        public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+            calledInterceptors.add(7);
+            return next.startCall(call, headers);
+
+        }
+      };
+    }
+
+    @Bean
+    @GRpcGlobalInterceptor
+    @Order
+    public  ServerInterceptor myOrderedMethodFactoryBeanInterceptor(){
+      return  new ServerInterceptor() {
+        @Override
+        public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+          calledInterceptors.add(10);
+          return next.startCall(call, headers);
+
+        }
+      };
     }
 
     @Bean
