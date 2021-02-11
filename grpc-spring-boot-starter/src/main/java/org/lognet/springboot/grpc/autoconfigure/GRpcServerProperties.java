@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.unit.DataSize;
@@ -36,6 +37,7 @@ public class GRpcServerProperties {
     @Getter(AccessLevel.NONE)
     private volatile Integer runningPort = null;
 
+    private int startUpPhase = SmartLifecycle.DEFAULT_PHASE;
     /**
      * Enables the embedded grpc server.
      */

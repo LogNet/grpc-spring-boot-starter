@@ -83,6 +83,15 @@ The actual port being used can then be retrieved by using `@LocalRunningGrpcPort
     enableReflection: true
 ----
 
+
+* Optionally set the startup phase order (deafaults to `Integer.MAX_VALUE`).
+
+[source,yaml]
+----
+ grpc:
+    start-up-phase: XXX
+----
+
 * Optionally set the number of seconds to wait for preexisting calls to finish during graceful server shutdown.
 New calls will be rejected during this time.
 A negative value is equivalent to an infinite grace period.
