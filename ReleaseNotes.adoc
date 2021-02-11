@@ -1,3 +1,6 @@
+== Version 4.4.4-SNAPSHOT
+* Fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/181[181]
+
 == Version 4.4.3
 * Fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/178[178]
 * Fixes https://github.com/LogNet/grpc-spring-boot-starter/issues/117[117]

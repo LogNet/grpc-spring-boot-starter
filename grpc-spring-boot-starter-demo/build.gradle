@@ -45,7 +45,7 @@ dependencies {
 
     testCompile "org.springframework.cloud:spring-cloud-config-server"
     testCompile "org.springframework.cloud:spring-cloud-config-client"
-    testCompile "com.playtika.testcontainers:embedded-keycloak:1.76"
+    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.3"
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
 
