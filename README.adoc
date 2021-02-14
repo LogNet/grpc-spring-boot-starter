@@ -31,7 +31,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.4.3'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.4.4'
 }
 
 
@@ -84,7 +84,7 @@ The actual port being used can then be retrieved by using `@LocalRunningGrpcPort
 ----
 
 
-* Optionally set the startup phase order (deafaults to `Integer.MAX_VALUE`).
+* Optionally set the https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/SmartLifecycle.html[startup phase order] (defaults to `Integer.MAX_VALUE`).
 
 [source,yaml]
 ----
