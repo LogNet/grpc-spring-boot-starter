@@ -7,6 +7,7 @@ import io.grpc.ServerMethodDefinition;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.ServiceDescriptor;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -39,7 +40,7 @@ public class GrpcServiceAuthorizationConfigurer
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
         registry.processSecuredAnnotation();
-        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.securedMethods));
+        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.securedMethods, registry.interceptorPrecedence));
     }
 
 
@@ -88,6 +89,7 @@ public class GrpcServiceAuthorizationConfigurer
         private MultiValueMap<MethodDescriptor<?, ?>, ConfigAttribute> securedMethods = new LinkedMultiValueMap<>();
         private ApplicationContext context;
         private boolean withSecuredAnnotation = true;
+        private int interceptorPrecedence = Ordered.HIGHEST_PRECEDENCE;
 
         Registry(ApplicationContext context) {
             this.context = context;
@@ -117,6 +119,17 @@ public class GrpcServiceAuthorizationConfigurer
         }
         public GrpcSecurity withSecuredAnnotation(boolean withSecuredAnnotation) {
             this.withSecuredAnnotation = withSecuredAnnotation;
+            return and();
+        }
+
+        /**
+         * Allows callers to configure the security interceptor precedence
+         * @param interceptorPrecedence the precedence, defaults to {@code org.springframework.core.Ordered.HIGHEST_PRECEDENCE}
+         * @return GrpcSecurity configuration
+         * @see org.springframework.core.Ordered
+         */
+        public GrpcSecurity withInterceptorPrecedence(int interceptorPrecedence) {
+            this.interceptorPrecedence = interceptorPrecedence;
             return and();
         }
 

@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 
 public class GrpcSecurityMetadataSource implements SecurityMetadataSource {
     private Map<MethodDescriptor<?,?>, List<ConfigAttribute>> methodsMap;
+    private int interceptorPrecedence;
 
-    public GrpcSecurityMetadataSource(Map<MethodDescriptor<?, ?>, List<ConfigAttribute>> methodsMap) {
+    public GrpcSecurityMetadataSource(Map<MethodDescriptor<?, ?>, List<ConfigAttribute>> methodsMap, int interceptorPrecedence) {
         this.methodsMap = methodsMap;
+        this.interceptorPrecedence = interceptorPrecedence;
     }
 
     @Override
@@ -33,5 +35,9 @@ public class GrpcSecurityMetadataSource implements SecurityMetadataSource {
     @Override
     public boolean supports(Class<?> clazz) {
         return MethodDescriptor.class.isAssignableFrom(clazz);
+    }
+
+    public int getInterceptorPrecedence() {
+        return interceptorPrecedence;
     }
 }

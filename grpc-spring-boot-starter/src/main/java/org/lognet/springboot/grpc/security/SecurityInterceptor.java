@@ -34,7 +34,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Override
     public int getOrder() {
-        return HIGHEST_PRECEDENCE;
+        return securedMethods.getInterceptorPrecedence();
     }
 
     @Override
