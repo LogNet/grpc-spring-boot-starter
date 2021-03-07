@@ -7,6 +7,8 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.lognet.springboot.grpc.validation.group.RequestMessage;
 import org.lognet.springboot.grpc.validation.group.ResponseMessage;
 import org.springframework.core.Ordered;
@@ -14,11 +16,15 @@ import org.springframework.core.Ordered;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import java.util.Optional;
 import java.util.Set;
 
 
 public class ValidatingInterceptor implements ServerInterceptor, Ordered {
     private Validator validator;
+    @Setter
+    @Accessors(fluent = true)
+    private Integer order;
 
     public ValidatingInterceptor(Validator validator) {
         this.validator = validator;
@@ -59,6 +65,6 @@ public class ValidatingInterceptor implements ServerInterceptor, Ordered {
 
     @Override
     public int getOrder() {
-        return HIGHEST_PRECEDENCE + 10;
+        return Optional.ofNullable(order).orElse(HIGHEST_PRECEDENCE + 10);
     }
 }

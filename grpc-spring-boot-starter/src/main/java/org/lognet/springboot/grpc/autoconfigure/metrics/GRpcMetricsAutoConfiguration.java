@@ -9,6 +9,8 @@ import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
@@ -18,6 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +33,7 @@ import java.util.Optional;
 @AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class})
 @ConditionalOnClass({MeterRegistry.class})
 @Conditional(GRpcMetricsAutoConfiguration.OnGrpcAndMeterRegistryEnabledCondition.class)
+@EnableConfigurationProperties(GRpcMetricsProperties.class)
 public class GRpcMetricsAutoConfiguration {
 
     protected static class OnGrpcAndMeterRegistryEnabledCondition extends AllNestedConditions {
@@ -83,6 +87,9 @@ public class GRpcMetricsAutoConfiguration {
 
         private MeterRegistry registry;
         private boolean addAddressTag;
+        @Setter
+        @Accessors(fluent = true)
+        private Integer order;
 
 
         public MonitoringServerInterceptor(MeterRegistry registry,boolean addAddressTag) {
@@ -96,19 +103,22 @@ public class GRpcMetricsAutoConfiguration {
 
         }
 
+
+
         @Override
         public int getOrder() {
-            return HIGHEST_PRECEDENCE+20;
+            return Optional.ofNullable(order).orElse(HIGHEST_PRECEDENCE+20);
         }
     }
 
     @Bean
     @GRpcGlobalInterceptor
-    public ServerInterceptor measure(MeterRegistry registry, GRpcServerProperties properties){
+    public ServerInterceptor measure(MeterRegistry registry, GRpcServerProperties properties,GRpcMetricsProperties metricsProperties){
         final Boolean hasMultipleAddresses = Optional.ofNullable(properties.getNettyServer())
                 .map(GRpcServerProperties.NettyServerProperties::getAdditionalListenAddresses)
                 .map(l -> !l.isEmpty())
                 .orElse(false);
-        return  new MonitoringServerInterceptor(registry,hasMultipleAddresses);
+        return  new MonitoringServerInterceptor(registry,hasMultipleAddresses)
+                .order(metricsProperties.getInterceptorOrder());
     }
 }

@@ -151,7 +151,8 @@ public class GRpcServerRunner implements SmartLifecycle {
                                     .ifPresent(sources::add);
 
                     return sources.toArray();
-                }).reversed();
+                })
+                .reversed();
     }
 
     private void startDaemonAwaitThread() {

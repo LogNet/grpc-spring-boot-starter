@@ -26,15 +26,19 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     private GrpcSecurityMetadataSource securedMethods;
     private AuthenticationSchemeSelector schemeSelector;
+    private Integer order;
 
     public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods, AuthenticationSchemeSelector schemeSelector) {
         this.securedMethods = securedMethods;
         this.schemeSelector = schemeSelector;
     }
 
+    public void setOrder(Integer interceptorOrder) {
+        order = interceptorOrder;
+    }
     @Override
     public int getOrder() {
-        return HIGHEST_PRECEDENCE;
+        return Optional.ofNullable(order).orElse(Ordered.HIGHEST_PRECEDENCE);
     }
 
     @Override
@@ -93,8 +97,6 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
 
     }
-
-
 
 
 

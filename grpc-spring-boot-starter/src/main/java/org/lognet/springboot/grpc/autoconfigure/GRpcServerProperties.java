@@ -81,6 +81,12 @@ public class GRpcServerProperties {
     public static class SecurityProperties {
         private Resource certChain;
         private Resource privateKey;
+        private Auth auth;
+        @Getter
+        @Setter
+        public static class Auth {
+            private Integer interceptorOrder;
+        }
     }
 
     @Getter

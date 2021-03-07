@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc.security;
 
 import io.grpc.Context;
 import io.grpc.ServerInterceptor;
+import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterceptor, GrpcSecurity>
         implements SecurityBuilder<ServerInterceptor>, ApplicationContextAware {
@@ -68,12 +70,19 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
     @Override
     protected ServerInterceptor performBuild() throws Exception {
 
+
         final SecurityInterceptor securityInterceptor = new SecurityInterceptor(getSharedObject(GrpcSecurityMetadataSource.class),
                 getAuthenticationSchemeService());
         securityInterceptor.setAuthenticationManager(getSharedObject(AuthenticationManagerBuilder.class).build());
         final RoleVoter scopeVoter = new RoleVoter();
         scopeVoter.setRolePrefix("SCOPE_");
         securityInterceptor.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter(),scopeVoter, new AuthenticatedAttributeVoter())));
+        final Integer order = Optional.of(applicationContext.getBean(GRpcServerProperties.class))
+                .map(GRpcServerProperties::getSecurity)
+                .map(GRpcServerProperties.SecurityProperties::getAuth)
+                .map(GRpcServerProperties.SecurityProperties.Auth::getInterceptorOrder)
+                .orElse(null);
+        securityInterceptor.setOrder(order);
         return securityInterceptor;
     }
     @SuppressWarnings("unchecked")
