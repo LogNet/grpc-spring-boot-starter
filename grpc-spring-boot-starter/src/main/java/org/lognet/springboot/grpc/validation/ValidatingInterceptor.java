@@ -5,12 +5,14 @@ import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.lognet.springboot.grpc.FailureHandlingServerInterceptor;
+import org.lognet.springboot.grpc.GRpcErrorHandler;
 import org.lognet.springboot.grpc.validation.group.RequestMessage;
 import org.lognet.springboot.grpc.validation.group.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
 import javax.validation.ConstraintViolation;
@@ -20,14 +22,20 @@ import java.util.Optional;
 import java.util.Set;
 
 
-public class ValidatingInterceptor implements ServerInterceptor, Ordered {
+public class ValidatingInterceptor implements FailureHandlingServerInterceptor, Ordered {
     private Validator validator;
     @Setter
     @Accessors(fluent = true)
     private Integer order;
 
+    private GRpcErrorHandler errorHandler;
+
     public ValidatingInterceptor(Validator validator) {
         this.validator = validator;
+    }
+    @Autowired
+    public void setErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
+        this.errorHandler = errorHandler.orElseGet(()->new GRpcErrorHandler() {});
     }
 
     @Override
@@ -39,12 +47,10 @@ public class ValidatingInterceptor implements ServerInterceptor, Ordered {
             public void sendMessage(RespT message) {
                 final Set<ConstraintViolation<RespT>> violations = validator.validate(message, ResponseMessage.class);
                 if (!violations.isEmpty()) {
-                    Status status = Status.FAILED_PRECONDITION.withDescription(new ConstraintViolationException(violations).getMessage());
-                    delegate().close(status, headers);
+                    closeCall(message,errorHandler,delegate(),headers,Status.FAILED_PRECONDITION,new ConstraintViolationException(violations));
                 } else {
                     super.sendMessage(message);
                 }
-
             }
         }, headers);
         return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(listener) {
@@ -52,8 +58,8 @@ public class ValidatingInterceptor implements ServerInterceptor, Ordered {
             public void onMessage(ReqT message) {
                 final Set<ConstraintViolation<ReqT>> violations = validator.validate(message, RequestMessage.class);
                 if (!violations.isEmpty()) {
-                    Status status = Status.INVALID_ARGUMENT.withDescription(new ConstraintViolationException(violations).getMessage());
-                    call.close(status, headers);
+                    closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
+
                 } else {
                     super.onMessage(message);
                 }

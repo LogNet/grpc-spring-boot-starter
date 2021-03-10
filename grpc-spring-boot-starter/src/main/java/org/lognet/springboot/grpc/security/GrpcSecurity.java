@@ -77,12 +77,11 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
         final RoleVoter scopeVoter = new RoleVoter();
         scopeVoter.setRolePrefix("SCOPE_");
         securityInterceptor.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter(),scopeVoter, new AuthenticatedAttributeVoter())));
-        final Integer order = Optional.of(applicationContext.getBean(GRpcServerProperties.class))
+        final GRpcServerProperties.SecurityProperties.Auth authCfg = Optional.of(applicationContext.getBean(GRpcServerProperties.class))
                 .map(GRpcServerProperties::getSecurity)
                 .map(GRpcServerProperties.SecurityProperties::getAuth)
-                .map(GRpcServerProperties.SecurityProperties.Auth::getInterceptorOrder)
                 .orElse(null);
-        securityInterceptor.setOrder(order);
+        securityInterceptor.setConfig(authCfg);
         return securityInterceptor;
     }
     @SuppressWarnings("unchecked")

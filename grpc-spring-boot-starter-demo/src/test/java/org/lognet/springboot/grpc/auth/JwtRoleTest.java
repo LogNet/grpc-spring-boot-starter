@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc.auth;
 
 
+import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
@@ -9,6 +10,7 @@ import io.grpc.examples.GreeterGrpc;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.GRpcErrorHandler;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
@@ -17,6 +19,7 @@ import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,9 +48,22 @@ import static org.junit.Assert.assertThrows;
 public class JwtRoleTest extends JwtAuthBaseTest {
 
 
+    static final Metadata.Key<String> key = Metadata.Key.of("test", Metadata.ASCII_STRING_MARSHALLER);
+
     @TestConfiguration
     static class TestCfg {
 
+        @Bean
+        public GRpcErrorHandler handler(){
+            return new GRpcErrorHandler(){
+                @Override
+                public Status handle(Object message, Status status, Exception exception, Metadata requestHeaders, Metadata responseHeaders) {
+
+                    responseHeaders.put(key,"value");
+                    return super.handle(message, status, exception, requestHeaders, responseHeaders);
+                }
+            };
+        }
         @EnableGrpcSecurity
         public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
 
@@ -141,6 +157,8 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                     .build());
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
+
+        assertThat(statusRuntimeException.getTrailers().get(key),Matchers.is("value"));
 
 
     }

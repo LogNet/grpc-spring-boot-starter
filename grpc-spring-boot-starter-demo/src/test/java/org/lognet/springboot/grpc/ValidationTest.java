@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.GreeterGrpc;
@@ -10,6 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +23,22 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = {"grpc.port=0"})
+@Import(ValidationTest.TestCfg.class)
 public class ValidationTest extends GrpcServerTestBase {
+
+    @TestConfiguration
+    static class TestCfg {
+        @Bean
+        public GRpcErrorHandler authErrorHandler() {
+            return new GRpcErrorHandler() {
+                @Override
+                public Status handle(Object message, Status status, Exception exception, Metadata requestHeaders, Metadata responseHeaders) {
+                    responseHeaders.put(Metadata.Key.of("test", Metadata.ASCII_STRING_MARSHALLER), "val");
+                    return super.handle(message,status,exception,requestHeaders,responseHeaders);
+                }
+            };
+        }
+    }
     private  GreeterGrpc.GreeterBlockingStub stub;
 
 
@@ -45,6 +64,7 @@ public class ValidationTest extends GrpcServerTestBase {
                 Matchers.containsStringIgnoringCase(getFieldName(GreeterOuterClass.Person.NAME_FIELD_NUMBER))
 
         ));
+
     }
 
     @Test
@@ -84,6 +104,7 @@ public class ValidationTest extends GrpcServerTestBase {
                 Matchers.containsStringIgnoringCase("must be true")
 
         ));
+        assertResponseHeaders(e);
     }
 
     @Test
@@ -105,6 +126,7 @@ public class ValidationTest extends GrpcServerTestBase {
                 Matchers.containsStringIgnoringCase(person.getName()),
                 Matchers.containsStringIgnoringCase(Integer.toString(person.getAge()))
         ));
+        assertResponseHeaders(e);
 
 
 
@@ -135,15 +157,18 @@ public class ValidationTest extends GrpcServerTestBase {
 
                 Matchers.containsStringIgnoringCase(getFieldName(GreeterOuterClass.Person.NICKNAME_FIELD_NUMBER)),
                 Matchers.containsStringIgnoringCase("must not be empty")
-
-
         ));
-
+        assertResponseHeaders(e);
 
     }
 
 
     String getFieldName(int fieldNumber) {
         return GreeterOuterClass.Person.getDescriptor().findFieldByNumber(fieldNumber).getName();
+    }
+
+    private void assertResponseHeaders(StatusRuntimeException e) {
+        final String header = e.getTrailers().get(Metadata.Key.of("test", Metadata.ASCII_STRING_MARSHALLER));
+        assertThat(header, Matchers.is("val"));
     }
 }

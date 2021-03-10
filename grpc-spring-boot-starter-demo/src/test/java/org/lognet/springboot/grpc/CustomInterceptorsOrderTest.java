@@ -13,6 +13,7 @@ import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = DemoApp.class,
         properties = {
+                "grpc.security.auth.fail-fast=false", // give validator a chance to run before failing auth
                 "grpc.security.auth.interceptor-order=3", //third
                 "grpc.metrics.interceptor-order=2", //second
                 "grpc.validation.interceptor-order=1" //first
@@ -90,7 +92,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
 
     }
 
-   // @Test
+    @Test
     public void validationShouldInvokedBeforeAuthTest() {
         final GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(super.getChannel());
         StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
@@ -99,7 +101,9 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
                     .clearName()//invalid
                     .build());
         });
+
         assertThat(e.getStatus().getCode(), Matchers.is(Status.Code.INVALID_ARGUMENT));
+
 
     }
 

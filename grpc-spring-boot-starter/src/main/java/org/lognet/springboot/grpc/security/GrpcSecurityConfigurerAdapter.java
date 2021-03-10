@@ -20,6 +20,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     }
 
 
+
     @Autowired
     public void setApplicationContext(ApplicationContext context) throws Exception {
 

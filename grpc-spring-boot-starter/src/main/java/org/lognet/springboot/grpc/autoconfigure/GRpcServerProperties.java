@@ -86,6 +86,7 @@ public class GRpcServerProperties {
         @Setter
         public static class Auth {
             private Integer interceptorOrder;
+            private boolean failFast = true;
         }
     }
 
