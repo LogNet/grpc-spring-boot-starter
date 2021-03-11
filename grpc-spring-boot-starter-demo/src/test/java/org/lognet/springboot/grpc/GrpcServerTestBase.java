@@ -49,6 +49,8 @@ public abstract class GrpcServerTestBase {
     @Autowired
     protected GRpcServerProperties gRpcServerProperties;
 
+    protected String name="John";
+
     @Before
     public   void setupChannels() throws IOException {
         if(gRpcServerProperties.isEnabled()) {
@@ -102,7 +104,7 @@ public abstract class GrpcServerTestBase {
     public void simpleGreeting() throws ExecutionException, InterruptedException {
 
 
-        String name ="John";
+
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(selectedChanel);
         final GreeterOuterClass.HelloRequest helloRequest =GreeterOuterClass.HelloRequest.newBuilder().setName(name).build();
         final String reply = beforeGreeting(greeterFutureStub).sayHello(helloRequest).get().getMessage();
