@@ -1,4 +1,11 @@
 = Spring boot starter for http://www.grpc.io/[gRPC framework.]
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
 :toc:
 
 image:https://img.shields.io/maven-central/v/io.github.lognet/grpc-spring-boot-starter.svg?label=Maven%20Central[link=https://search.maven.org/search?q=g:%22io.github.lognet%22%20AND%20a:%22grpc-spring-boot-starter%22]
@@ -261,7 +268,11 @@ This gives you the ability to setup the desired order of built-in and your custo
 
 The way grpc interceptor works is that it intercepts the call and returns the server call listener, which in turn can intercept the request message as well, before forwarding it to the actual service call handler :
 
-`interceptor_1(interceptCall)` -> `interceptor_2(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `interceptor_2(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`
+ ****
+`interceptor_1(interceptCall)` -> `interceptor_2(interceptCall)` -> `interceptor_3(interceptCall)` -> +
+`interceptor_1(On_Message)`-> `interceptor_2(On_Message)`-> `interceptor_3(On_Message)`-> +
+`actual service call`
+****
 
 By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed +
 
@@ -270,11 +281,19 @@ Assuming `interceptor_2` is `securityInterceptor` :
 * For failed authentication/authorization with  `grpc.security.auth.fail-fast=true`(default): +
 +
 
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* -> +++<del>+++ -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
+****
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* -> +++<del>+++ `interceptor_3(interceptCall)` -> +
+`interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`->`interceptor_3(On_Message)`-> +
+`actual service call`+++</del>+++
+****
 
 * For failed authentication/authorization with `grpc.security.auth.fail-fast=false`: +
 +
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed* -> +++<del>+++-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
+****
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` ->
+`interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed*  +++<del>+++-> `interceptor_3(On_Message)`-> +
+`actual service call`+++</del>+++
+****
 
 === Distributed tracing support (Spring Cloud Sleuth integration)
 
