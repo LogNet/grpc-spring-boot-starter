@@ -268,7 +268,7 @@ This gives you the ability to setup the desired order of built-in and your custo
 
 The way grpc interceptor works is that it intercepts the call and returns the server call listener, which in turn can intercept the request message as well, before forwarding it to the actual service call handler :
 
- ****
+****
 `interceptor_1(interceptCall)` -> `interceptor_2(interceptCall)` -> `interceptor_3(interceptCall)` -> +
 `interceptor_1(On_Message)`-> `interceptor_2(On_Message)`-> `interceptor_3(On_Message)`-> +
 `actual service call`
