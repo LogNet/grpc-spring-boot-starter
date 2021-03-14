@@ -9,3 +9,4 @@ bin/
 !/.gitignore
 !/.travis.yml
 out/
+/grpc-spring-boot-starter/changelog

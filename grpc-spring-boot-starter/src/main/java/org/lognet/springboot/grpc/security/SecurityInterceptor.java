@@ -110,16 +110,15 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
     private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers,final Status status, Exception exception) {
 
         if (authCfg.isFailFast()) {
-            closeCall(null,errorHandler,call,headers,status,exception);
-            return new ServerCall.Listener<ReqT>() {
-                // noop
-            };
+            throw closeCall(null,errorHandler,call,headers,status,exception);
+
         } else {
 
            return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call,headers))  {
                 @Override
                 public void onMessage(ReqT message) {
-                    closeCall(message,errorHandler,call,headers,status,exception);
+                   throw  closeCall(message, errorHandler, call, headers, status, exception);
+
 
                 }
             };

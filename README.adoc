@@ -219,6 +219,17 @@ The annotation on java config factory method is also supported :
  }
 ----
 
+The particular service also has the opportunity to disable the global interceptors :
+
+[source,java]
+----
+@GRpcService(applyGlobalInterceptors = false)
+public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
+    // ommited
+}
+----
+==== Interceptors ordering
+
 Global interceptors can be ordered using Spring's `@Ordered` or `@Priority` annotations.
 Following Spring's ordering semantics, lower order values have higher priority and will be executed first in the interceptor chain.
 
@@ -237,15 +248,33 @@ public  class B implements ServerInterceptor{
 }
 ----
 
-The particular service also has the opportunity to disable the global interceptors :
+The starter uses built-in interceptors to implement Spring `Security`, `Validation` and `Metrics` integration.
+Their order can also be controlled by below properties :
 
-[source,java]
-----
-@GRpcService(applyGlobalInterceptors = false)
-public  class GreeterService extends  GreeterGrpc.GreeterImplBase{
-    // ommited
-}
-----
+* `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE`)
+* `grpc.validation.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+10`)
+* `grpc.metrics.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+20`)
+
+This gives you the ability to setup the desired order of built-in and your custom interceptors.
+
+*Keep on reading !!! There is more*
+
+The way grpc interceptor works is that it intercepts the call and returns the server call listener, which in turn can intercept the request message as well, before forwarding it to the actual service call handler :
+
+`interceptor_1(interceptCall)` -> `interceptor_2(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `interceptor_2(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`
+
+By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed +
+
+So, for failed authentication/authorization with +
+`grpc.security.auth.fail-fast=true`(default): +
+
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* [.line-through]#-> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`#
+
+And  for failed authentication/authorization with +
+`grpc.security.auth.fail-fast=false`: +
+
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed*-> [.line-through]#`interceptor_3(On_Message)`-> `actual service call`#
+
 === Distributed tracing support (Spring Cloud Sleuth integration)
 
 This started is *natively* supported by `spring-cloud-sleuth` project. +
@@ -264,8 +293,20 @@ the starter will collect gRPC server metrics , broken down by
 After configuring the exporter of your https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html#production-ready-metrics[choice],
 you should see the `timer` named `grpc.server.calls`.
 
+==== Custom tags support
 
+By defining `GRpcMetricsTagsContributor` bean in your application context, you can add custom tags to the `grpc.server.calls` timer. +
+You can also use `RequestAwareGRpcMetricsTagsContributor` bean to tag *unary* calls. +
+Demo is https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/GrpcMeterTest.java[here]
 
+[TIP]
+Keep the dispersion low not to blow up the cardinality of the metric.
+
+`RequestAwareGRpcMetricsTagsContributor` can be still executed for failed authentication if `metric` interceptor has higher precedence than `security` interceptor and   `grpc.security.auth.fail-fast` set to `false`. +
+This case is covered by link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/MetricWithSecurityTest.java[this] test. +
+
+[TIP]
+Make sure to read <<Interceptors ordering>> chapter.
 
 === Spring Boot Validation support
 
@@ -399,6 +440,12 @@ Note also custom cross-field link:grpc-spring-boot-starter-demo/src/main/java/or
 </bean>
 ----
 
+As described in  <<Interceptors ordering>> chapter, you can give `validation` interceptor the higher precedence than `security` interceptor and set `grpc.security.auth.fail-fast` property to `false`. +
+In this scenario, if call is both unauthenticated and invalid, the client will get `Status.INVALID_ARGUMENT` instead of `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` response status.
+
+By adding `GRpcErrorHandler` bean to your application, you get  a chance to send your custom response headers. The error handler will be called with `Status.INVALID_ARGUMENT` and incoming request message that is failed.
+
+
 == Spring Security Integration
 
 === Setup
@@ -525,6 +572,14 @@ To obtain  `Authentication` object in the implementation of *secured method*, pl
 ----
 final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
 ----
+
+
+=== Custom  authentication failure handling
+
+By adding `GRpcErrorHandler` bean to your application, you get  a chance to provide your custom response headers. The error handler will be called with `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` (and incoming request message , if you set `grpc.security.auth.fail-fast` property to `false`). +
+The demo is link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtRoleTest.java[here]
+
+
 
 
 

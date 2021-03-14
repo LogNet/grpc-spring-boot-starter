@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -71,6 +72,7 @@ public class GRpcMetricsAutoConfiguration {
 
         private Collection<GRpcMetricsTagsContributor> tagsContributors;
         private  List<Tag> additionalTags;
+        private AtomicBoolean closed = new AtomicBoolean(false);
 
 
 
@@ -84,14 +86,17 @@ public class GRpcMetricsAutoConfiguration {
         @Override
         public void close(Status status, Metadata trailers) {
 
-            final Timer.Builder timerBuilder = Timer.builder("grpc.server.calls");
-            tagsContributors.forEach(c->
-                timerBuilder.tags(c.getTags(status,getMethodDescriptor(),getAttributes()))
-            );
-            Optional.ofNullable(additionalTags)
-                    .ifPresent(timerBuilder::tags);
+            if(closed.compareAndSet(false,true)){ //close is called twice , first time with actual status
+                final Timer.Builder timerBuilder = Timer.builder("grpc.server.calls");
+                tagsContributors.forEach(c->
+                        timerBuilder.tags(c.getTags(status,getMethodDescriptor(),getAttributes()))
+                );
+                Optional.ofNullable(additionalTags)
+                        .ifPresent(timerBuilder::tags);
 
-            start.stop(timerBuilder.register(registry));
+                start.stop(timerBuilder.register(registry));
+            }
+
 
             super.close(status, trailers);
         }

@@ -47,18 +47,19 @@ public class ValidatingInterceptor implements FailureHandlingServerInterceptor, 
             public void sendMessage(RespT message) {
                 final Set<ConstraintViolation<RespT>> violations = validator.validate(message, ResponseMessage.class);
                 if (!violations.isEmpty()) {
-                    closeCall(message,errorHandler,delegate(),headers,Status.FAILED_PRECONDITION,new ConstraintViolationException(violations));
+                    throw closeCall(message, errorHandler, delegate(), headers, Status.FAILED_PRECONDITION, new ConstraintViolationException(violations));
                 } else {
                     super.sendMessage(message);
                 }
             }
         }, headers);
         return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(listener) {
+
             @Override
             public void onMessage(ReqT message) {
                 final Set<ConstraintViolation<ReqT>> violations = validator.validate(message, RequestMessage.class);
                 if (!violations.isEmpty()) {
-                    closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
+                    throw closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
 
                 } else {
                     super.onMessage(message);

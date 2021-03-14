@@ -8,7 +8,9 @@ buildscript {
         classpath "io.franzbecker:gradle-lombok:4.0.0"
     }
 }
-
+plugins {
+    id "de.undercouch.download" version "4.1.1"
+}
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -23,6 +25,29 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+task generateReleaseNotes(type: JavaExec, group: "documentation") {
+    def m =  java.util.regex.Pattern.compile("(\\d+\\.\\d+\\.\\d+).*").matcher(version.toString())
+    def milestoneLabel = ""
+    if(m.find()) {
+         milestoneLabel  = m.group(1)
+    }
+
+    def generator = file("changelog/github-changelog-generator.jar")
+    classpath(generator.absolutePath)
+    args  (
+            milestoneLabel
+            ,"changelog/changelog.md"
+            , "--changelog.repository=LogNet/grpc-spring-boot-starter"
+    )
+    doFirst {
+        download {
+            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.6/github-changelog-generator.jar'
+            dest generator
+            onlyIfModified true
+        }
+    }
+}
+
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
     def outputDir = file("$buildDir/delombok")
     outputs.dir(outputDir)
