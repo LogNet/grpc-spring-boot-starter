@@ -268,12 +268,12 @@ By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream i
 So, for failed authentication/authorization with +
 `grpc.security.auth.fail-fast=true`(default): +
 
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* [.line-through]#-> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`#
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* +++<del>+++ -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
 
 And  for failed authentication/authorization with +
 `grpc.security.auth.fail-fast=false`: +
 
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed*-> [.line-through]#`interceptor_3(On_Message)`-> `actual service call`#
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed* +++<del>+++-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
 
 === Distributed tracing support (Spring Cloud Sleuth integration)
 
