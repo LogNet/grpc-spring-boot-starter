@@ -265,15 +265,16 @@ The way grpc interceptor works is that it intercepts the call and returns the se
 
 By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed +
 
-So, for failed authentication/authorization with +
-`grpc.security.auth.fail-fast=true`(default): +
+Assuming `interceptor_2` is `securityInterceptor` :
 
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* +++<del>+++ -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
+* For failed authentication/authorization with  `grpc.security.auth.fail-fast=true`(default): +
++
 
-And  for failed authentication/authorization with +
-`grpc.security.auth.fail-fast=false`: +
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* -> +++<del>+++ -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
 
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed* +++<del>+++-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
+* For failed authentication/authorization with `grpc.security.auth.fail-fast=false`: +
++
+`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` -> `interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed* -> +++<del>+++-> `interceptor_3(On_Message)`-> `actual service call`+++</del>+++
 
 === Distributed tracing support (Spring Cloud Sleuth integration)
 
