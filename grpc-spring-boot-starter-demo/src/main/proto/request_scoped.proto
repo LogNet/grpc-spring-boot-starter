@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "io.grpc.examples";
+
+service RequestScoped {
+  rpc RequestScoped(stream RequestScopedMessage) returns (stream RequestScopedMessage) {}
+}
+
+message RequestScopedMessage {
+  string str = 1;
+}
