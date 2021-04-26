@@ -45,7 +45,7 @@ dependencies {
 ----
 
 If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
-In  this case you'll need to forcibly and implicitly set the  `grpc` version to use (see link:ReleaseNotes.adoc[version matrix here^] ):
+In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.adoc[version matrix here^] ):
 
 [source,groovy]
 ----
