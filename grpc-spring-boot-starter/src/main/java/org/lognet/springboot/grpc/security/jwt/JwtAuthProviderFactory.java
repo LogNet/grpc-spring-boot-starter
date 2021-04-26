@@ -1,8 +1,7 @@
 package org.lognet.springboot.grpc.security.jwt;
 
-
-import com.nimbusds.jose.shaded.json.JSONNavi;
-import com.nimbusds.jose.shaded.json.JSONObject;
+import net.minidev.json.JSONNavi;
+import net.minidev.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -38,6 +37,7 @@ public class JwtAuthProviderFactory {
             return IntStream.range(0, roles.getSize())
                     .mapToObj(k ->  new SimpleGrantedAuthority("ROLE_" + roles.get(k).toString()))
                     .collect(Collectors.toList());
+
 
         });
         final JwtAuthenticationProvider authenticationProvider = new JwtAuthenticationProvider(jwtDecoder);
