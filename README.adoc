@@ -489,8 +489,7 @@ class MyGrpcService extends ...{
 
 
 
-Theoretically, and as you can see - https://github.com/LogNet/grpc-spring-boot-starter/issues/187[practically], there is small time-span when client (if the network latency is minimal, and your grpc server encouraged context switch right after +++<i class="conum" data-value="2"></i>
-+++) can try to access the database via another grpc call *before* the transaction is committed.
+Theoretically, and as you can see - https://github.com/LogNet/grpc-spring-boot-starter/issues/187[practically], there is small time-span when client (if the network latency is minimal, and your grpc server encouraged context switch right after <2>) can try to access the database via another grpc call *before* the transaction is committed.
 
 The  solution to overcome this situation is to externalize the transactional logic into separate service class :
 
@@ -510,7 +509,6 @@ class MyService{
 class MyGrpcService extends ...{
     @Autowired
     private MyService myService;
-
 
     public void rpcCall(Req request, StreamOvserver<Res> observer) {
         Res response = myService.doTransactionalWork();
