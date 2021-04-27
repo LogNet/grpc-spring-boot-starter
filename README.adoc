@@ -466,6 +466,66 @@ In this scenario, if call is both unauthenticated and invalid, the client will g
 By adding `GRpcErrorHandler` bean to your application, you get  a chance to send your custom response headers. The error handler will be called with `Status.INVALID_ARGUMENT` and incoming request message that is failed.
 
 
+== GRPC response observer  and Spring @Transactional caveats
+While it's still possible to have your rpc methods annotated with `@Transactional` (with `spring.aop.proxy-target-class=true` if it's not enabled by default), chances are to get unpredictable behaviour. Consider below grpc method implementation :
+
+[source,java]
+----
+class MyGrpcService extends ...{
+    @Autowired
+    private MyJpaRepository repo;
+
+    @Transactional //<1>
+    public void rpcCall(Req request, StreamOvserver<Res> observer) {
+        Res response = // Database operations via repo
+        observer.onNext(response); //<2>
+        observer.onCompleted();
+    }//<3>
+}
+----
+<1> The method is annotated as `@Transactional`, Spring will commit the transaction **at some time after methods returns**
+<2> Response is returned to the caller
+<3> Methods returns, transaction *eventually* committed.
+
+
+
+Theoretically, and as you can see - https://github.com/LogNet/grpc-spring-boot-starter/issues/187[practically], there is small time-span when client (if the network latency is minimal, and your grpc server encouraged context switch right after +++<i class="conum" data-value="2"></i>
++++) can try to access the database via another grpc call *before* the transaction is committed.
+
+The  solution to overcome this situation is to externalize the transactional logic into separate service class :
+
+[source,java]
+----
+@Service
+class MyService{
+    @Autowired
+    private MyJpaRepository repo;
+
+    @Transactional //<1>
+    public Res doTransactionalWork(){
+        // Database operations via repo
+        return result;
+    }//<2>
+}
+class MyGrpcService extends ...{
+    @Autowired
+    private MyService myService;
+
+
+    public void rpcCall(Req request, StreamOvserver<Res> observer) {
+        Res response = myService.doTransactionalWork();
+        observer.onNext(response); //<3>
+        observer.onCompleted();
+    }
+}
+----
+<1> Service method is transactional
+<2> Transaction is *eventually* committed.
+<3> Reply *after* transaction is committed.
+
+By following this approach you also decouple the transport layer and business logic that now can be tested separately.
+
+
 == Spring Security Integration
 
 === Setup
