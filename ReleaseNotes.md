@@ -1,3 +1,18 @@
+# Version 4.4.6
+
+## :star: New Features
+
+- Support Springs `@Ordered` Annotation on GRpcServerRunner [#126](https://github.com/LogNet/grpc-spring-boot-starter/issues/126)
+
+## :notebook_with_decorative_cover: Documentation
+
+- Document `@Transactional` usage [#195](https://github.com/LogNet/grpc-spring-boot-starter/issues/195)
+
+## :hammer: Dependency Upgrades
+
+- Bump gRPC to 1.37.0 and spring-boot to 2.4.5  [#202](https://github.com/LogNet/grpc-spring-boot-starter/issues/202)
+
+
 # Version 4.4.5
 
 ## :star: New Features
