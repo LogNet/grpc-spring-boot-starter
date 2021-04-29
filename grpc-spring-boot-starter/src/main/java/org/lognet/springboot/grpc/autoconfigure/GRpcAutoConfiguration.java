@@ -69,7 +69,6 @@ public class GRpcAutoConfiguration {
     }
 
     @Bean(name = "grpcInternalConfigurator")
-    @OnGrpcServerEnabled
     public Consumer<ServerBuilder<?>> configurator(GRpcServerBuilderConfigurer configurer) {
         return serverBuilder -> {
             if (grpcServerProperties.isEnabled()) {
