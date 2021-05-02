@@ -10,9 +10,6 @@ management:
         include: "*"
 
 
-spring:
-  profiles:
-    active: disable-security
 logging:
   level:
     root: INFO

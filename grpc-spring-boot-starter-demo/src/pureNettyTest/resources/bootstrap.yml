@@ -2,6 +2,8 @@ spring:
   application:
     name: grpc-demo
   cloud:
+    config:
+      enabled: false
     consul:
       discovery:
         enabled: false
@@ -9,10 +11,9 @@ spring:
     service-registry:
       auto-registration:
         enabled: false
-    config:
-      uri: http://localhost:${config.port:8888}
 embedded:
   keycloak:
     enabled: false
   containers:
     enabled: false
+

@@ -4,14 +4,18 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "com.netflix.nebula:nebula-project-plugin:7.0.7"
     }
 }
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: "nebula.facet"
 
-
+facets {
+    pureNettyTest
+}
 
 dependencyManagement {
     imports {
@@ -19,6 +23,20 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+configurations.findAll{ cfg ->
+    if (cfg.name.startsWith("pureNetty")) {
+        cfg.exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+        dependencies.add(cfg.name,"io.grpc:grpc-netty")
+    }
+    if(cfg.name.equals("pureNettyTestCompileClasspath")){
+        cfg.extendsFrom(configurations.getByName("testCompileClasspath"))
+    }
+    if(cfg.name.equals("pureNettyTestRuntimeClasspath")){
+        cfg.extendsFrom(configurations.getByName("testRuntimeClasspath"))
+    }
+
+}
+
 
 dependencies {
 
@@ -42,7 +60,6 @@ dependencies {
     testCompile 'org.awaitility:awaitility:4.0.3'
 
 
-
     testCompile "org.springframework.cloud:spring-cloud-config-server"
     testCompile "org.springframework.cloud:spring-cloud-config-client"
     testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.6"
@@ -61,9 +78,9 @@ dependencies {
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
-            if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-                details.useVersion grpcVersion
-            }
+        if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
+            details.useVersion grpcVersion
+        }
     }
 }
 sourceSets {
