@@ -44,6 +44,17 @@ dependencies {
 
 ----
 
+By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency, if you are forced to use pure `grpc-netty` dependency:
+
+[source,groovy]
+----
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.4.7') {
+  exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+ }
+ compile 'io.grpc:grpc-netty:1.37.0' // <1>
+----
+<1> Make sure to pull the version that matches the release.
+
 If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
 In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.adoc[version matrix here^] ):
 
