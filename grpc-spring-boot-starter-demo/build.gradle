@@ -15,6 +15,7 @@ apply plugin: "nebula.facet"
 
 facets {
     pureNettyTest
+    customSecurityTest
 }
 
 dependencyManagement {
@@ -26,15 +27,24 @@ dependencyManagement {
 configurations.findAll{ cfg ->
     if (cfg.name.startsWith("pureNetty")) {
         cfg.exclude group: 'io.grpc', module: 'grpc-netty-shaded'
-        dependencies.add(cfg.name,"io.grpc:grpc-netty")
-    }
-    if(cfg.name.equals("pureNettyTestCompileClasspath")){
-        cfg.extendsFrom(configurations.getByName("testCompileClasspath"))
-    }
-    if(cfg.name.equals("pureNettyTestRuntimeClasspath")){
-        cfg.extendsFrom(configurations.getByName("testRuntimeClasspath"))
+
     }
 
+    if (cfg.name.startsWith("customSecurity")) {
+        cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-resource-server'
+        cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-jose'
+    }
+
+
+}
+
+
+configurations {
+    pureNettyTestCompile.extendsFrom( testCompile)
+    pureNettyTestRuntime.extendsFrom(testRuntime)
+
+    customSecurityTestCompile.extendsFrom( testCompile)
+    customSecurityTestRuntime.extendsFrom(testRuntime)
 }
 
 
@@ -70,7 +80,10 @@ dependencies {
 
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
+    customSecurityTestCompile  sourceSets.test.output
 
+    pureNettyTestCompile sourceSets.test.output
+    pureNettyTestCompile "io.grpc:grpc-netty"
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 

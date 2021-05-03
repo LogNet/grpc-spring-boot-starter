@@ -42,17 +42,17 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
         builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext()));
         builder.setSharedObject(AuthenticationManagerBuilder.class, authenticationManagerBuilder);
         final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
-        registerSchemaSelectors(authenticationSchemeService);
+
+
+        context.getBeansOfType(AuthenticationSchemeSelector.class)
+                .values()
+                .forEach(authenticationSchemeService::register);
+
         builder.setSharedObject(AuthenticationSchemeService.class, authenticationSchemeService);
 
     }
 
-    protected void registerSchemaSelectors(AuthenticationSchemeService authenticationSchemeService) {
-        Map<String, AuthenticationSchemeSelector> schemeSelectorMap = context.getBeansOfType(AuthenticationSchemeSelector.class);
-        for (AuthenticationSchemeSelector selector : schemeSelectorMap.values()) {
-            authenticationSchemeService.register(selector);
-        }
-    }
+
 
     @Override
     public void configure(GrpcSecurity builder) throws Exception {

@@ -45,6 +45,37 @@ public final class SecuredGreeterGrpc {
     return getSayAuthHelloMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthHello2Method;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "SayAuthHello2",
+      requestType = com.google.protobuf.Empty.class,
+      responseType = io.grpc.examples.GreeterOuterClass.HelloReply.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.google.protobuf.Empty,
+      io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthHello2Method() {
+    io.grpc.MethodDescriptor<com.google.protobuf.Empty, io.grpc.examples.GreeterOuterClass.HelloReply> getSayAuthHello2Method;
+    if ((getSayAuthHello2Method = SecuredGreeterGrpc.getSayAuthHello2Method) == null) {
+      synchronized (SecuredGreeterGrpc.class) {
+        if ((getSayAuthHello2Method = SecuredGreeterGrpc.getSayAuthHello2Method) == null) {
+          SecuredGreeterGrpc.getSayAuthHello2Method = getSayAuthHello2Method =
+              io.grpc.MethodDescriptor.<com.google.protobuf.Empty, io.grpc.examples.GreeterOuterClass.HelloReply>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SayAuthHello2"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.google.protobuf.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  io.grpc.examples.GreeterOuterClass.HelloReply.getDefaultInstance()))
+              .setSchemaDescriptor(new SecuredGreeterMethodDescriptorSupplier("SayAuthHello2"))
+              .build();
+        }
+      }
+    }
+    return getSayAuthHello2Method;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -100,6 +131,13 @@ public final class SecuredGreeterGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayAuthHelloMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void sayAuthHello2(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayAuthHello2Method(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -109,6 +147,13 @@ public final class SecuredGreeterGrpc {
                 com.google.protobuf.Empty,
                 io.grpc.examples.GreeterOuterClass.HelloReply>(
                   this, METHODID_SAY_AUTH_HELLO)))
+          .addMethod(
+            getSayAuthHello2Method(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                com.google.protobuf.Empty,
+                io.grpc.examples.GreeterOuterClass.HelloReply>(
+                  this, METHODID_SAY_AUTH_HELLO2)))
           .build();
     }
   }
@@ -134,6 +179,14 @@ public final class SecuredGreeterGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void sayAuthHello2(com.google.protobuf.Empty request,
+        io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getSayAuthHello2Method(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -155,6 +208,13 @@ public final class SecuredGreeterGrpc {
     public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthHello(com.google.protobuf.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSayAuthHelloMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public io.grpc.examples.GreeterOuterClass.HelloReply sayAuthHello2(com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSayAuthHello2Method(), getCallOptions(), request);
     }
   }
 
@@ -179,9 +239,18 @@ public final class SecuredGreeterGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSayAuthHelloMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<io.grpc.examples.GreeterOuterClass.HelloReply> sayAuthHello2(
+        com.google.protobuf.Empty request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getSayAuthHello2Method(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_SAY_AUTH_HELLO = 0;
+  private static final int METHODID_SAY_AUTH_HELLO2 = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -202,6 +271,10 @@ public final class SecuredGreeterGrpc {
       switch (methodId) {
         case METHODID_SAY_AUTH_HELLO:
           serviceImpl.sayAuthHello((com.google.protobuf.Empty) request,
+              (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply>) responseObserver);
+          break;
+        case METHODID_SAY_AUTH_HELLO2:
+          serviceImpl.sayAuthHello2((com.google.protobuf.Empty) request,
               (io.grpc.stub.StreamObserver<io.grpc.examples.GreeterOuterClass.HelloReply>) responseObserver);
           break;
         default:
@@ -266,6 +339,7 @@ public final class SecuredGreeterGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new SecuredGreeterFileDescriptorSupplier())
               .addMethod(getSayAuthHelloMethod())
+              .addMethod(getSayAuthHello2Method())
               .build();
         }
       }

@@ -24,9 +24,18 @@ public class SecuredGreeterService extends SecuredGreeterGrpc.SecuredGreeterImpl
             user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
         }
 
+        reply(user,responseObserver);
+    }
+
+    @Override
+    public void sayAuthHello2(Empty request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+        reply(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get().getName(),responseObserver);
+    }
+
+    private void reply(String userName,StreamObserver<GreeterOuterClass.HelloReply> responseObserver){
         responseObserver.onNext(GreeterOuterClass.HelloReply
                 .newBuilder()
-                .setMessage(user)
+                .setMessage(userName)
                 .build());
         responseObserver.onCompleted();
     }

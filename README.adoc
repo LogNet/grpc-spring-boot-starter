@@ -640,6 +640,19 @@ One is possible to plug in your own bespoke authentication provider by implement
 <4> Register your own `AuthenticationProvider` that supports validation of `MyAuthenticationObject`
 <5> Validate provided `authentication` and return validated and *authenticated* `Authentication` object
 
+
+`AuthenticationSchemeSelector` can also be registered by defining Spring bean in your application context:
+
+[source,java]
+----
+@Bean
+public AuthenticationSchemeSelector myCustomSchemeSelector(){
+     return authHeader->{
+         // your logic here
+     };
+}
+----
+
 <<Client side configuration support>> section explains how to pass custom authorization scheme and claim from GRPC client.
 
 === Obtaining Authentication details

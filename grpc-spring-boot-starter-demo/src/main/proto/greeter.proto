@@ -16,6 +16,7 @@ service Greeter {
 }
 service SecuredGreeter {
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
+    rpc SayAuthHello2 ( google.protobuf.Empty) returns (  HelloReply) {}
 
 }
 

@@ -2564,10 +2564,11 @@ public final class GreeterOuterClass {
       "\000\0229\n\020SayAuthOnlyHello\022\026.google.protobuf." +
       "Empty\032\013.HelloReply\"\000\022.\n\030HelloPersonValid" +
       "Response\022\007.Person\032\007.Person\"\000\0220\n\032HelloPer" +
-      "sonInvalidResponse\022\007.Person\032\007.Person\"\0002G" +
+      "sonInvalidResponse\022\007.Person\032\007.Person\"\0002\177" +
       "\n\016SecuredGreeter\0225\n\014SayAuthHello\022\026.googl" +
-      "e.protobuf.Empty\032\013.HelloReply\"\000B\022\n\020io.gr" +
-      "pc.examplesb\006proto3"
+      "e.protobuf.Empty\032\013.HelloReply\"\000\0226\n\rSayAu" +
+      "thHello2\022\026.google.protobuf.Empty\032\013.Hello" +
+      "Reply\"\000B\022\n\020io.grpc.examplesb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
