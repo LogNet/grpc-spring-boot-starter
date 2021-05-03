@@ -1,3 +1,14 @@
+# Version 4.4.7
+
+## :star: New Features
+
+- grpc-netty dependency support [#203](https://github.com/LogNet/grpc-spring-boot-starter/issues/203)
+
+## :beetle: Bug Fixes
+
+- GrpcSecurityConfigurerAdapter initialization failure without spring-security-oauth2-resource-server [#176](https://github.com/LogNet/grpc-spring-boot-starter/issues/176)
+
+
 # Version 4.4.6
 
 ## :star: New Features
