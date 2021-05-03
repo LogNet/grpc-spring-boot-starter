@@ -4,6 +4,7 @@ import io.grpc.ServerInterceptor;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -38,6 +39,18 @@ public class GrpcSecurityConfiguration {
 
     }
 
+    @Bean
+    public BasicAuthSchemeSelector basicAuthSchemeSelector() {
+        return new BasicAuthSchemeSelector();
+    }
+
+    @Bean
+    @ConditionalOnClass(name = {
+            "org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
+            "org.springframework.security.oauth2.core.OAuth2AuthenticationException"})
+    public BearerTokenAuthSchemeSelector bearerTokenAuthSchemeSelector() {
+        return new BearerTokenAuthSchemeSelector();
+    }
 
     @Autowired(required = false)
     @SuppressWarnings({ "rawtypes", "unchecked" })

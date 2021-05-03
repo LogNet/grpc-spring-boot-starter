@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
+import java.util.Map;
+
 public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigurer<GrpcSecurity> {
 
     private AuthenticationConfiguration authenticationConfiguration;
@@ -29,7 +31,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
         this.authenticationConfiguration = context.getBean(AuthenticationConfiguration.class);
 
         authenticationManagerBuilder = authenticationConfiguration
-                .authenticationManagerBuilder(objectPostProcessor,context)
+                .authenticationManagerBuilder(objectPostProcessor, context)
                 .parentAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
 
         this.context = context;
@@ -38,12 +40,18 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     @Override
     public void init(GrpcSecurity builder) throws Exception {
         builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext()));
-        builder.setSharedObject(AuthenticationManagerBuilder.class,authenticationManagerBuilder);
+        builder.setSharedObject(AuthenticationManagerBuilder.class, authenticationManagerBuilder);
         final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
-        authenticationSchemeService.register(new BasicAuthSchemeSelector());
-        authenticationSchemeService.register(new BearerTokenAuthSchemeSelector());
+        registerSchemaSelectors(authenticationSchemeService);
         builder.setSharedObject(AuthenticationSchemeService.class, authenticationSchemeService);
 
+    }
+
+    protected void registerSchemaSelectors(AuthenticationSchemeService authenticationSchemeService) {
+        Map<String, AuthenticationSchemeSelector> schemeSelectorMap = context.getBeansOfType(AuthenticationSchemeSelector.class);
+        for (AuthenticationSchemeSelector selector : schemeSelectorMap.values()) {
+            authenticationSchemeService.register(selector);
+        }
     }
 
     @Override
@@ -51,10 +59,10 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
         try {
             final Class<?> jwtDecoderClass = Class.forName("org.springframework.security.oauth2.jwt.JwtDecoder");
             final String[] beanNames = context.getBeanNamesForType(jwtDecoderClass);
-            if (1==beanNames.length){
-                builder.authenticationProvider(JwtAuthProviderFactory.forAuthorities(context.getBean(beanNames[0],JwtDecoder.class)));
+            if (1 == beanNames.length) {
+                builder.authenticationProvider(JwtAuthProviderFactory.forAuthorities(context.getBean(beanNames[0], JwtDecoder.class)));
             }
-        }catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             //swallow
         }
         builder.authorizeRequests()
