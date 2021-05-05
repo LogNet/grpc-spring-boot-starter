@@ -15,6 +15,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,7 +52,8 @@ public class GRpcAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnExpression("#{environment.getProperty('grpc.inProcessServerName','')!=''}")
+    //@ConditionalOnExpression("#{environment.getProperty('grpc.inProcessServerName','')!=''}")
+    @ConditionalOnProperty(prefix = "grpc", name = "inProcessServerName")
     public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator) {
 
         return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
