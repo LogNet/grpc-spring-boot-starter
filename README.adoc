@@ -34,7 +34,7 @@ Starting from release `4.0.0` the starter is compiled and tested against Spring 
 ----
 repositories {
     mavenCentral()
-   //maven { url "https://oss.sonatype.org/content/repositories/snapshots" } //for snashot builds
+   //maven { url "https://oss.sonatype.org/content/repositories/snapshots" } //for snapshot builds
 
 }
 dependencies {
@@ -56,14 +56,14 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 <1> Make sure to pull the version that matches the release.
 
 If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
-In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.adoc[version matrix here^] ):
+In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.md[version matrix here^] ):
 
 [source,groovy]
 ----
 configurations.all {
  resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-        details.useVersion "1.33.0"
+        details.useVersion "1.37.0"
         }
     }
 }
@@ -74,7 +74,7 @@ Starting from release `3.0.0` the artifacts are published to *maven central*.
 Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
 [NOTE]
-The release notes with compatibility matrix can be found link:ReleaseNotes.adoc[here^]
+The release notes with compatibility matrix can be found link:ReleaseNotes.md[here^]
 
 == Usage
 
@@ -285,7 +285,7 @@ The way grpc interceptor works is that it intercepts the call and returns the se
 `actual service call`
 ****
 
-By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed +
+By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed in case of authentication/authorization failure +
 
 Assuming `interceptor_2` is `securityInterceptor` :
 
