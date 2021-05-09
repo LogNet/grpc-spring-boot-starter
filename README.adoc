@@ -349,7 +349,24 @@ implementation "io.micrometer:micrometer-registry-prometheus"
 implementation 'org.springframework.boot:spring-boot-starter-web'
 ```
 
+Configuration :
+
+```yml
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+```
+
 Standard `/actuator/metrics` and `/actuator/prometheus` endpoints will render `grpc.server.calls` metrics (see demo https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/DemoAppTest.java[here]).
+
+[NOTE]
+GRPC scrapping https://github.com/prometheus/prometheus/issues/8414[proposal]
 
 === Spring Boot Validation support
 
