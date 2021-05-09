@@ -4,7 +4,9 @@ import io.grpc.ServerInterceptor;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -24,6 +26,14 @@ public class GrpcSecurityConfiguration {
 
     private GrpcSecurity grpcSecurity;
 
+
+
+    @Bean
+    @ConditionalOnMissingBean(GrpcSecurityConfigurerAdapter.class)
+    public GrpcSecurityConfigurerAdapter defaultAdapter(){
+        return  new GrpcSecurityConfigurerAdapter() {
+        };
+    }
 
     @Bean
     @GRpcGlobalInterceptor

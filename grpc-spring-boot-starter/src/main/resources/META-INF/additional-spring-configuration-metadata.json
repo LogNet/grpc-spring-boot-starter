@@ -1,0 +1,11 @@
+{
+  "properties": [
+    {
+      "name": "grpc.security.auth.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": "true",
+      "description": "Enable grpc security."
+    }
+  ],
+  "hints": []
+}

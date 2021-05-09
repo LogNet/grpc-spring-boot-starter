@@ -7,11 +7,7 @@ import io.grpc.examples.SecuredGreeterGrpc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
-import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -22,14 +18,8 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
-@Import({DefaultAuthConfigTest.TestCfg.class})
 public class DefaultAuthConfigTest extends JwtAuthBaseTest {
 
-    @TestConfiguration
-    @EnableGrpcSecurity
-    static class TestCfg  extends GrpcSecurityConfigurerAdapter {
-
-    }
 
     public DefaultAuthConfigTest() {
         super(false);

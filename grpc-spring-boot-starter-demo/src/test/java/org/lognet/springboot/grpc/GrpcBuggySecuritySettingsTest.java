@@ -16,7 +16,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunnerWithGlobalExpectedExceptionInspected.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
-@ActiveProfiles("buggy-security")
+@ActiveProfiles({"buggy-transport-security","disable-security"})
 @ExpectedStartupExceptionWithInspector(GrpcBuggySecuritySettingsTest.ExceptionInspector.class)
 public class GrpcBuggySecuritySettingsTest extends GrpcServerTestBase {
     @Test

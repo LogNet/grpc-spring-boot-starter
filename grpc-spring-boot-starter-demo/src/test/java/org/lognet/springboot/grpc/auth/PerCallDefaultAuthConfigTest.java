@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
-@Import({PerCallDefaultAuthConfigTest.TestCfg.class})
+
 public class PerCallDefaultAuthConfigTest extends JwtAuthBaseTest {
 
     private AuthCallCredentials callCredentials;
@@ -35,14 +35,6 @@ public class PerCallDefaultAuthConfigTest extends JwtAuthBaseTest {
         callCredentials = new AuthCallCredentials(AuthHeader.builder().bearer().tokenSupplier(this::generateToken));
     }
 
-    @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
-
-        }
-    }
 
 
     @Test

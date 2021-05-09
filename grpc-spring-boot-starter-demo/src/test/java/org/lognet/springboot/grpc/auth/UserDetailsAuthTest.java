@@ -47,10 +47,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
 
     @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg   extends GrpcSecurityConfigurerAdapter {
 
 
             static final String pwd="strongPassword1";
@@ -83,7 +80,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
             }
 
 
-        }
+
 
     }
 
@@ -159,7 +156,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     protected Channel getChannel(boolean binaryFormat) {
 
         final AuthClientInterceptor interceptor = new AuthClientInterceptor(AuthHeader.builder()
-                .basic(user.getUsername(),TestCfg.DemoGrpcSecurityConfig.pwd.getBytes())
+                .basic(user.getUsername(),TestCfg.pwd.getBytes())
                 .binaryFormat(binaryFormat)
         );
         return ClientInterceptors.intercept(super.getChannel(), interceptor);

@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.prometheus.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -83,7 +84,7 @@ public class GrpcMeterTest extends GrpcServerTestBase {
     private int port;
 
     @Autowired
-    private SimpleConfig registryConfig;
+    private PrometheusConfig registryConfig;
 
     @Before
     public void setUp()  {

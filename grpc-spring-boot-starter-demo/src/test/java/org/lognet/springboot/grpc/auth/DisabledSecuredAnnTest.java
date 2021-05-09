@@ -3,6 +3,7 @@ package org.lognet.springboot.grpc.auth;
 
 import com.google.protobuf.Empty;
 import io.grpc.examples.GreeterGrpc;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 
@@ -24,7 +26,6 @@ public class DisabledSecuredAnnTest extends JwtAuthBaseTest {
 
 
     @TestConfiguration
-    @EnableGrpcSecurity
     static class TestCfg  extends GrpcSecurityConfigurerAdapter {
         @Override
         public void configure(GrpcSecurity builder) throws Exception {
@@ -42,7 +43,8 @@ public class DisabledSecuredAnnTest extends JwtAuthBaseTest {
         final GreeterGrpc.GreeterBlockingStub   greeter = GreeterGrpc.newBlockingStub(getChannel(true));
 
         final String reply = greeter.sayAuthHello(Empty.getDefaultInstance()).getMessage();
-        assertNotNull("Reply should not be null",reply);
+        assertThat(reply, Matchers.notNullValue(String.class));
+        assertThat(reply,Matchers.not("anonymous"));
 
 
     }

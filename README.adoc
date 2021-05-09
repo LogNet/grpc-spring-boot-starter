@@ -568,30 +568,26 @@ By following this approach you also decouple the transport layer and business lo
 GRPC security configuration follows the same principals and APIs as Spring WEB security configuration.
 
 ==== Default
-
-Defining bean with type `GrpcSecurityConfigurerAdapter` annotated with `@EnableGrpcSecurity` is sufficient to secure you GRPC services and/or methods :
-
-[source,java]
-----
-
-    @EnableGrpcSecurity
-    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
-
-    }
-
-----
+GRPC security is enabled by default if you have `org.springframework.security:spring-security-config`  dependency in your classpath.
 
 This default configuration secures GRPC methods/services annotated with `org.springframework.security.access.annotation.@Secured`  annotation. +
-Leaving  value of the annotation empty (`@Secured({})`) means : `authenticate` only, no authorization will be performed. +
+Leaving  value of the annotation empty (`@Secured({})`) means : `authenticate` only, no authorization will be performed.
+
 If `JwtDecoder` bean exists in your context, it will also register `JwtAuthenticationProvider` to handle the validation of authentication claim.
+
+`BasicAuthSchemeSelector` and `BearerTokenAuthSchemeSelector` are also automatically registered to support authentication with username/password and bearer token.
+
+By setting `grpc.security.auth.enabled` to `false`, GRPC security can be turned-off.
 
 ==== Custom
 
-Various configuration examples and test scenarios are link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth[here].
+Customization of GRPC security configuration is done by extending `GrpcSecurityConfigurerAdapter` (Various configuration examples and test scenarios are link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth[here].)
+
+
 
 [source,java]
 ----
-    @EnableGrpcSecurity
+    @Configuration
     public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
         @Autowired
         private JwtDecoder jwtDecoder;
@@ -616,7 +612,7 @@ One is possible to plug in your own bespoke authentication provider by implement
 
 [source,java]
 ----
-@EnableGrpcSecurity
+@Configuration
     public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
     @Override
         public void configure(GrpcSecurity builder) throws Exception {

@@ -113,10 +113,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
     }
 
     @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg  extends GrpcSecurityConfigurerAdapter {
 
 
             static final String pwd = "strongPassword1";
@@ -159,7 +156,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
                         })
                         .userDetailsService(new InMemoryUserDetailsManager(user()));
             }
-        }
+
 
         @Bean
         @GRpcGlobalInterceptor
@@ -188,7 +185,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
 
 
         final AuthClientInterceptor interceptor = new AuthClientInterceptor(AuthHeader.builder()
-                .basic(user.getUsername(), TestCfg.DemoGrpcSecurityConfig.pwd.getBytes())
+                .basic(user.getUsername(), TestCfg.pwd.getBytes())
         );
         return ClientInterceptors.intercept(super.getChannel(), interceptor);
     }

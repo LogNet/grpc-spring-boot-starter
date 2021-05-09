@@ -25,10 +25,7 @@ public class JwtAuthorityTest extends JwtAuthBaseTest {
 
 
     @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg extends GrpcSecurityConfigurerAdapter {
 
             @Autowired
             private JwtDecoder jwtDecoder;
@@ -42,7 +39,7 @@ public class JwtAuthorityTest extends JwtAuthBaseTest {
                         .and()
                         .authenticationProvider(JwtAuthProviderFactory.forAuthorities(jwtDecoder));
             }
-        }
+
     }
 
 }

@@ -10,7 +10,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
-@ActiveProfiles("security")
+@ActiveProfiles("transport-security")
 public class GrpcSecurityTest extends GrpcServerTestBase {
 
 

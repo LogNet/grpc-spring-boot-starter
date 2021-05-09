@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 public class AllAuthConfigTest extends JwtAuthBaseTest {
 
     @TestConfiguration
-    @EnableGrpcSecurity
     static class TestCfg extends GrpcSecurityConfigurerAdapter {
         @Override
         public void configure(GrpcSecurity builder) throws Exception {

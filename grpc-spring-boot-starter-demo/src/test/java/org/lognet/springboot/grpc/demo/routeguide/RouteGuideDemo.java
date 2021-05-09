@@ -13,6 +13,7 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApp.class, webEnvironment = NONE)
+@ActiveProfiles("disable-security")
 public class RouteGuideDemo extends GrpcServerTestBase {
     @Test
     public void bidirectionalStreamingDemo() throws ExecutionException, InterruptedException, TimeoutException {

@@ -53,10 +53,7 @@ public class ConcurrentAuthConfigTest extends GrpcServerTestBase {
             AuthHeader.builder().basic(user2.getUsername(), user2.getPassword().getBytes()));
 
     @TestConfiguration
-    static class TestCfg {
-
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg  extends GrpcSecurityConfigurerAdapter {
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
@@ -71,7 +68,7 @@ public class ConcurrentAuthConfigTest extends GrpcServerTestBase {
                         .anyMethod().authenticated();
             }
 
-        }
+
     }
 
     @Test

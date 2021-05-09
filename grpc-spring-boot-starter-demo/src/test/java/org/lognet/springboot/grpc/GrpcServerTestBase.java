@@ -101,7 +101,7 @@ public abstract class GrpcServerTestBase {
     }
 
     @Test
-    public void simpleGreeting() throws ExecutionException, InterruptedException {
+    public void simpleGreeting() throws  Exception {
 
 
 
@@ -118,7 +118,7 @@ public abstract class GrpcServerTestBase {
         return  stub;
     }
 
-    protected void afterGreeting(){
+    protected void afterGreeting() throws Exception {
 
     }
 }

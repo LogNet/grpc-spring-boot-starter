@@ -11,6 +11,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.util.Optional;
+
 @Slf4j
 @GRpcService(interceptors = { LogInterceptor.class })
 @Secured("SCOPE_profile")
@@ -29,7 +31,10 @@ public class SecuredGreeterService extends SecuredGreeterGrpc.SecuredGreeterImpl
 
     @Override
     public void sayAuthHello2(Empty request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
-        reply(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get().getName(),responseObserver);
+        String userName = Optional.ofNullable(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get())
+                .map(Authentication::getName)
+                .orElse("anonymous");
+        reply(userName,responseObserver);
     }
 
     private void reply(String userName,StreamObserver<GreeterOuterClass.HelloReply> responseObserver){

@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GRpcErrorHandler;
 import org.lognet.springboot.grpc.demo.DemoApp;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
@@ -64,8 +63,8 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                 }
             };
         }
-        @EnableGrpcSecurity
-        public class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
+
+        private static class DemoGrpcSecurityAdapter extends GrpcSecurityConfigurerAdapter {
 
             @Autowired
             private JwtDecoder jwtDecoder;
@@ -81,6 +80,10 @@ public class JwtRoleTest extends JwtAuthBaseTest {
             }
 
 
+        }
+        @Bean
+        public GrpcSecurityConfigurerAdapter adapter(){
+            return new DemoGrpcSecurityAdapter();
         }
 
     }

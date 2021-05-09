@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc;
 
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.GreeterGrpc;
@@ -8,8 +9,10 @@ import io.grpc.examples.GreeterOuterClass;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.prometheus.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthCallCredentials;
@@ -20,7 +23,10 @@ import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -37,7 +43,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 
 @SpringBootTest(classes = DemoApp.class
@@ -53,14 +61,42 @@ import static org.junit.Assert.assertThrows;
 public class MetricWithSecurityTest extends GrpcServerTestBase {
 
 
+
+
     @Autowired
     private MeterRegistry registry;
 
 
 
     @Autowired
-    private SimpleConfig registryConfig;
+    private PrometheusConfig registryConfig;
 
+
+    @TestConfiguration
+    static class TestCfg extends GrpcSecurityConfigurerAdapter {
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+
+            builder.authorizeRequests()
+                    .anyMethod().authenticated()
+                    .and()
+                    .authenticationProvider(new AuthenticationProvider() {
+                        @Override
+                        public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                            throw  new BadCredentialsException("");
+                        }
+
+                        @Override
+                        public boolean supports(Class<?> authentication) {
+                            return true;
+                        }
+                    })
+                    .userDetailsService(new InMemoryUserDetailsManager());
+        }
+
+
+
+    }
 
    // @Test
     public void validationShouldInvokedBeforeAuthTest() {
@@ -84,12 +120,11 @@ public class MetricWithSecurityTest extends GrpcServerTestBase {
         );
 
         final GreeterGrpc.GreeterBlockingStub greeterFutureStub = GreeterGrpc.newBlockingStub(selectedChanel);
-        StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
-
+        StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () ->
             greeterFutureStub
                     .withCallCredentials(callCredentials)
-                .sayHello(GreeterOuterClass.HelloRequest.newBuilder().setName(name).build());
-        });
+                .sayHello(GreeterOuterClass.HelloRequest.newBuilder().setName(name).build())
+        );
         assertThat(e.getStatus().getCode(),Matchers.is(Status.Code.UNAUTHENTICATED));
 
         final Timer timer = registry.find("grpc.server.calls").timer();
@@ -108,34 +143,12 @@ public class MetricWithSecurityTest extends GrpcServerTestBase {
         final String resultTag = timer.getId().getTag("result");
         assertThat(resultTag,notNullValue());
         assertThat(resultTag,is(Status.UNAUTHENTICATED.getCode().name()));
-    }
-
-    @TestConfiguration
-    @EnableGrpcSecurity
-    static class TestCfg extends GrpcSecurityConfigurerAdapter {
-            @Override
-            public void configure(GrpcSecurity builder) throws Exception {
-
-                builder.authorizeRequests()
-                        .anyMethod().authenticated()
-                        .and()
-                        .authenticationProvider(new AuthenticationProvider() {
-                            @Override
-                            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-                                throw  new BadCredentialsException("");
-                            }
-
-                            @Override
-                            public boolean supports(Class<?> authentication) {
-                                return true;
-                            }
-                        })
-                        .userDetailsService(new InMemoryUserDetailsManager());
-            }
-
-
 
     }
+
+
+
+
 
 
 

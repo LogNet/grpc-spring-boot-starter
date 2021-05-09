@@ -1,18 +1,14 @@
 management:
   metrics:
     export:
+      prometheus:
+        enabled: false
       simple:
         enabled: false
   endpoints:
     web:
-      base-path: "/"
       exposure:
         include: "*"
-
-
-spring:
-  profiles:
-    active: disable-security
 logging:
   level:
     root: INFO
