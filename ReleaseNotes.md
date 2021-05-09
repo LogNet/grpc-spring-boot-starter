@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.0](#version-450)| 1.37.0        |2.4.5               |
 | [4.4.7](#version-447)| 1.37.0        |2.4.5               |
 | [4.4.6](#version-446)| 1.37.0        |2.4.5               |
 | [4.4.5](#version-445)| 1.36.0        |2.4.1               |
@@ -21,6 +22,45 @@
 
 
 
+# Version 4.5.0
+
+## :beetle: Bug Fixes
+
+- How to disable Grpc Security [#206](https://github.com/LogNet/grpc-spring-boot-starter/issues/206)
+## :hammer_and_wrench:  Migration from 4.4.x
+
+
+Please use standard `@Configuration` instead of `@EnableGrpcSecurity` :
+
+Before (4.4.x):
+```java
+@EnableGrpcSecurity
+public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter{
+    
+}
+```
+After (4.5.0) :
+```java
+@Configuration
+public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter{
+    
+}
+```
+or
+
+```java
+@Configuration
+public class MyAppConfiguration {
+    public class GrpcSecurityConfiguration extends GrpcSecurityConfigurerAdapter {
+
+    }
+
+    @Bean
+    public GrpcSecurityConfigurerAdapter grpcConfig(){
+        return  new GrpcSecurityConfiguration();
+    }
+}
+```
 # Version 4.4.7 
 
 ## :star: New Features

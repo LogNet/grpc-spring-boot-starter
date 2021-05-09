@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.4.7'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.0'
 }
 
 
@@ -338,6 +338,18 @@ This case is covered by link:grpc-spring-boot-starter-demo/src/test/java/org/log
 
 [TIP]
 Make sure to read <<Interceptors ordering>> chapter.
+
+==== Exposing Prometheus endpoint
+
+Make sure to include below dependencies :
+
+```
+implementation "org.springframework.boot:spring-boot-starter-actuator"
+implementation "io.micrometer:micrometer-registry-prometheus"
+implementation 'org.springframework.boot:spring-boot-starter-web'
+```
+
+Standard `/actuator/metrics` and `/actuator/prometheus` endpoints will render `grpc.server.calls` metrics (see demo https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/DemoAppTest.java[here]).
 
 === Spring Boot Validation support
 
