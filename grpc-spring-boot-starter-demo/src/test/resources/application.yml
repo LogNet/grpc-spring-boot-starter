@@ -12,3 +12,11 @@ management:
 logging:
   level:
     root: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "!default-port"
+grpc:
+  port: 0

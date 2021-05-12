@@ -47,7 +47,7 @@ subprojects {
     targetCompatibility = 1.8
 
     test {
-        forkEvery = 1
+     //   forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
         }
@@ -67,10 +67,6 @@ task codeCoverageReport(type: JacocoReport) {
 
     sourceSets (project('grpc-spring-boot-starter').sourceSets.main
             ,project('grpc-client-spring-boot-starter').sourceSets.main)
-
-    //subprojects.each {
-    //sourceSets it.sourceSets.main
-    //}
 
     reports {
         xml.enabled true
