@@ -20,27 +20,31 @@ public final class CalculatorOuterClass {
 
     /**
      * <code>double number1 = 1;</code>
+     * @return The number1.
      */
     double getNumber1();
 
     /**
      * <code>double number2 = 2;</code>
+     * @return The number2.
      */
     double getNumber2();
 
     /**
      * <code>.CalculatorRequest.OperationType operation = 3;</code>
+     * @return The enum numeric value on the wire for operation.
      */
     int getOperationValue();
     /**
      * <code>.CalculatorRequest.OperationType operation = 3;</code>
+     * @return The operation.
      */
     io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation();
   }
   /**
    * Protobuf type {@code CalculatorRequest}
    */
-  public  static final class CalculatorRequest extends
+  public static final class CalculatorRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CalculatorRequest)
       CalculatorRequestOrBuilder {
@@ -50,9 +54,14 @@ public final class CalculatorOuterClass {
       super(builder);
     }
     private CalculatorRequest() {
-      number1_ = 0D;
-      number2_ = 0D;
       operation_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CalculatorRequest();
     }
 
     @java.lang.Override
@@ -68,7 +77,6 @@ public final class CalculatorOuterClass {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -79,13 +87,6 @@ public final class CalculatorOuterClass {
             case 0:
               done = true;
               break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
             case 9: {
 
               number1_ = input.readDouble();
@@ -100,6 +101,13 @@ public final class CalculatorOuterClass {
               int rawValue = input.readEnum();
 
               operation_ = rawValue;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
@@ -119,6 +127,7 @@ public final class CalculatorOuterClass {
       return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorRequest_descriptor;
     }
 
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorRequest_fieldAccessorTable
@@ -177,6 +186,8 @@ public final class CalculatorOuterClass {
       }
 
       /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
        * @deprecated Use {@link #forNumber(int)} instead.
        */
       @java.lang.Deprecated
@@ -184,6 +195,10 @@ public final class CalculatorOuterClass {
         return forNumber(value);
       }
 
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
       public static OperationType forNumber(int value) {
         switch (value) {
           case 0: return ADD;
@@ -208,6 +223,10 @@ public final class CalculatorOuterClass {
 
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
           getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
         return getDescriptor().getValues().get(ordinal());
       }
       public final com.google.protobuf.Descriptors.EnumDescriptor
@@ -246,7 +265,9 @@ public final class CalculatorOuterClass {
     private double number1_;
     /**
      * <code>double number1 = 1;</code>
+     * @return The number1.
      */
+    @java.lang.Override
     public double getNumber1() {
       return number1_;
     }
@@ -255,7 +276,9 @@ public final class CalculatorOuterClass {
     private double number2_;
     /**
      * <code>double number2 = 2;</code>
+     * @return The number2.
      */
+    @java.lang.Override
     public double getNumber2() {
       return number2_;
     }
@@ -264,19 +287,23 @@ public final class CalculatorOuterClass {
     private int operation_;
     /**
      * <code>.CalculatorRequest.OperationType operation = 3;</code>
+     * @return The enum numeric value on the wire for operation.
      */
-    public int getOperationValue() {
+    @java.lang.Override public int getOperationValue() {
       return operation_;
     }
     /**
      * <code>.CalculatorRequest.OperationType operation = 3;</code>
+     * @return The operation.
      */
-    public io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation() {
+    @java.lang.Override public io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation() {
+      @SuppressWarnings("deprecation")
       io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType result = io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.valueOf(operation_);
       return result == null ? io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -286,6 +313,7 @@ public final class CalculatorOuterClass {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (number1_ != 0D) {
@@ -300,6 +328,7 @@ public final class CalculatorOuterClass {
       unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -332,18 +361,15 @@ public final class CalculatorOuterClass {
       }
       io.grpc.examples.CalculatorOuterClass.CalculatorRequest other = (io.grpc.examples.CalculatorOuterClass.CalculatorRequest) obj;
 
-      boolean result = true;
-      result = result && (
-          java.lang.Double.doubleToLongBits(getNumber1())
-          == java.lang.Double.doubleToLongBits(
-              other.getNumber1()));
-      result = result && (
-          java.lang.Double.doubleToLongBits(getNumber2())
-          == java.lang.Double.doubleToLongBits(
-              other.getNumber2()));
-      result = result && operation_ == other.operation_;
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (java.lang.Double.doubleToLongBits(getNumber1())
+          != java.lang.Double.doubleToLongBits(
+              other.getNumber1())) return false;
+      if (java.lang.Double.doubleToLongBits(getNumber2())
+          != java.lang.Double.doubleToLongBits(
+              other.getNumber2())) return false;
+      if (operation_ != other.operation_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -436,6 +462,7 @@ public final class CalculatorOuterClass {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -443,6 +470,7 @@ public final class CalculatorOuterClass {
     public static Builder newBuilder(io.grpc.examples.CalculatorOuterClass.CalculatorRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -466,6 +494,7 @@ public final class CalculatorOuterClass {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorRequest_descriptor;
       }
 
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorRequest_fieldAccessorTable
@@ -488,6 +517,7 @@ public final class CalculatorOuterClass {
                 .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         number1_ = 0D;
@@ -499,15 +529,18 @@ public final class CalculatorOuterClass {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorRequest_descriptor;
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorRequest getDefaultInstanceForType() {
         return io.grpc.examples.CalculatorOuterClass.CalculatorRequest.getDefaultInstance();
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorRequest build() {
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest result = buildPartial();
         if (!result.isInitialized()) {
@@ -516,6 +549,7 @@ public final class CalculatorOuterClass {
         return result;
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorRequest buildPartial() {
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest result = new io.grpc.examples.CalculatorOuterClass.CalculatorRequest(this);
         result.number1_ = number1_;
@@ -525,32 +559,39 @@ public final class CalculatorOuterClass {
         return result;
       }
 
+      @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.grpc.examples.CalculatorOuterClass.CalculatorRequest) {
           return mergeFrom((io.grpc.examples.CalculatorOuterClass.CalculatorRequest)other);
@@ -576,10 +617,12 @@ public final class CalculatorOuterClass {
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -601,12 +644,16 @@ public final class CalculatorOuterClass {
       private double number1_ ;
       /**
        * <code>double number1 = 1;</code>
+       * @return The number1.
        */
+      @java.lang.Override
       public double getNumber1() {
         return number1_;
       }
       /**
        * <code>double number1 = 1;</code>
+       * @param value The number1 to set.
+       * @return This builder for chaining.
        */
       public Builder setNumber1(double value) {
         
@@ -616,6 +663,7 @@ public final class CalculatorOuterClass {
       }
       /**
        * <code>double number1 = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNumber1() {
         
@@ -627,12 +675,16 @@ public final class CalculatorOuterClass {
       private double number2_ ;
       /**
        * <code>double number2 = 2;</code>
+       * @return The number2.
        */
+      @java.lang.Override
       public double getNumber2() {
         return number2_;
       }
       /**
        * <code>double number2 = 2;</code>
+       * @param value The number2 to set.
+       * @return This builder for chaining.
        */
       public Builder setNumber2(double value) {
         
@@ -642,6 +694,7 @@ public final class CalculatorOuterClass {
       }
       /**
        * <code>double number2 = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearNumber2() {
         
@@ -653,27 +706,36 @@ public final class CalculatorOuterClass {
       private int operation_ = 0;
       /**
        * <code>.CalculatorRequest.OperationType operation = 3;</code>
+       * @return The enum numeric value on the wire for operation.
        */
-      public int getOperationValue() {
+      @java.lang.Override public int getOperationValue() {
         return operation_;
       }
       /**
        * <code>.CalculatorRequest.OperationType operation = 3;</code>
+       * @param value The enum numeric value on the wire for operation to set.
+       * @return This builder for chaining.
        */
       public Builder setOperationValue(int value) {
+        
         operation_ = value;
         onChanged();
         return this;
       }
       /**
        * <code>.CalculatorRequest.OperationType operation = 3;</code>
+       * @return The operation.
        */
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType getOperation() {
+        @SuppressWarnings("deprecation")
         io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType result = io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.valueOf(operation_);
         return result == null ? io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType.UNRECOGNIZED : result;
       }
       /**
        * <code>.CalculatorRequest.OperationType operation = 3;</code>
+       * @param value The operation to set.
+       * @return This builder for chaining.
        */
       public Builder setOperation(io.grpc.examples.CalculatorOuterClass.CalculatorRequest.OperationType value) {
         if (value == null) {
@@ -686,6 +748,7 @@ public final class CalculatorOuterClass {
       }
       /**
        * <code>.CalculatorRequest.OperationType operation = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearOperation() {
         
@@ -693,11 +756,13 @@ public final class CalculatorOuterClass {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -719,6 +784,7 @@ public final class CalculatorOuterClass {
 
     private static final com.google.protobuf.Parser<CalculatorRequest>
         PARSER = new com.google.protobuf.AbstractParser<CalculatorRequest>() {
+      @java.lang.Override
       public CalculatorRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -736,6 +802,7 @@ public final class CalculatorOuterClass {
       return PARSER;
     }
 
+    @java.lang.Override
     public io.grpc.examples.CalculatorOuterClass.CalculatorRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -748,13 +815,14 @@ public final class CalculatorOuterClass {
 
     /**
      * <code>double result = 1;</code>
+     * @return The result.
      */
     double getResult();
   }
   /**
    * Protobuf type {@code CalculatorResponse}
    */
-  public  static final class CalculatorResponse extends
+  public static final class CalculatorResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:CalculatorResponse)
       CalculatorResponseOrBuilder {
@@ -764,7 +832,13 @@ public final class CalculatorOuterClass {
       super(builder);
     }
     private CalculatorResponse() {
-      result_ = 0D;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CalculatorResponse();
     }
 
     @java.lang.Override
@@ -780,7 +854,6 @@ public final class CalculatorOuterClass {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -791,16 +864,16 @@ public final class CalculatorOuterClass {
             case 0:
               done = true;
               break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
             case 9: {
 
               result_ = input.readDouble();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
           }
@@ -820,6 +893,7 @@ public final class CalculatorOuterClass {
       return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorResponse_descriptor;
     }
 
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorResponse_fieldAccessorTable
@@ -831,12 +905,15 @@ public final class CalculatorOuterClass {
     private double result_;
     /**
      * <code>double result = 1;</code>
+     * @return The result.
      */
+    @java.lang.Override
     public double getResult() {
       return result_;
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -846,6 +923,7 @@ public final class CalculatorOuterClass {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (result_ != 0D) {
@@ -854,6 +932,7 @@ public final class CalculatorOuterClass {
       unknownFields.writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -878,13 +957,11 @@ public final class CalculatorOuterClass {
       }
       io.grpc.examples.CalculatorOuterClass.CalculatorResponse other = (io.grpc.examples.CalculatorOuterClass.CalculatorResponse) obj;
 
-      boolean result = true;
-      result = result && (
-          java.lang.Double.doubleToLongBits(getResult())
-          == java.lang.Double.doubleToLongBits(
-              other.getResult()));
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (java.lang.Double.doubleToLongBits(getResult())
+          != java.lang.Double.doubleToLongBits(
+              other.getResult())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -972,6 +1049,7 @@ public final class CalculatorOuterClass {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -979,6 +1057,7 @@ public final class CalculatorOuterClass {
     public static Builder newBuilder(io.grpc.examples.CalculatorOuterClass.CalculatorResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -1002,6 +1081,7 @@ public final class CalculatorOuterClass {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorResponse_descriptor;
       }
 
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorResponse_fieldAccessorTable
@@ -1024,6 +1104,7 @@ public final class CalculatorOuterClass {
                 .alwaysUseFieldBuilders) {
         }
       }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         result_ = 0D;
@@ -1031,15 +1112,18 @@ public final class CalculatorOuterClass {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return io.grpc.examples.CalculatorOuterClass.internal_static_CalculatorResponse_descriptor;
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorResponse getDefaultInstanceForType() {
         return io.grpc.examples.CalculatorOuterClass.CalculatorResponse.getDefaultInstance();
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorResponse build() {
         io.grpc.examples.CalculatorOuterClass.CalculatorResponse result = buildPartial();
         if (!result.isInitialized()) {
@@ -1048,6 +1132,7 @@ public final class CalculatorOuterClass {
         return result;
       }
 
+      @java.lang.Override
       public io.grpc.examples.CalculatorOuterClass.CalculatorResponse buildPartial() {
         io.grpc.examples.CalculatorOuterClass.CalculatorResponse result = new io.grpc.examples.CalculatorOuterClass.CalculatorResponse(this);
         result.result_ = result_;
@@ -1055,32 +1140,39 @@ public final class CalculatorOuterClass {
         return result;
       }
 
+      @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof io.grpc.examples.CalculatorOuterClass.CalculatorResponse) {
           return mergeFrom((io.grpc.examples.CalculatorOuterClass.CalculatorResponse)other);
@@ -1100,10 +1192,12 @@ public final class CalculatorOuterClass {
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1125,12 +1219,16 @@ public final class CalculatorOuterClass {
       private double result_ ;
       /**
        * <code>double result = 1;</code>
+       * @return The result.
        */
+      @java.lang.Override
       public double getResult() {
         return result_;
       }
       /**
        * <code>double result = 1;</code>
+       * @param value The result to set.
+       * @return This builder for chaining.
        */
       public Builder setResult(double value) {
         
@@ -1140,6 +1238,7 @@ public final class CalculatorOuterClass {
       }
       /**
        * <code>double result = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearResult() {
         
@@ -1147,11 +1246,13 @@ public final class CalculatorOuterClass {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -1173,6 +1274,7 @@ public final class CalculatorOuterClass {
 
     private static final com.google.protobuf.Parser<CalculatorResponse>
         PARSER = new com.google.protobuf.AbstractParser<CalculatorResponse>() {
+      @java.lang.Override
       public CalculatorResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1190,6 +1292,7 @@ public final class CalculatorOuterClass {
       return PARSER;
     }
 
+    @java.lang.Override
     public io.grpc.examples.CalculatorOuterClass.CalculatorResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -1227,18 +1330,10 @@ public final class CalculatorOuterClass {
       "lculatorResponse\"\000B\022\n\020io.grpc.examplesb\006" +
       "proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_CalculatorRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_CalculatorRequest_fieldAccessorTable = new

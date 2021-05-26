@@ -7,9 +7,7 @@ buildscript {
 
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.11'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
         classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
     }

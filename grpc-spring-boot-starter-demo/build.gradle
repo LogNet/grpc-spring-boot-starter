@@ -112,7 +112,7 @@ sourceSets {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.5.1'
+        artifact = 'com.google.protobuf:protoc:3.17.1'
     }
     plugins {
         grpc {

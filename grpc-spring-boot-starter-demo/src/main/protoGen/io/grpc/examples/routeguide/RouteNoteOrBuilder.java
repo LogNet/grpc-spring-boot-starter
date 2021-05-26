@@ -13,6 +13,7 @@ public interface RouteNoteOrBuilder extends
    * </pre>
    *
    * <code>.routeguide.Point location = 1;</code>
+   * @return Whether the location field is set.
    */
   boolean hasLocation();
   /**
@@ -21,6 +22,7 @@ public interface RouteNoteOrBuilder extends
    * </pre>
    *
    * <code>.routeguide.Point location = 1;</code>
+   * @return The location.
    */
   io.grpc.examples.routeguide.Point getLocation();
   /**
@@ -38,6 +40,7 @@ public interface RouteNoteOrBuilder extends
    * </pre>
    *
    * <code>string message = 2;</code>
+   * @return The message.
    */
   java.lang.String getMessage();
   /**
@@ -46,6 +49,7 @@ public interface RouteNoteOrBuilder extends
    * </pre>
    *
    * <code>string message = 2;</code>
+   * @return The bytes for message.
    */
   com.google.protobuf.ByteString
       getMessageBytes();
