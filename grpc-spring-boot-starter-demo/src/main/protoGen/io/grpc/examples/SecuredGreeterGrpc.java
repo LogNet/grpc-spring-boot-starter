@@ -5,7 +5,7 @@ import static io.grpc.MethodDescriptor.generateFullMethodName;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.37.0)",
+    value = "by gRPC proto compiler (version 1.38.0)",
     comments = "Source: greeter.proto")
 public final class SecuredGreeterGrpc {
 

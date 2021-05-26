@@ -30,9 +30,9 @@ apply from: "${rootDir}/publishSonatype.gradle"
 allprojects {
     repositories {
         mavenCentral()
-        jcenter()
         maven { url "https://repo.spring.io/milestone" }
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 
     }
 }
