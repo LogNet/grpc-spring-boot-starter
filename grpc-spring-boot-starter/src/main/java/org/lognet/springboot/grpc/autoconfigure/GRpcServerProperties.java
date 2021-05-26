@@ -113,8 +113,8 @@ public class GRpcServerProperties {
         /**
          *  grpc listen address. <P>If configured, takes precedence over {@code grpc.port} property value.</p>
          *  Supported format:
-         *  <li>{@code host:port} (if port is less than 1, uses random value)
-         *  <li>{@code host:}  (uses default grpc port, 6565 )
+         *  <ul><li>{@code host:port} (if port is less than 1, uses random value)
+         *  <li>{@code host:}  (uses default grpc port, 6565 )</ul>
          */
         private InetSocketAddress primaryListenAddress;
 

@@ -70,16 +70,20 @@ dependencies {
     testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
     testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
     testCompile 'org.awaitility:awaitility:4.0.3'
-
-
     testCompile "org.springframework.cloud:spring-cloud-config-server"
     testCompile "org.springframework.cloud:spring-cloud-config-client"
-    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.6"
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
+
+    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.8"
+    constraints {
+        testCompile('org.testcontainers:testcontainers:1.15.3'){
+            because 'embedded-keycloak or testcontainers  should be upgraded when https://github.com/testcontainers/testcontainers-java/issues/4125 fixed.'
+        }
+
+    }
 
 
     testImplementation 'org.hamcrest:hamcrest:2.1'
-
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
     customSecurityTestCompile  sourceSets.test.output

@@ -10,6 +10,8 @@ buildscript {
 }
 plugins {
     id "de.undercouch.download" version "4.1.1"
+    id "com.github.sherter.google-java-format" version "0.9"
+
 }
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
@@ -47,24 +49,39 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
         }
     }
 }
-
+def delombokOutputDir = file("$buildDir/delombok")
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
-    def outputDir = file("$buildDir/delombok")
-    outputs.dir(outputDir)
+
+    outputs.dir(delombokOutputDir)
     for (srcDir in project.sourceSets.main.java.srcDirs) {
         inputs.dir(srcDir)
-        args(srcDir, "-d", outputDir)
+        args(srcDir, "-d", delombokOutputDir)
     }
     doFirst {
-        outputDir.deleteDir()
+        delombokOutputDir.deleteDir()
     }
 }
 
-task sourceJar(type: Jar) {
-    classifier "sources"
-    from delombok
+googleJavaFormat {
+    toolVersion = '1.9'
+    source = delombokOutputDir
+    include '**/*.java'
 }
-
+tasks.verifyGoogleJavaFormat {
+    enabled false
+}
+tasks.googleJavaFormat {
+    dependsOn tasks.delombok
+}
+task sourceJar(type: Jar) {
+    dependsOn(tasks.googleJavaFormat)
+    classifier "sources"
+    from delombokOutputDir
+}
+javadoc {
+    dependsOn tasks.googleJavaFormat
+    source = delombokOutputDir
+}
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier "javadoc"
     from javadoc.destinationDir
@@ -168,6 +185,19 @@ dependencies {
 
 
 }
-compileJava.dependsOn(processResources)
+if(null!=System.getenv("CI")) {
+    compileJava {
+        dependsOn(processResources, tasks.googleJavaFormat)
+        source googleJavaFormat.source
+        include { FileTreeElement e ->
+            def included = true
+            if (e.name.toLowerCase().endsWith("java")) {
+                included = e.file.absolutePath.startsWith(delombokOutputDir.absolutePath)
+            }
+
+            return included
+        }
+    }
+}
 
 

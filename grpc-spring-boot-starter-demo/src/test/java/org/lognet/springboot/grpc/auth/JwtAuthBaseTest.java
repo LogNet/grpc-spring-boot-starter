@@ -79,7 +79,7 @@ public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
             return ByteBuffer.wrap(new ObjectMapper().readTree(response.getBody())
                     .at("/access_token")
                     .asText().getBytes());
-        } catch (JsonProcessingException e) {
+        } catch ( Exception e) {
             throw new RuntimeException(e);
         }
     }
