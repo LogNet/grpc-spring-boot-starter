@@ -55,6 +55,8 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 ----
 <1> Make sure to pull the version that matches the release.
 
+Both libraries' presence on classpath is also xref:_netty_server[supported] with `grpc.netty-server.on-collision-prefer-shaded-netty` property.
+
 If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
 In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.md[version matrix here^] ):
 
@@ -124,6 +126,7 @@ Default value is `0` (means don't wait).
 * link:grpc-spring-boot-starter/src/main/java/org/lognet/springboot/grpc/autoconfigure/GRpcServerProperties.java[Netty-specific server properties] can be specified under `grpc.netty-server` prefix. +
 By configuring one of the `grpc.netty-server.xxxx` values you are implicitly setting transport to be Netty-based.
 
+[[_netty_server]]
 [source,yaml]
 ----
 grpc:
@@ -133,7 +136,7 @@ grpc:
     primary-listen-address: 10.10.15.23:0 <3>
     additional-listen-addresses:
       - 192.168.0.100:6767 <4>
-
+    on-collision-prefer-shaded-netty: false <5>
 
 ----
 <1> `Duration` type properties can be configured with string value format described https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/convert/DurationStyle.java[here].
@@ -143,6 +146,7 @@ grpc:
 * `host:port` (if `port` value is less than 1, uses random value)
 * `host:`  (uses default grpc port, `6565` )
 <4> Exposed on internal network IP as well with predefined port `6767`.
+<5> In case you have both `shaded` and `pure` netty libraries in dependencies, pick the `NettyServerBuilder` type that should be created. This is the type that will be passed to `GRpcServerBuilderConfigurer` (see <<Custom gRPC Server Configuration>>), defaults to `true`(i.e. `io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder`; `io.grpc.netty.NettyServerBuilder` if `false`)
 
 The starter supports also the `in-process server`, which should be used for testing purposes :
 

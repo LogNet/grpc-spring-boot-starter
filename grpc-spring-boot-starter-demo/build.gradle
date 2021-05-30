@@ -16,6 +16,7 @@ apply plugin: "nebula.facet"
 facets {
     pureNettyTest
     customSecurityTest
+    bothPureAndShadedNettyTest
 }
 
 dependencyManagement {
@@ -45,6 +46,9 @@ configurations {
 
     customSecurityTestCompile.extendsFrom( testCompile)
     customSecurityTestRuntime.extendsFrom(testRuntime)
+
+    bothPureAndShadedNettyTestCompile.extendsFrom( testCompile)
+    bothPureAndShadedNettyTestRuntime.extendsFrom( testRuntime)
 }
 
 
@@ -90,10 +94,22 @@ dependencies {
 
     pureNettyTestCompile sourceSets.test.output
     pureNettyTestCompile "io.grpc:grpc-netty"
+
+
+    bothPureAndShadedNettyTestCompile sourceSets.test.output
+    bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 
 }
+sourceSets.test.output.each {println it.absolutePath}
+//sourceSets {
+//    bothPureAndShadedNettyTest {
+//        resources {
+//            srcDir sourceSets.test.output
+//        }
+//    }
+//}
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->

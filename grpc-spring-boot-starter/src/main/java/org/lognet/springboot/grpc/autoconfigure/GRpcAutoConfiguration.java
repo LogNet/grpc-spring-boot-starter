@@ -37,7 +37,9 @@ import java.util.function.Consumer;
 @AutoConfigureAfter(ValidationAutoConfiguration.class)
 @ConditionalOnBean(annotation = GRpcService.class)
 @EnableConfigurationProperties({GRpcServerProperties.class})
-@Import({GRpcValidationConfiguration.class,PureNettyConfiguration.class,ShadedNettyConfiguration.class})
+@Import({GRpcValidationConfiguration.class,
+        NettyServerBuilderSelector.class
+})
 @Slf4j
 public class GRpcAutoConfiguration {
 

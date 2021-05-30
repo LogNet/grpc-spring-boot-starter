@@ -93,6 +93,7 @@ public class GRpcServerProperties {
     @Getter
     @Setter
     public static class NettyServerProperties {
+        private boolean onCollisionPreferShadedNetty;
         private Integer flowControlWindow;
         private Integer initialFlowControlWindow;
 
