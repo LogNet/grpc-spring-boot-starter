@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.1](#version-451)| 1.38.0        |2.5.0               |
 | [4.5.0](#version-450)| 1.37.0        |2.4.5               |
 | [4.4.7](#version-447)| 1.37.0        |2.4.5               |
 | [4.4.6](#version-446)| 1.37.0        |2.4.5               |
@@ -21,6 +22,18 @@
 
 
 
+
+# Version 4.5.1
+
+## :beetle: Bug Fixes
+
+- Bean collision when both netty and netty-shaded exist in classpath [#214](https://github.com/LogNet/grpc-spring-boot-starter/issues/214)
+- Application fails to start when no grpc services discovered [#210](https://github.com/LogNet/grpc-spring-boot-starter/issues/210)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade Spring boot to 2.5.0 [#212](https://github.com/LogNet/grpc-spring-boot-starter/issues/212)
+- Upgrade grpc to 1.38.0 [#211](https://github.com/LogNet/grpc-spring-boot-starter/issues/211)
 
 # Version 4.5.0
 

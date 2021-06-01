@@ -24,10 +24,6 @@ Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",w
 
 Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application. +
 
-[IMPORTANT]
-Starting from release `4.0.0` the starter is compiled and tested against Spring Boot *2.X.X* only, +
-*1.5.X* Spring boot version support is dropped to allow tight Spring Boot Security framework integration.
-
 == Setup
 
 [source,groovy]
@@ -38,7 +34,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.1'
 }
 
 
@@ -70,10 +66,6 @@ configurations.all {
     }
 }
 ----
-
-[IMPORTANT]
-Starting from release `3.0.0` the artifacts are published to *maven central*.
-Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
 [NOTE]
 The release notes with compatibility matrix can be found link:ReleaseNotes.md[here^]
