@@ -102,14 +102,6 @@ dependencies {
 
 
 }
-sourceSets.test.output.each {println it.absolutePath}
-//sourceSets {
-//    bothPureAndShadedNettyTest {
-//        resources {
-//            srcDir sourceSets.test.output
-//        }
-//    }
-//}
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
@@ -168,7 +160,7 @@ bootJar{
     enabled false
 }
 jar{
-    enabled false
+    enabled true
 }
 
 
