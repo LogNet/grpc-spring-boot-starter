@@ -1,0 +1,51 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://repo.spring.io/release' }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.9.2")
+
+    }
+}
+
+
+
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.experimental.aot'
+
+
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation (project(':grpc-spring-boot-starter-demo')){
+        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+    }
+    implementation 'io.grpc:grpc-netty:1.38.0'
+}
+springBoot {
+    mainClass  = "org.lognet.springboot.grpc.demo.DemoApp"
+}
+jar {
+    enabled = false
+}
+
+springAot {
+    failOnMissingSelectorHint  = false
+}
+
+bootBuildImage {
+    builder = 'paketobuildpacks/builder:tiny'
+    environment = ['BP_NATIVE_IMAGE': 'true']
+}
