@@ -30,14 +30,14 @@
 
 - Can't download version `4.5.1` from maven central [#217](https://github.com/LogNet/grpc-spring-boot-starter/issues/217) - fixed by setting jar classifier to empty string :
 
-* Gradle
+ Gradle
 ```
 dependencies {
     compile 'io.github.lognet:grpc-spring-boot-starter:4.5.2'
 }
 ```
 
-* Maven
+ Maven
 ```
 <dependency>
     <groupId>io.github.lognet</groupId>
