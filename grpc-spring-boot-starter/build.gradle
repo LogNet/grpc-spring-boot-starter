@@ -106,10 +106,12 @@ nexusPublishing {
 }
 jar {
     enabled = true
+    archiveClassifier.convention("")
 }
 
 bootJar {
     enabled = false
+    archiveClassifier.convention('boot')
 }
 publishing {
     publications {
