@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.2](#version-452)| 1.38.0        |2.5.0               |
 | [4.5.1](#version-451)| 1.38.0        |2.5.0               |
 | [4.5.0](#version-450)| 1.37.0        |2.4.5               |
 | [4.4.7](#version-447)| 1.37.0        |2.4.5               |
@@ -23,6 +24,29 @@
 
 
 
+# Version 4.5.2
+
+## :beetle: Bug Fixes
+
+- Can't download version `4.5.1` from maven central [#217](https://github.com/LogNet/grpc-spring-boot-starter/issues/217) - fixed by setting jar classifier to empty string :
+
+* Gradle
+```
+dependencies {
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.2'
+}
+```
+
+* Maven
+```
+<dependency>
+    <groupId>io.github.lognet</groupId>
+    <artifactId>grpc-spring-boot-starter</artifactId>
+    <version>4.5.2</version>
+</dependency>
+```
+
+
 # Version 4.5.1
 
 ## :beetle: Bug Fixes
@@ -34,6 +58,26 @@
 
 - Upgrade Spring boot to 2.5.0 [#212](https://github.com/LogNet/grpc-spring-boot-starter/issues/212)
 - Upgrade grpc to 1.38.0 [#211](https://github.com/LogNet/grpc-spring-boot-starter/issues/211)
+
+## :hammer_and_wrench:  IMPORTANT!
+This release was incorrectly published to maven repository with `plain` jar classifier. For `4.5.1` only please use :
+
+* Gradle
+```
+dependencies {
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.1:plain'
+}
+```
+
+* Maven
+```
+<dependency>
+    <groupId>io.github.lognet</groupId>
+    <artifactId>grpc-spring-boot-starter</artifactId>
+    <version>4.5.1</version>
+    <classifier>plain</classifier>
+</dependency>
+```
 
 # Version 4.5.0
 
