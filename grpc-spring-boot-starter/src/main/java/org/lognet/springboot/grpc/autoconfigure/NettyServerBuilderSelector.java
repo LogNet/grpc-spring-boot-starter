@@ -39,9 +39,9 @@ public class NettyServerBuilderSelector implements ImportSelector, EnvironmentAw
                     .orElse(true);
             imports.add(preferShadedNetty ? shadedNettyConfig : pureNettyConfig);
         }else {
-            Optional
-                    .ofNullable(shadedNettyConfig)
-                    .or(()->Optional.ofNullable(pureNettyConfig))
+            final String cfg = Optional.ofNullable(shadedNettyConfig)
+                    .orElse(Optional.ofNullable(pureNettyConfig).orElse(null));
+            Optional.ofNullable(cfg)
                     .ifPresent(imports::add);
         }
 
