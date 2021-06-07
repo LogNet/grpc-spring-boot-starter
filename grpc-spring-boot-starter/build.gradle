@@ -158,6 +158,11 @@ publishing {
     }
 }
 
+tasks.compileJava {
+    options.compilerArgs.addAll(["--release", "8"])
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 signing {
     required {
         // signing is required if this is a release version and the artifacts are to be published

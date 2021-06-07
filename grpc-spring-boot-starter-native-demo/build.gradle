@@ -3,23 +3,31 @@ buildscript {
         mavenCentral()
         gradlePluginPortal()
         maven { url 'https://repo.spring.io/release' }
+        maven { url 'https://repo.spring.io/snapshot' }
+        flatDir {
+            dirs '../grpc-spring-boot-starter-gradle-plugin/build/libs'
+        }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.9.2")
+        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
+        classpath ("io.github.lognet:grpc-spring-boot-starter-gradle-plugin:${version}")
 
     }
 }
 
 
 
-
 apply plugin: 'java'
+apply plugin: org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.experimental.aot'
 
-
+repositories {
+    maven { url 'https://repo.spring.io/snapshot' }
+    mavenCentral()
+}
 
 dependencyManagement {
     imports {
@@ -27,22 +35,40 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+sourceCompatibility = '11'
+
+repositories {
+    maven { url 'https://repo.spring.io/release' }
+    mavenCentral()
+}
+
 
 dependencies {
-    implementation (project(':grpc-spring-boot-starter-demo')){
+    //implementation 'org.springframework.boot:spring-boot-starter'
+
+    compile (project(":grpc-spring-boot-starter")){
+        exclude group: 'io.netty', module:'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
     }
     implementation 'io.grpc:grpc-netty:1.38.0'
+//
+//    implementation "org.springframework.boot:spring-boot-starter-security"
+//    implementation "org.springframework.security:spring-security-oauth2-resource-server"
+//    implementation "org.springframework.security:spring-security-oauth2-jose"
+//    implementation 'org.springframework.boot:spring-boot-starter-validation'
+//    implementation "org.springframework.boot:spring-boot-starter-actuator"
+//    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
+//    implementation "org.springframework.boot:spring-boot-starter-web"
+
+  //  testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
-springBoot {
-    mainClass  = "org.lognet.springboot.grpc.demo.DemoApp"
-}
-jar {
-    enabled = false
+test {
+    useJUnitPlatform()
 }
 
 springAot {
     failOnMissingSelectorHint  = false
+
 }
 
 bootBuildImage {
