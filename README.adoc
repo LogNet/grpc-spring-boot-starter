@@ -9,7 +9,7 @@ endif::[]
 :toc:
 
 image:https://img.shields.io/maven-central/v/io.github.lognet/grpc-spring-boot-starter.svg?label=Maven%20Central[link=https://search.maven.org/search?q=g:%22io.github.lognet%22%20AND%20a:%22grpc-spring-boot-starter%22]
-image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
+image:https://travis-ci.com/LogNet/grpc-spring-boot-starter.svg?branch=master["Build Status", link="https://travis-ci.com/LogNet/grpc-spring-boot-starter"]
 image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov",link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"]
 Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",width="24", link="https://www.octotree.io"]
 
