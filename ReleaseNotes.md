@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.3](#version-453)| 1.38.0        |2.5.0               |
 | [4.5.2](#version-452)| 1.38.0        |2.5.0               |
 | [4.5.1](#version-451)| 1.38.0        |2.5.0               |
 | [4.5.0](#version-450)| 1.37.0        |2.4.5               |
@@ -20,6 +21,15 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.3
+
+* Requires JRE `1.8` and higher.
+
+## :beetle: Bug Fixes
+
+- Failed to run the app with jre 1.8 [#218](https://github.com/LogNet/grpc-spring-boot-starter/issues/218)
+
 
 
 
@@ -46,6 +56,7 @@ dependencies {
 </dependency>
 ```
 
+* Requires JRE `1.9`  and higher.
 
 # Version 4.5.1
 
@@ -78,6 +89,8 @@ dependencies {
     <classifier>plain</classifier>
 </dependency>
 ```
+
+* Requires JRE `1.9`  and higher.
 
 # Version 4.5.0
 
