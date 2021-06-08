@@ -13,5 +13,5 @@ include 'grpc-spring-boot-starter'
 include 'grpc-client-spring-boot-starter'
 include 'grpc-spring-boot-starter-demo'
 //include 'grpc-spring-boot-starter-gradle-plugin'
-//include 'grpc-spring-boot-starter-native-demo'
+include 'grpc-spring-boot-starter-native-demo'
 

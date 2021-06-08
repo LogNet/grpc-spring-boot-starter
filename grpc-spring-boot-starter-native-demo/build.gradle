@@ -4,14 +4,12 @@ buildscript {
         gradlePluginPortal()
         maven { url 'https://repo.spring.io/release' }
         maven { url 'https://repo.spring.io/snapshot' }
-        flatDir {
-            dirs '../grpc-spring-boot-starter-gradle-plugin/build/libs'
-        }
+
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
-        classpath ("io.github.lognet:grpc-spring-boot-starter-gradle-plugin:${version}")
+
 
     }
 }
