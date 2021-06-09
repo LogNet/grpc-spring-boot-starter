@@ -1,14 +1,16 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven { url 'http://repo.spring.io/plugins-release' }
         maven { url "https://plugins.gradle.org/m2/" }
+
+        maven { url 'https://repo.spring.io/snapshot' }
+
 
     }
     dependencies {
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
     }
 }
@@ -47,6 +49,7 @@ subprojects {
     tasks.withType(JavaCompile,{
         options.compilerArgs.addAll(["--release", "8"])
     })
+
 
     test {
      //   forkEvery = 1

@@ -1,0 +1,61 @@
+apply plugin: 'com.google.protobuf'
+
+String grpcVersion ="1.38.0"
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
+            details.useVersion grpcVersion
+        }
+    }
+}
+
+
+sourceSets.configureEach{s->
+    java {
+        srcDir project.buildDir.toPath()
+                .resolve("protoGen")
+                .resolve(s.name)
+                .toFile()
+    }
+}
+
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.17.1'
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+
+                }
+            }
+            task.plugins {
+                grpc {
+
+                }
+            }
+        }
+    }
+
+    generatedFilesBaseDir = "${project.buildDir}/protoGen"
+}
+
+
+
+
+
+
+
+
+
+
+

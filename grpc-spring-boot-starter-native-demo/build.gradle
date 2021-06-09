@@ -1,0 +1,70 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
+
+    }
+}
+
+plugins {
+    id "grpc-boot"
+}
+
+apply plugin: 'java'
+apply plugin: org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.experimental.aot'
+
+repositories {
+    maven { url 'https://repo.spring.io/snapshot' }
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+repositories {
+    maven { url 'https://repo.spring.io/release' }
+    mavenCentral()
+}
+
+
+dependencies {
+    compile(project(":grpc-spring-boot-starter")) {
+
+        exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
+        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+    }
+    implementation 'io.grpc:grpc-netty:1.38.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
+
+}
+test {
+    useJUnitPlatform()
+    dependsOn bootBuildImage
+    systemProperty "image-name","${project.name}:${project.version}"
+
+
+}
+jar {
+    enabled = false
+}
+springAot {
+    failOnMissingSelectorHint = false
+
+}
+
+
+
+
+bootBuildImage {
+    builder = 'paketobuildpacks/builder:tiny'
+    environment = ['BP_NATIVE_IMAGE': 'true']
+}

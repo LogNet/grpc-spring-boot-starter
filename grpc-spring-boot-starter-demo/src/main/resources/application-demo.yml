@@ -6,10 +6,10 @@ spring:
   cloud:
     consul:
       discovery:
-        enabled: true
+        enabled: false
     service-registry:
       auto-registration:
-        enabled: true
+        enabled: false
   application:
     name: Demo
 
