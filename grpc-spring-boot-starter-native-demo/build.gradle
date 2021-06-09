@@ -1,20 +1,14 @@
 buildscript {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-        maven { url 'https://repo.spring.io/release' }
-        maven { url 'https://repo.spring.io/snapshot' }
-
-    }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
 
-
     }
 }
 
-
+plugins {
+    id "grpc-boot"
+}
 
 apply plugin: 'java'
 apply plugin: org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin
@@ -33,7 +27,6 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
-sourceCompatibility = '11'
 
 repositories {
     maven { url 'https://repo.spring.io/release' }
@@ -42,32 +35,34 @@ repositories {
 
 
 dependencies {
-    //implementation 'org.springframework.boot:spring-boot-starter'
+    compile(project(":grpc-spring-boot-starter")) {
 
-    compile (project(":grpc-spring-boot-starter")){
-        exclude group: 'io.netty', module:'netty-tcnative-boringssl-static'
+        exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
     }
     implementation 'io.grpc:grpc-netty:1.38.0'
-//
-//    implementation "org.springframework.boot:spring-boot-starter-security"
-//    implementation "org.springframework.security:spring-security-oauth2-resource-server"
-//    implementation "org.springframework.security:spring-security-oauth2-jose"
-//    implementation 'org.springframework.boot:spring-boot-starter-validation'
-//    implementation "org.springframework.boot:spring-boot-starter-actuator"
-//    implementation 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
-//    implementation "org.springframework.boot:spring-boot-starter-web"
 
-  //  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testcontainers:junit-jupiter:1.15.3"
+
 }
 test {
     useJUnitPlatform()
-}
+    dependsOn bootBuildImage
+    systemProperty "image-name","${project.name}:${project.version}"
 
+
+}
+jar {
+    enabled = false
+}
 springAot {
-    failOnMissingSelectorHint  = false
+    failOnMissingSelectorHint = false
 
 }
+
+
+
 
 bootBuildImage {
     builder = 'paketobuildpacks/builder:tiny'

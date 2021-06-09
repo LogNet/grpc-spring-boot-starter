@@ -8,13 +8,18 @@ configurations.all {
         }
     }
 }
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/protoGen'
-        }
+
+
+sourceSets.configureEach{s->
+    java {
+        srcDir project.buildDir.toPath()
+                .resolve("protoGen")
+                .resolve(s.name)
+                .toFile()
     }
 }
+
+
 
 protobuf {
     protoc {
@@ -27,28 +32,24 @@ protobuf {
     }
 
     generateProtoTasks {
-        ofSourceSet('main').each { task ->
+        all().each { task ->
             task.builtins {
                 java {
-                    outputSubDir = 'protoGen'
+
                 }
             }
             task.plugins {
                 grpc {
-                    outputSubDir = 'protoGen'
+
                 }
             }
         }
     }
-    generatedFilesBaseDir = "$projectDir/src/"
+
+    generatedFilesBaseDir = "${project.buildDir}/protoGen"
 }
 
-task cleanProtoGen {
-    doFirst {
-        delete("$projectDir/src/main/protoGen")
-    }
-}
-clean.dependsOn cleanProtoGen
+
 
 
 
