@@ -62,11 +62,12 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
 }
 def delombokOutputDir = file("$buildDir/delombok")
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
-
     outputs.dir(delombokOutputDir)
     for (srcDir in project.sourceSets.main.java.srcDirs) {
-        inputs.dir(srcDir)
-        args(srcDir, "-d", delombokOutputDir)
+        if(srcDir.exists()) {
+            inputs.dir(srcDir)
+            args(srcDir, "-d", delombokOutputDir)
+        }
     }
     doFirst {
         delombokOutputDir.deleteDir()
