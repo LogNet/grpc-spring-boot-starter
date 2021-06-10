@@ -1,7 +1,9 @@
 buildscript {
+
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
 
     }
 }
@@ -16,10 +18,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.experimental.aot'
 
-repositories {
-    maven { url 'https://repo.spring.io/snapshot' }
-    mavenCentral()
-}
+
 
 dependencyManagement {
     imports {
@@ -28,19 +27,18 @@ dependencyManagement {
     }
 }
 
-repositories {
-    maven { url 'https://repo.spring.io/release' }
-    mavenCentral()
-}
 
 
 dependencies {
-    compile(project(":grpc-spring-boot-starter")) {
 
+    implementation(project(":grpc-spring-boot-starter")) {
+    //implementation("io.github.lognet:grpc-spring-boot-starter:4.5.4-SNAPSHOT") {
         exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
     }
-    implementation 'io.grpc:grpc-netty:1.38.0'
+    implementation "io.grpc:grpc-netty:${grpcVersion}"
+
+
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "org.testcontainers:junit-jupiter:1.15.3"
@@ -60,9 +58,6 @@ springAot {
     failOnMissingSelectorHint = false
 
 }
-
-
-
 
 bootBuildImage {
     builder = 'paketobuildpacks/builder:tiny'

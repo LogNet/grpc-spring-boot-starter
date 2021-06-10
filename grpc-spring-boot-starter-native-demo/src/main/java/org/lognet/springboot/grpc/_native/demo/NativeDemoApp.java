@@ -8,9 +8,12 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.nativex.hint.NativeHint;
+import org.springframework.nativex.hint.TypeHint;
 
 
 @SpringBootApplication
+@TypeHint (types = io.grpc.netty.NettyServerBuilder.class)
 public class NativeDemoApp {
 
     @GRpcService
@@ -25,11 +28,8 @@ public class NativeDemoApp {
     }
 
     public static void main(String[] args) {
-        final ConfigurableApplicationContext applicationContext = SpringApplication.run(NativeDemoApp.class, args);
-        final Boolean autoStop = applicationContext.getEnvironment().getProperty("auto-stop", Boolean.class, false);
-        if (autoStop) {
-            applicationContext.close();
-        }
+        SpringApplication.run(NativeDemoApp.class, args);
+
     }
 }
 

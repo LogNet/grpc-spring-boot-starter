@@ -152,9 +152,6 @@ task cleanProtoGen {
 }
 clean.dependsOn cleanProtoGen
 
-springBoot {
-    mainClass  = "org.lognet.springboot.grpc.demo.DemoApp"
-}
 
 bootJar{
     enabled false

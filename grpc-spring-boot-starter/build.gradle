@@ -172,8 +172,24 @@ jar {
                 finalJson.call(filtered)
                 finalJson.writeTo(w)
             }
+        }
+        new File(transformed, "resource-config.json").withWriter { w ->
+            new File(aotDir, "resource-config.json").withInputStream { is ->
+                def obj = new JsonSlurper().parse(is)
 
-    }
+                def filtered = obj.resources.includes
+                        .findAll { it.pattern.contains("org/lognet/springboot/grpc") }
+
+                def finalJson = new groovy.json.JsonBuilder()
+                finalJson{
+                    resources{
+                        includes (filtered)
+                    }
+                }
+                finalJson.writeTo(w)
+
+            }
+        }
 
     }
 

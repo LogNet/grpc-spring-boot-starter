@@ -124,10 +124,10 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
             }
 
             @Bean
-            public UserDetails user() {
+            public UserDetails user(PasswordEncoder passwordEncoder) {
                 return User.
                         withUsername("user1")
-                        .password(passwordEncoder().encode(pwd))
+                        .password(passwordEncoder.encode(pwd))
                         .roles("reader")
                         .build();
             }
@@ -137,6 +137,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
             public void configure(GrpcSecurity builder) throws Exception {
 
 
+                final UserDetails user = builder.getApplicationContext().getBean(UserDetails.class);
                 builder.authorizeRequests()
                         .anyMethod().authenticated()
                         .and()
@@ -154,7 +155,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
                                 return true;
                             }
                         })
-                        .userDetailsService(new InMemoryUserDetailsManager(user()));
+                        .userDetailsService(new InMemoryUserDetailsManager(user ));
             }
 
 

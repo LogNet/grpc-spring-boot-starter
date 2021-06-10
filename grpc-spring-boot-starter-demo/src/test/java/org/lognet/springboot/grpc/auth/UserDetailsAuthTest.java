@@ -57,10 +57,10 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
             }
 
             @Bean
-            public UserDetails user() {
+            public UserDetails user(PasswordEncoder passwordEncoder) {
                 return User.
                         withUsername("user1")
-                        .password(passwordEncoder().encode(pwd))
+                        .password(passwordEncoder.encode(pwd))
                         .roles("reader")
                         .build();
             }
@@ -75,7 +75,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
                         .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
                         .withSecuredAnnotation()
-                        .userDetailsService(new InMemoryUserDetailsManager(user()));
+                        .userDetailsService(new InMemoryUserDetailsManager(builder.getApplicationContext().getBean(UserDetails.class)));
 
             }
 
