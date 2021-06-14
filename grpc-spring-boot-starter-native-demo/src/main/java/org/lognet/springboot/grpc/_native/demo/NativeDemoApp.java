@@ -13,7 +13,7 @@ import org.springframework.nativex.hint.TypeHint;
 
 
 @SpringBootApplication
-@TypeHint (types = io.grpc.netty.NettyServerBuilder.class)
+//@TypeHint (types = io.grpc.netty.NettyServerBuilder.class)
 public class NativeDemoApp {
 
     @GRpcService

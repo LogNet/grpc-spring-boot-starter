@@ -1,7 +1,35 @@
+buildscript {
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+        classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
+    }
+}
 plugins {
     id 'java-gradle-plugin'
-
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.14.0'
 }
+
+apply plugin: 'signing'
+apply plugin: "de.marcphilipp.nexus-publish"
+apply from: "../publishSonatype.gradle"
+
+Properties p = new Properties()
+file("../gradle.properties").withInputStream {p.load(it)}
+
+version = p.get("version")
+group = p.get("group")
+
+project['gradle.publish.key'] = System.getenv('gradle.publish.key')
+project['gradle.publish.secret'] = System.getenv('gradle.publish.secret')
+
+
+pluginBundle {
+    website = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+    vcsUrl = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+    tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -9,14 +37,104 @@ repositories {
     }
 
 }
-
+jar {
+    manifest {
+        attributes("Implementation-Version": archiveVersion)
+        attributes("Specification-Version": p.get("grpcVersion"))
+    }
+}
 gradlePlugin {
     plugins {
         grpcBootPlugin {
-            id = 'grpc-boot'
+            id = 'grpc-spring-boot'
             implementationClass = 'org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin'
+            displayName = 'GRPC Spring Boot starter gradle plugin'
+            description = 'Configures project with grpc-spring-boot-starter'
         }
     }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+    archives javadocJar
+}
+signing {
+    sign configurations.archives
+}
+
+
+nexusPublishing {
+    clientTimeout = java.time.Duration.ofMinutes(7)
+    repositories {
+        sonatype()
+    }
+
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'grpc-spring-boot-starter-gradle-plugin'
+                description = 'Configures project with grpc-spring-boot-starter'
+                url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+
+                scm {
+                    url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+                    connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+                    developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'jvmlet'
+                        name = 'Furer Alexander'
+                        email = 'furer.alexander@gmail.com'
+                    }
+                }
+
+            }
+
+            from components.java
+
+
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
+        }
+    }
+}
+
+signing {
+    required {
+        // signing is required if this is a release version and the artifacts are to be published
+        !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
+            gradle.taskGraph.hasTask it
+        }
+    }
+    sign publishing.publications
 }
 
 

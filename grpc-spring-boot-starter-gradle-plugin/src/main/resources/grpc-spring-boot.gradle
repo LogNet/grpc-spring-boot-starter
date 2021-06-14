@@ -1,10 +1,10 @@
 apply plugin: 'com.google.protobuf'
 
-String grpcVersion ="1.38.0"
+
 configurations.all {
     resolutionStrategy.eachDependency { details ->
         if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-            details.useVersion grpcVersion
+            details.useVersion grpcSpringBoot.grpcVersion.get()
         }
     }
 }
@@ -23,11 +23,11 @@ sourceSets.configureEach{s->
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.17.1'
+        artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}"
     }
     plugins {
         grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcSpringBoot.grpcVersion.get()}"
         }
     }
 

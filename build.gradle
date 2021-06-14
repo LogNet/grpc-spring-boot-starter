@@ -65,6 +65,9 @@ subprojects {
             add(conf, "org.projectlombok:lombok:1.18.12")
         }
    }
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
 
 }
 

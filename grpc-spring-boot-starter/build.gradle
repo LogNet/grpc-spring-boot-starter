@@ -13,7 +13,7 @@ buildscript {
 plugins {
     id "de.undercouch.download" version "4.1.1"
     id "com.github.sherter.google-java-format" version "0.9"
-    id "grpc-boot"
+    id "grpc-spring-boot"
 
 }
 apply plugin: 'java'
