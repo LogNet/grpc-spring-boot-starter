@@ -7,7 +7,7 @@ buildscript {
 plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.14.0'
+    //id 'com.gradle.plugin-publish' version '0.14.0'
 }
 
 apply plugin: 'signing'
@@ -20,15 +20,15 @@ file("../gradle.properties").withInputStream {p.load(it)}
 version = p.get("version")
 group = p.get("group")
 
-project['gradle.publish.key'] = System.getenv('gradle.publish.key')
-project['gradle.publish.secret'] = System.getenv('gradle.publish.secret')
+project['gradle.publish.key'] = System.getenv('gradlePublishKey')
+project['gradle.publish.secret'] = System.getenv('gradlePublishSecret')
 
 
-pluginBundle {
-    website = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
-    vcsUrl = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
-    tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
-}
+//pluginBundle {
+//    website = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+//    vcsUrl = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+//    tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
+//}
 
 repositories {
     mavenCentral()
