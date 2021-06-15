@@ -87,7 +87,7 @@ publishing {
         publications {
             pluginMaven {
                 // customize main publications here
-                artifact sourcesJar
+                artifact sourceJar
                 artifact javadocJar
                 pom {
                     name = 'grpc-spring-boot-starter-gradle-plugin'
