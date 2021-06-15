@@ -1,5 +1,12 @@
 apply plugin: 'com.google.protobuf'
 
+java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().get())
+        .ifPresent {v->
+            project.dependencies {
+                implementation("io.github.lognet:grpc-spring-boot-starter:${v}")
+            }
+        }
+
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
