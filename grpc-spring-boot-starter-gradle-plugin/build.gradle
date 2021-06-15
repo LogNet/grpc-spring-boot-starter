@@ -54,6 +54,10 @@ gradlePlugin {
         }
     }
 }
+dependencies {
+    runtime "com.google.protobuf:protobuf-gradle-plugin:0.8.16"
+}
+
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
