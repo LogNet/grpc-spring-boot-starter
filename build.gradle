@@ -9,7 +9,6 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
     }

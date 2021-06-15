@@ -16,6 +16,7 @@ embedded:
     enabled: false
     wait-timeout-in-seconds: 120
     reuse-container: true
+    db-vendor: h2
     env:
       JAVA_OPTS_APPEND: "-Xms1024m -Xmx1024m"
   containers:

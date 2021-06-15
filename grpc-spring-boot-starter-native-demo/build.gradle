@@ -3,8 +3,6 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0-SNAPSHOT")
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.16'
-
     }
 }
 
