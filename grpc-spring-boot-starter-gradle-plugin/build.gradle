@@ -46,7 +46,7 @@ jar {
 gradlePlugin {
     plugins {
         grpcBootPlugin {
-            id = 'grpc-spring-boot'
+            id = "${group}.grpc-spring-boot"
             implementationClass = 'org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin'
             displayName = 'GRPC Spring Boot starter gradle plugin'
             description = 'Configures project with grpc-spring-boot-starter'
