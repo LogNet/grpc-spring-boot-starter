@@ -83,48 +83,85 @@ nexusPublishing {
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            pom {
-                name = 'grpc-spring-boot-starter-gradle-plugin'
-                description = 'Configures project with grpc-spring-boot-starter'
-                url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-
-                scm {
+    afterEvaluate {
+        publications {
+            pluginMaven {
+                // customize main publications here
+                artifact sourcesJar
+                artifact javadocJar
+                pom {
+                    name = 'grpc-spring-boot-starter-gradle-plugin'
+                    description = 'Configures project with grpc-spring-boot-starter'
                     url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-                    connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-                    developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
-                }
 
-                licenses {
-                    license {
-                        name = 'The Apache Software License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution = 'repo'
+                    scm {
+                        url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+                        connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+                        developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
                     }
-                }
 
-                developers {
-                    developer {
-                        id = 'jvmlet'
-                        name = 'Furer Alexander'
-                        email = 'furer.alexander@gmail.com'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
                     }
+
+                    developers {
+                        developer {
+                            id = 'jvmlet'
+                            name = 'Furer Alexander'
+                            email = 'furer.alexander@gmail.com'
+                        }
+                    }
+
                 }
-
-            }
-
-            from components.java
-
-
-            artifact(sourceJar) {
-                classifier = 'sources'
-            }
-            artifact(javadocJar) {
-                classifier = 'javadoc'
             }
         }
     }
+//    publications {
+//        mavenJava(MavenPublication) {
+//            pom {
+//                name = 'grpc-spring-boot-starter-gradle-plugin'
+//                description = 'Configures project with grpc-spring-boot-starter'
+//                url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+//
+//                scm {
+//                    url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+//                    connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+//                    developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+//                }
+//
+//                licenses {
+//                    license {
+//                        name = 'The Apache Software License, Version 2.0'
+//                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                        distribution = 'repo'
+//                    }
+//                }
+//
+//                developers {
+//                    developer {
+//                        id = 'jvmlet'
+//                        name = 'Furer Alexander'
+//                        email = 'furer.alexander@gmail.com'
+//                    }
+//                }
+//
+//            }
+//
+//            from components.java
+//
+//
+//            artifact(sourceJar) {
+//                classifier = 'sources'
+//            }
+//            artifact(javadocJar) {
+//                classifier = 'javadoc'
+//            }
+//        }
+//    }
 }
 
 signing {
