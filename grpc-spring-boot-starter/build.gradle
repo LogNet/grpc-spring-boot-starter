@@ -16,6 +16,9 @@ plugins {
     id "io.github.lognet.grpc-spring-boot"
 
 }
+grpcSpringBoot {
+    grpcSpringBootStarterVersion.set((String)null)
+}
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
