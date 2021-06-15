@@ -9,12 +9,12 @@ buildscript {
 }
 
 plugins {
-    id "grpc-spring-boot"
+    id "io.github.lognet.grpc-spring-boot"
 }
 
 
 apply plugin: 'java'
-apply plugin: org.lognet.springboot.grpc.gradle.GrpcSpringBootPlugin
+
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.experimental.aot'
