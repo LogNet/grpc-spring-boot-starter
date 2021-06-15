@@ -14,12 +14,12 @@ before_install:
 install: true # disables default "./gradlew assemble"  install script
 after_success:
 # - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./gradlew -S publishToSonatype   closeAndReleaseRepository  && ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build publishToSonatype   closeAndReleaseRepository "
- - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./gradlew -S publishToSonatype   closeAndReleaseRepository"
-# - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]]  && ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build publishToSonatype   closeAndReleaseRepository "
+# - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]] && ./gradlew -S publishToSonatype   closeAndReleaseRepository"
+ - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]]  && ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build publishToSonatype   closeAndReleaseRepository "
  - bash <(curl -s https://codecov.io/bash)
 script:
- - ./gradlew build codeCoverageReport
-# - ./gradlew -p grpc-spring-boot-starter-gradle-plugin build
+# - ./gradlew build codeCoverageReport
+ - ./gradlew -p grpc-spring-boot-starter-gradle-plugin build
 
 
 
