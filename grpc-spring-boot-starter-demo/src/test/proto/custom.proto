@@ -1,0 +1,21 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option java_package = "io.grpc.examples.custom";
+
+
+
+// Custom service definition.
+service CustomService {
+    rpc Custom ( CustomRequest) returns (  CustomReply) {}
+}
+
+
+message CustomRequest {
+    string name = 1;
+}
+
+message CustomReply {
+    string message = 1;
+}
+
+

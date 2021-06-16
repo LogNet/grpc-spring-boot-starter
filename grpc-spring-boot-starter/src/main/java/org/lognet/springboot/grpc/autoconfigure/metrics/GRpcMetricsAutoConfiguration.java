@@ -15,7 +15,9 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
+import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
@@ -41,9 +43,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Configuration
-@AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class})
+@AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class, GRpcAutoConfiguration.class})
 @ConditionalOnClass({MeterRegistry.class})
 @Conditional(GRpcMetricsAutoConfiguration.OnGrpcAndMeterRegistryEnabledCondition.class)
+@ConditionalOnBean(GRpcServerRunner.class)
 @EnableConfigurationProperties(GRpcMetricsProperties.class)
 public class GRpcMetricsAutoConfiguration {
 

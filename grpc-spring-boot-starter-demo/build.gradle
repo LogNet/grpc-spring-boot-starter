@@ -85,6 +85,10 @@ dependencies {
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
     testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.9"
+    testCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
+    testCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+
+
     constraints {
         testCompile('org.testcontainers:testcontainers:1.15.3'){
             because 'embedded-keycloak or testcontainers  should be upgraded when https://github.com/testcontainers/testcontainers-java/issues/4125 fixed.'
