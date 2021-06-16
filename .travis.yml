@@ -17,7 +17,7 @@ after_success:
 # - "[[ ${TRAVIS_PULL_REQUEST} == 'false' ]] && [[ ${TRAVIS_BRANCH} == 'master' ]] && [[ ${TRAVIS_TAG} == '' ]]  && ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build publishToSonatype   closeAndReleaseRepository "
  - bash <(curl -s https://codecov.io/bash)
 script:
- - ./gradlew build codeCoverageReport
+ - travis_wait 30  ./gradlew build codeCoverageReport
 # - ./gradlew -p grpc-spring-boot-starter-gradle-plugin build
 
 
