@@ -19,11 +19,8 @@ apply plugin: 'signing'
 apply plugin: "de.marcphilipp.nexus-publish"
 apply from: "../publishSonatype.gradle"
 
-
 project['gradle.publish.key'] = System.getenv('gradlePublishKey')
 project['gradle.publish.secret'] = System.getenv('gradlePublishSecret')
-
-println tasks.publishPlugins.getClass().name
 
 
 repositories {
@@ -183,7 +180,7 @@ signing {
         !version.toString().endsWith('-SNAPSHOT') && (
                 tasks.withType(PublishToMavenRepository).find {
                     gradle.taskGraph.hasTask it
-                } || gradle.taskGraph.hasTask("publishPlugins")
+                }
 
         )
     }

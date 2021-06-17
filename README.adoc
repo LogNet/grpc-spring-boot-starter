@@ -369,6 +369,14 @@ GRPC scrapping https://github.com/prometheus/prometheus/issues/8414[proposal]
 The starter can be  auto-configured to validate request/response gRPC service messages.
 Please continue to <<Implementing message validation>> for configuration details.
 
+=== Spring cloud stream support
+
+The starter internally defines the bean of type `java.util.function.Consumer` which is being considered  for function registry when `spring-cloud-stream` is on classpath, which is undesirable (`spring-cloud-stream` auto-registers the channel if you have exactly one Consumer/Supplier/Function bean in the application context, so you already have one if you use  this starter together with `spring-cloud-stream`).
+
+According to  https://github.com/spring-cloud/spring-cloud-function/issues/418[this],  it is  recommended to use `spring.cloud.function.definition` property in production ready applications and not to rely on the auto-discovery.
+
+Please  refer to https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/kafkaStreamTest/java/org/lognet/springboot/grpc/kafka/GrpcKafkaTest.java[GRPC Kafka Stream demo], the essential part is https://github.com/LogNet/grpc-spring-boot-starter/blob/0784a007c15ac479e5d9e19a22b943f9852244b9/grpc-spring-boot-starter-demo/src/kafkaStreamTest/resources/bootstrap-kafka-test.yml#L22[this] line.
+
 === Spring security support
 
 The starter provides built-in support for authenticating and authorizing users leveraging integration with https://spring.io/projects/spring-security[Spring Security framework]. +
