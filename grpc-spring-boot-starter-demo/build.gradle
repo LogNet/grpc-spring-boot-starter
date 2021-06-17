@@ -19,6 +19,7 @@ apply plugin: "nebula.facet"
 
 facets {
     pureNettyTest
+    kafkaStreamTest
     customSecurityTest
     bothPureAndShadedNettyTest
 }
@@ -55,6 +56,9 @@ configurations {
 
     bothPureAndShadedNettyTestCompile.extendsFrom( testCompile)
     bothPureAndShadedNettyTestRuntime.extendsFrom( testRuntime)
+
+    kafkaStreamTestCompile.extendsFrom( testCompile)
+    kafkaStreamTestRuntime.extendsFrom(testRuntime)
 }
 
 
@@ -86,11 +90,6 @@ dependencies {
 
     testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.9"
 
-    testCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
-    testCompile "org.springframework.kafka:spring-kafka-test"
-
-
-
     constraints {
         testCompile('org.testcontainers:testcontainers:1.15.3'){
             because 'embedded-keycloak or testcontainers  should be upgraded when https://github.com/testcontainers/testcontainers-java/issues/4125 fixed.'
@@ -110,6 +109,11 @@ dependencies {
 
     bothPureAndShadedNettyTestCompile sourceSets.test.output
     bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
+
+    kafkaStreamTestCompile sourceSets.test.output
+    kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
+    kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 

@@ -4,9 +4,8 @@ import io.grpc.examples.custom.Custom;
 import io.grpc.examples.custom.CustomServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GRpcService;
@@ -20,15 +19,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.rule.EmbeddedKafkaRule;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
 import java.util.function.Consumer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 
@@ -36,9 +32,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
 @ActiveProfiles({"disable-security", "kafka-test"})
 @Import({GrpcKafkaTest.TestConfig.class})
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 public class GrpcKafkaTest extends GrpcServerTestBase {
-
 
     @Configuration
     @Slf4j
@@ -47,16 +41,14 @@ public class GrpcKafkaTest extends GrpcServerTestBase {
         private KafkaTemplate<String, byte[]> kafkaTemplate;
 
         @GRpcService
-        class MyCustomService extends io.grpc.examples.custom.CustomServiceGrpc.CustomServiceImplBase {
+        class MyCustomService extends CustomServiceGrpc.CustomServiceImplBase {
             @Override
             public void custom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
                 kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), request.getName().getBytes())
                         .addCallback(e -> {
                             responseObserver.onNext(Custom.CustomReply.newBuilder().setMessage(request.getName()).build());
                             responseObserver.onCompleted();
-                        }, f -> {
-                            responseObserver.onError(f);
-                        });
+                        }, responseObserver::onError);
             }
         }
 
@@ -81,7 +73,7 @@ public class GrpcKafkaTest extends GrpcServerTestBase {
                         .setName(name)
                         .build()
                 );
-        assertThat(customReply.getMessage(), Matchers.is(name));
+        MatcherAssert.assertThat(customReply.getMessage(), Matchers.is(name));
         Mockito.verify(consumerMock,
                 Mockito.timeout(Duration.ofSeconds(3).toMillis()).times(1)
         ).accept(name);
