@@ -183,10 +183,8 @@ signing {
         !version.toString().endsWith('-SNAPSHOT') && (
                 tasks.withType(PublishToMavenRepository).find {
                     gradle.taskGraph.hasTask it
-                } ||
-                        tasks.withType(PublishTask).find {
-                            gradle.taskGraph.hasTask it
-                        }
+                } || gradle.taskGraph.hasTask("publishPlugins")
+
         )
     }
     sign publishing.publications
