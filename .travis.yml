@@ -11,6 +11,7 @@ cache:
     - $HOME/.gradle/wrapper/
 before_install:
 - "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in codesigning.asc.enc -out codesigning.asc -d && gpg --import ./codesigning.asc || echo"
+- "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in codesigning.asc.enc -out ./grpc-spring-boot-starter-gradle-plugin/codesigning.asc -d && gpg --import ./grpc-spring-boot-starter-gradle-plugin/codesigning.asc || echo"
 - chmod +x ./publish.sh
 install: true # disables default "./gradlew assemble"  install script
 after_success:
