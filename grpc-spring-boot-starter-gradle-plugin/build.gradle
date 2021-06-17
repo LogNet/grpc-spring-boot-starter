@@ -7,7 +7,7 @@ buildscript {
 plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
-    //id 'com.gradle.plugin-publish' version '0.14.0'
+    id 'com.gradle.plugin-publish' version '0.14.0'
 }
 // should be BEFORE applying other plugins
 Properties p = new Properties()
@@ -25,11 +25,11 @@ project['gradle.publish.key'] = System.getenv('gradlePublishKey')
 project['gradle.publish.secret'] = System.getenv('gradlePublishSecret')
 
 
-//pluginBundle {
-//    website = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
-//    vcsUrl = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
-//    tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
-//}
+pluginBundle {
+    website = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+    vcsUrl = 'https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin'
+    tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
+}
 
 repositories {
     mavenCentral()
@@ -88,6 +88,14 @@ nexusPublishing {
 }
 
 publishing {
+    publishing {
+        repositories {
+            maven {
+                name = 'localPluginRepository'
+                url = './build/local-plugin-repository'
+            }
+        }
+    }
     afterEvaluate {
         publications {
             pluginMaven {
