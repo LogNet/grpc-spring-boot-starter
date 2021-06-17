@@ -21,5 +21,3 @@ embedded:
       JAVA_OPTS_APPEND: "-Xms1024m -Xmx1024m"
   containers:
     enabled: false
-  kafka:
-    enabled: false

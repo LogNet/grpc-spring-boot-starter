@@ -85,8 +85,10 @@ dependencies {
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
     testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.9"
-    testCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
+
     testCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+    testCompile "org.springframework.kafka:spring-kafka-test"
+
 
 
     constraints {
