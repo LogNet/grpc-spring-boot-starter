@@ -23,6 +23,15 @@ project['gradle.publish.key'] = System.getenv('gradlePublishKey')
 project['gradle.publish.secret'] = System.getenv('gradlePublishSecret')
 
 
+println "Parent" :
+fileTree("../").visit { FileVisitDetails details -> 
+    println  details.file.path 
+}
+println "Dir" :
+fileTree("./").visit { FileVisitDetails details -> 
+    println  details.file.path 
+}
+
 repositories {
     mavenCentral()
     maven {
