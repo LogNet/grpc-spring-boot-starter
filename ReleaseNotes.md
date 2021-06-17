@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.4](#version-454)| 1.38.0        |2.5.0               |
 | [4.5.3](#version-453)| 1.38.0        |2.5.0               |
 | [4.5.2](#version-452)| 1.38.0        |2.5.0               |
 | [4.5.1](#version-451)| 1.38.0        |2.5.0               |
@@ -21,6 +22,16 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.4
+
+## :star: New Features
+
+- Introduce  grpc-spring-boot-starter-gradle-plugin [#222](https://github.com/LogNet/grpc-spring-boot-starter/issues/222)
+
+## :notebook_with_decorative_cover: Documentation
+
+- Document  GRPC starter + Kafka Stream usage [#219](https://github.com/LogNet/grpc-spring-boot-starter/issues/219)
 
 # Version 4.5.3
 

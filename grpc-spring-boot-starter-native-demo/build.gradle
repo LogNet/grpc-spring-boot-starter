@@ -33,7 +33,7 @@ grpcSpringBoot {
 dependencies {
 
     implementation(project(":grpc-spring-boot-starter")) {
-    //implementation("io.github.lognet:grpc-spring-boot-starter:4.5.4-SNAPSHOT") {
+    //implementation("io.github.lognet:grpc-spring-boot-starter:4.5.4") {
         exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
     }
@@ -65,6 +65,6 @@ bootBuildImage {
     environment = ['BP_NATIVE_IMAGE': 'true']
 }
 
-//[tasks.test,tasks.bootBuildImage].each {
-//    it.enabled false
-//}
+[tasks.test,tasks.bootBuildImage].each {
+    it.enabled false
+}
