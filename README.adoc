@@ -26,6 +26,10 @@ Auto-configures and runs the embedded gRPC server with @GRpcService-enabled bean
 
 == Setup
 
+
+[IMPORTANT]
+Make sure to check out the link:./grpc-spring-boot-starter-gradle-plugin/README.adoc[io.github.lognet.grpc-spring-boot^]   gradle plugin that dramatically simplifies the project setup.
+
 [source,groovy]
 ----
 repositories {

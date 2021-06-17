@@ -1,0 +1,75 @@
+= GRPC Spring boot gradle plugin
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:source-highlighter: prettify
+:numbered:
+:icons: font
+
+
+
+== Features
+
+Bootstraps the project with  `com.google.protobuf` gradle plugin (including `grpc` protoc plugin) and `io.github.lognet:grpc-spring-boot-starter`
+
+== Setup
+
+[source,groovy]
+----
+plugins {
+    id 'java'
+    id "io.github.lognet.grpc-spring-boot" version '4.5.4'
+}
+
+----
+Your project is configured to :
+
+. Generate `proto` and `grpc` classes for each `.proto` file under `${sourceSet}/proto` folder for all source sets :
+.. `src/main/java/proto/*.proto`
+.. `src/main/test/proto/*.proto`
+.. `src/main/myCustomSourset/proto/*.proto`.
++
+by applying `com.google.protobuf` gradle plugin.
+
+. All generated source files are added to your project's source sets (find them under `$buildDir/protoGen` folder )
+. `io.github.lognet:grpc-spring-boot-starter` is added to `implementation` configuration dependencies.
+
+
+== Configure
+
+
+[source,groovy]
+----
+grpcSpringBoot {
+    grpcSpringBootStarterVersion.set("X.X.X")// <1>
+    grpcVersion.set("X.X.X")//<2>
+    protocVersion.set("X.X.X")//<3>
+}
+----
+<1> `io.github.lognet:grpc-spring-boot-starter` version to use, defaults to the same version as this plugin.
+<2> `grpc` version to use, defaults to the version the `io.github.lognet:grpc-spring-boot-starter` was compiled with (see version matrix https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.md[here])
+<3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.17.1`)
+
+
+The version of `com.google.protobuf` can be controlled via `pluginManagement` block :
+
+[source,groovy]
+.setting.gradle
+----
+pluginManagement {
+    plugins {
+        id 'com.google.protobuf' version "X.X.X"//<1>
+    }
+}
+----
+<1> Defaults to  `0.8.16`
+
+
+== License
+
+Apache 2.0
