@@ -19,6 +19,8 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 script:
  #- ./gradlew build codeCoverageReport
+ - ll
+ - ll ./grpc-spring-boot-starter-gradle-plugin
  - ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build
 
 
