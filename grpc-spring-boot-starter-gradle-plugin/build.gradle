@@ -26,16 +26,6 @@ project['signing.secretKeyRingFile'] = '/home/travis/.gnupg/secring.gpg'
 project['gradle.publish.key'] = System.getenv('gradlePublishKey')
 project['gradle.publish.secret'] = System.getenv('gradlePublishSecret')
 
-
-println "Parent" :
-fileTree("../").visit { FileVisitDetails details -> 
-    println  details.file.path 
-}
-println "Dir" :
-fileTree("./").visit { FileVisitDetails details -> 
-    println  details.file.path 
-}
-
 repositories {
     mavenCentral()
     maven {
@@ -96,7 +86,35 @@ nexusPublishing {
     }
 
 }
+def withPom = {pomObj->
+    configure(pomObj,{
+        name = 'grpc-spring-boot-starter-gradle-plugin'
+        description = 'Configures project with grpc-spring-boot-starter'
+        url = 'https://github.com/LogNet/grpc-spring-boot-starter'
 
+        scm {
+            url = 'https://github.com/LogNet/grpc-spring-boot-starter'
+            connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
+            developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
+        }
+
+        licenses {
+            license {
+                name = 'The Apache Software License, Version 2.0'
+                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution = 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id = 'jvmlet'
+                name = 'Furer Alexander'
+                email = 'furer.alexander@gmail.com'
+            }
+        }
+    })
+}
 publishing {
     publishing {
         repositories {
@@ -110,66 +128,13 @@ publishing {
         publications {
            grpcBootPluginPluginMarkerMaven {
                 // customize marker publications here
-                pom {
-                    name = 'grpc-spring-boot-starter-gradle-plugin'
-                    description = 'Configures project with grpc-spring-boot-starter marker'
-                    url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-
-                    scm {
-                        url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-                        connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-                        developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'The Apache Software License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution = 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = 'jvmlet'
-                            name = 'Furer Alexander'
-                            email = 'furer.alexander@gmail.com'
-                        }
-                    }
-                }
+                pom  = withPom << {it.name +=" marker" }
             }
             pluginMaven {
                 // customize main publications here
                 artifact sourceJar
                 artifact javadocJar
-                pom {
-                    name = 'grpc-spring-boot-starter-gradle-plugin'
-                    description = 'Configures project with grpc-spring-boot-starter'
-                    url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-
-                    scm {
-                        url = 'https://github.com/LogNet/grpc-spring-boot-starter'
-                        connection = 'scm:https://LogNet@github.com/LogNet/grpc-spring-boot-starter.git'
-                        developerConnection = 'scm:git://github.com/LogNet/grpc-spring-boot-starter.git'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'The Apache Software License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution = 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = 'jvmlet'
-                            name = 'Furer Alexander'
-                            email = 'furer.alexander@gmail.com'
-                        }
-                    }
-
-                }
+                pom   = withPom
             }
         }
     }

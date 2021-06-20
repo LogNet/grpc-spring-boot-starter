@@ -10,19 +10,14 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 before_install:
-- chmod +x ./publish.sh
-- "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in codesigning.asc.enc -out codesigning.asc -d && gpg --import ./codesigning.asc || echo"
-- cd ./grpc-spring-boot-starter-gradle-plugin
-- "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in ./../codesigning.asc.enc -out codesigning.asc -d && gpg --import ./codesigning.asc || echo"
-- cd ./..
+  - chmod +x ./publish.sh
+  - "openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in codesigning.asc.enc -out codesigning.asc -d && gpg --import ./codesigning.asc || echo"
 install: true # disables default "./gradlew assemble"  install script
 after_success:
   - ./publish.sh
   - bash <(curl -s https://codecov.io/bash)
 script:
- #- ./gradlew build codeCoverageReport
-  - ./gradlew -S -p grpc-spring-boot-starter-gradle-plugin build
-
+ - ./gradlew build codeCoverageReport
 
 
 
