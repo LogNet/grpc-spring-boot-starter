@@ -86,10 +86,10 @@ nexusPublishing {
     }
 
 }
-def withPom = {pomObj->
+def withPom = {pomObj, desc->
     configure(pomObj,{
         name = 'grpc-spring-boot-starter-gradle-plugin'
-        description = 'Configures project with grpc-spring-boot-starter'
+        description = "Configures project with grpc-spring-boot-starter ${desc}"
         url = 'https://github.com/LogNet/grpc-spring-boot-starter'
 
         scm {
@@ -128,13 +128,13 @@ publishing {
         publications {
            grpcBootPluginPluginMarkerMaven {
                 // customize marker publications here
-                pom  = withPom << {it.name +=" marker" }
+               withPom.call(pom,"")
             }
             pluginMaven {
                 // customize main publications here
                 artifact sourceJar
                 artifact javadocJar
-                pom   = withPom
+                withPom.call(pom," marker")
             }
         }
     }
