@@ -23,11 +23,11 @@ class AuthenticationSchemeService implements AuthenticationSchemeRegistry, Authe
                 .collect(Collectors.toList());
         switch (auth.size()){
             case 0:
-                throw  new IllegalStateException("Authentication scheme" +authorization.toString() +"not supported");
+                throw  new IllegalStateException("Authentication scheme " + authorization + " not supported");
             case 1 :
                 return Optional.of(auth.get(0));
             default:
-                throw  new IllegalStateException("Ambiguous authentication scheme "+authorization.toString());
+                throw  new IllegalStateException("Ambiguous authentication scheme " + authorization);
         }
     }
 
