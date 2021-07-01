@@ -12,6 +12,7 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -98,8 +99,8 @@ public class MetricWithSecurityTest extends GrpcServerTestBase {
 
     }
 
-   // @Test
-    public void validationShouldInvokedBeforeAuthTest() {
+    @Test
+   public void validationShouldInvokedBeforeAuthTest() {
         final GreeterGrpc.GreeterBlockingStub stub = GreeterGrpc.newBlockingStub(super.getChannel());
         StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
             stub.helloPersonValidResponse(GreeterOuterClass.Person.newBuilder()
@@ -114,7 +115,7 @@ public class MetricWithSecurityTest extends GrpcServerTestBase {
     }
 
     @Override
-    public void simpleGreeting() throws ExecutionException, InterruptedException {
+    public void simpleGreeting() throws  Exception {
         AuthCallCredentials callCredentials = new AuthCallCredentials(
                 AuthHeader.builder().basic("user","pwd".getBytes())
         );
