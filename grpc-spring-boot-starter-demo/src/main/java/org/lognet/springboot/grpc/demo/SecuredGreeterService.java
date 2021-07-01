@@ -4,7 +4,6 @@ import com.google.protobuf.Empty;
 import io.grpc.examples.GreeterOuterClass;
 import io.grpc.examples.SecuredGreeterGrpc;
 import io.grpc.stub.StreamObserver;
-import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.springframework.security.access.annotation.Secured;
@@ -13,7 +12,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 import java.util.Optional;
 
-@Slf4j
+
 @GRpcService(interceptors = { LogInterceptor.class })
 @Secured("SCOPE_profile")
 public class SecuredGreeterService extends SecuredGreeterGrpc.SecuredGreeterImplBase{

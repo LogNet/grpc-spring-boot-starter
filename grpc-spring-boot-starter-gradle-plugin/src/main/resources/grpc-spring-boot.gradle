@@ -7,13 +7,16 @@ java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().g
             }
         }
 
+def grpcDeps = ["grpc-netty-shaded","grpc-netty","grpc-services"]
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
-        if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-            details.useVersion grpcSpringBoot.grpcVersion.get()
+        if ("io.grpc".equalsIgnoreCase(details.requested.group) &&
+            grpcDeps.contains(details.requested.name.toLowerCase())) {
+                details.useVersion grpcSpringBoot.grpcVersion.get()
         }
     }
+
 }
 
 
@@ -42,7 +45,7 @@ protobuf {
         all().each { task ->
             task.builtins {
                 java {
-
+                   option "annotate_code"
                 }
             }
             task.plugins {
