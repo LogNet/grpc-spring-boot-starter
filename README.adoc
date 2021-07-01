@@ -522,6 +522,7 @@ While it's still possible to have your rpc methods annotated with `@Transactiona
 
 [source,java]
 ----
+@GRpcService
 class MyGrpcService extends ...{
     @Autowired
     private MyJpaRepository repo;
@@ -557,6 +558,7 @@ class MyService{
         return result;
     }//<2>
 }
+@GRpcService
 class MyGrpcService extends ...{
     @Autowired
     private MyService myService;
