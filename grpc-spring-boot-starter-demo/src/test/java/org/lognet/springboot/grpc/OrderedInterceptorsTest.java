@@ -36,8 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("disable-security")
 public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
-  @LocalRunningGrpcPort
-  int runningPort;
+
 
   private static List<Integer> calledInterceptors = new ArrayList<>();
 

@@ -26,6 +26,7 @@ public class PreferPureNettyCollisionTest extends DefaultNettyCollisionTest {
 
 
     @Test
+    @Override
     public void contextLoads() {
       assertNettyBuilderClass(io.grpc.netty.NettyServerBuilder.class);
 

@@ -510,6 +510,9 @@ Note also custom cross-field link:grpc-spring-boot-starter-demo/src/main/java/or
 
 As described in  <<Interceptors ordering>> chapter, you can give `validation` interceptor the higher precedence than `security` interceptor and set `grpc.security.auth.fail-fast` property to `false`. +
 In this scenario, if call is both unauthenticated and invalid, the client will get `Status.INVALID_ARGUMENT` instead of `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` response status.
+Demo is https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/ValidationWithSecurityTest.java[here]
+
+
 
 By adding `GRpcErrorHandler` bean to your application, you get  a chance to send your custom response headers. The error handler will be called with `Status.INVALID_ARGUMENT` and incoming request message that is failed.
 

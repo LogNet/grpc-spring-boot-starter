@@ -26,6 +26,7 @@ public class PreferShadedNettyCollisionTest extends DefaultNettyCollisionTest {
 
 
     @Test
+    @Override
     public void contextLoads() {
         assertNettyBuilderClass(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class);
 
