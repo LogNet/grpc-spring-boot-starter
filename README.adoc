@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.4'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.5'
 }
 
 
@@ -48,10 +48,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.4.7') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.5.5') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
- compile 'io.grpc:grpc-netty:1.37.0' // <1>
+ compile 'io.grpc:grpc-netty:1.39.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 

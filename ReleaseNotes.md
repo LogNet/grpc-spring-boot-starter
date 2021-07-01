@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.5](#version-455)| 1.39.0        |2.5.0               |
 | [4.5.4](#version-454)| 1.38.0        |2.5.0               |
 | [4.5.3](#version-453)| 1.38.0        |2.5.0               |
 | [4.5.2](#version-452)| 1.38.0        |2.5.0               |
@@ -22,6 +23,17 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.5
+
+## :beetle: Bug Fixes
+
+- grpc-kotlin-stub version is not same grpc version [#224](https://github.com/LogNet/grpc-spring-boot-starter/issues/224)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to 1.39.0 [#227](https://github.com/LogNet/grpc-spring-boot-starter/issues/227)
+
 
 # Version 4.5.4
 
