@@ -278,17 +278,18 @@ dependencies {
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    compileOnly("org.springframework.boot:spring-boot-starter-security")
+    compileOnly "org.springframework.boot:spring-boot-starter-security"
     compileOnly "org.springframework.security:spring-security-oauth2-resource-server"
     compileOnly "org.springframework.security:spring-security-oauth2-jose"
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly "org.springframework.boot:spring-boot-starter-actuator"
     compileOnly 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+    testImplementation "org.springframework.boot:spring-boot-starter-security"
 
     testCompile "io.grpc:grpc-netty"
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-
 }
 
 
