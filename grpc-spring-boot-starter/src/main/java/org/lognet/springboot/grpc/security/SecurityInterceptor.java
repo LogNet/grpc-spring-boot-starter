@@ -76,33 +76,38 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
 
         final CharSequence authorization = Optional.ofNullable(headers.get(Metadata.Key.of("Authorization" + Metadata.BINARY_HEADER_SUFFIX, Metadata.BINARY_BYTE_MARSHALLER)))
-                .map(auth -> (CharSequence) StandardCharsets.UTF_8.decode(ByteBuffer.wrap(auth)))
-                .orElse(headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER)));
+            .map(auth -> (CharSequence) StandardCharsets.UTF_8.decode(ByteBuffer.wrap(auth)))
+            .orElse(headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER)));
 
         try {
-            final Authentication authentication = null == authorization ? null :
-                schemeSelector.getAuthScheme(authorization)
-                        .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
+            final Context grpcSecurityContext;
+            try {
+                grpcSecurityContext = setupGRpcSecurityContext(call, authorization);
+            } catch (AccessDeniedException e) {
+                return fail(next, call, headers, Status.PERMISSION_DENIED, e);
+            } catch (Exception e) {
+                return fail(next, call, headers, Status.UNAUTHENTICATED, e);
+            }
 
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-
-            beforeInvocation(call.getMethodDescriptor());
-
-            Context ctx = Context.current()
-                    .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
-
-            return Contexts.interceptCall(ctx, call, headers, next);
-        } catch (AccessDeniedException e) {
-            return fail(next, call, headers, Status.PERMISSION_DENIED, e);
-        } catch (Exception e) {
-            return fail(next, call, headers, Status.UNAUTHENTICATED, e);
+            return Contexts.interceptCall(grpcSecurityContext, call, headers, next);
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
+    }
 
+    private Context setupGRpcSecurityContext(ServerCall<?, ?> call, CharSequence authorization) {
+        final Authentication authentication = null == authorization ? null :
+            schemeSelector.getAuthScheme(authorization)
+                .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
 
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        beforeInvocation(call.getMethodDescriptor());
+
+        return Context.current()
+            .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
     }
 
     private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers,final Status status, Exception exception) {
