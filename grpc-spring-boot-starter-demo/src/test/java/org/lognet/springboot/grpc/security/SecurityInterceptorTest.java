@@ -15,16 +15,14 @@ import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.lognet.springboot.grpc.GRpcErrorHandler;
 
-class SecurityInterceptorTest {
+public class SecurityInterceptorTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @DisplayName("handles exceptions during auth scheme selection")
-    void authSchemeSelectionException() {
+    public void authSchemeSelectionException() {
         AuthenticationSchemeSelector throwingSchemeSelector = mock(AuthenticationSchemeSelector.class);
         Exception testException = new IllegalStateException("test");
         when(throwingSchemeSelector.getAuthScheme(any())).thenThrow(testException);
