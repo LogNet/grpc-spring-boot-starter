@@ -95,7 +95,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             Context ctx = Context.current()
                     .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
 
-            return Contexts.interceptCall(ctx, call, headers, next);
+            return Contexts.interceptCall(ctx, call, headers, authenticationPropagatingHandler(next));
         } catch (AccessDeniedException e) {
             return fail(next, call, headers, Status.PERMISSION_DENIED, e);
         } catch (Exception e) {
@@ -104,6 +104,48 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             SecurityContextHolder.getContext().setAuthentication(null);
         }
 
+
+    }
+
+    private <ReqT, RespT> ServerCallHandler<ReqT, RespT> authenticationPropagatingHandler(ServerCallHandler<ReqT, RespT> next) {
+
+        return (call, headers) -> new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call, headers)) {
+
+            @Override
+            public void onMessage(ReqT message) {
+                propagateAuthentication(() -> super.onMessage(message));
+            }
+
+            @Override
+            public void onHalfClose() {
+                propagateAuthentication(super::onHalfClose);
+            }
+
+            @Override
+            public void onCancel() {
+                propagateAuthentication(super::onCancel);
+            }
+
+            @Override
+            public void onComplete() {
+                propagateAuthentication(super::onComplete);
+            }
+
+            @Override
+            public void onReady() {
+                propagateAuthentication(super::onReady);
+            }
+
+            private void propagateAuthentication(Runnable runnable) {
+                try {
+                    SecurityContextHolder.getContext().setAuthentication(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get());
+                    runnable.run();
+                } finally {
+                    SecurityContextHolder.clearContext();
+                }
+            }
+
+        };
 
     }
 
