@@ -79,13 +79,11 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
                 .map(auth -> (CharSequence) StandardCharsets.UTF_8.decode(ByteBuffer.wrap(auth)))
                 .orElse(headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER)));
 
-
-        final Authentication authentication = null == authorization ? null :
+        try {
+            final Authentication authentication = null == authorization ? null :
                 schemeSelector.getAuthScheme(authorization)
                         .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
 
-
-        try {
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authentication);
             SecurityContextHolder.setContext(context);
