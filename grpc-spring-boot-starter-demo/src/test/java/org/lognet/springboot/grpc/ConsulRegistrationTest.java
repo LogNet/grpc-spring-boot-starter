@@ -25,6 +25,7 @@ import org.springframework.util.SocketUtils;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
@@ -52,7 +53,7 @@ public class ConsulRegistrationTest {
     @AfterClass
     public  static void clear(){
         System.clearProperty("spring.cloud.consul.port");
-        consul.close();
+        Optional.ofNullable(consul).ifPresent(ConsulProcess::close);
 
     }
 

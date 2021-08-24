@@ -146,7 +146,7 @@ jar {
 
 
     // generate native config by executing test app in graalvm docker image
-    // then grab generating json files and filter to include class from `org.lognet.springboot.grpc` package only
+    // then grab generated json files and filter to include class from `org.lognet.springboot.grpc` package only
     dependsOn testDependencyFatJar
     File aotDir = new File(buildDir, "native-configs");
     File transformed = new File(aotDir, "transformed")

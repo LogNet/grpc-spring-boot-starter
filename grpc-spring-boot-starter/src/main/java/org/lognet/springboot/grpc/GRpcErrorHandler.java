@@ -2,7 +2,9 @@ package org.lognet.springboot.grpc;
 
 import io.grpc.Metadata;
 import io.grpc.Status;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class GRpcErrorHandler {
 
     /**
@@ -27,6 +29,7 @@ public class GRpcErrorHandler {
      * @return
      */
     public Status handle(Object message,Status status, Exception exception, Metadata requestHeaders, Metadata responseHeaders) {
+        log.error("Got error with status {} ",status.getCode().name(),exception);
         return status.withDescription(exception.getMessage());
     }
 }

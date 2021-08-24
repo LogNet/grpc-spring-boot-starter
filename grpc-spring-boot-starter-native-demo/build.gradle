@@ -2,7 +2,7 @@ buildscript {
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.0")
+        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.3")
     }
 }
 

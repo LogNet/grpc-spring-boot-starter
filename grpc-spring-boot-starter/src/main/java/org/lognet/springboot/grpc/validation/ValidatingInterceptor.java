@@ -47,7 +47,7 @@ public class ValidatingInterceptor implements FailureHandlingServerInterceptor, 
             public void sendMessage(RespT message) {
                 final Set<ConstraintViolation<RespT>> violations = validator.validate(message, ResponseMessage.class);
                 if (!violations.isEmpty()) {
-                    throw closeCall(message, errorHandler, delegate(), headers, Status.FAILED_PRECONDITION, new ConstraintViolationException(violations));
+                    closeCall(message, errorHandler, delegate(), headers, Status.FAILED_PRECONDITION, new ConstraintViolationException(violations));
                 } else {
                     super.sendMessage(message);
                 }
@@ -59,7 +59,7 @@ public class ValidatingInterceptor implements FailureHandlingServerInterceptor, 
             public void onMessage(ReqT message) {
                 final Set<ConstraintViolation<ReqT>> violations = validator.validate(message, RequestMessage.class);
                 if (!violations.isEmpty()) {
-                    throw closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
+                     closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
 
                 } else {
                     super.onMessage(message);

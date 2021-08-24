@@ -28,11 +28,9 @@ import java.util.Optional;
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements FailureHandlingServerInterceptor, Ordered {
 
 
+    private final GrpcSecurityMetadataSource securedMethods;
 
-
-    private final  GrpcSecurityMetadataSource securedMethods;
-
-    private final  AuthenticationSchemeSelector schemeSelector;
+    private final AuthenticationSchemeSelector schemeSelector;
 
     private GRpcServerProperties.SecurityProperties.Auth authCfg;
 
@@ -46,7 +44,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Autowired
     public void setErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
-        this.errorHandler = errorHandler.orElseGet(()->new GRpcErrorHandler() {});
+        this.errorHandler = errorHandler.orElseGet(() -> new GRpcErrorHandler() {
+        });
     }
 
     public void setConfig(GRpcServerProperties.SecurityProperties.Auth authCfg) {
@@ -55,7 +54,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Override
     public int getOrder() {
-        return Optional.ofNullable(authCfg.getInterceptorOrder()).orElse(Ordered.HIGHEST_PRECEDENCE);
+        return Optional.ofNullable(authCfg.getInterceptorOrder()).orElse(Ordered.HIGHEST_PRECEDENCE+1);
     }
 
     @Override
@@ -80,24 +79,15 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
                 .orElse(headers.get(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER)));
 
         try {
-            final Authentication authentication = null == authorization ? null :
-                schemeSelector.getAuthScheme(authorization)
-                        .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
-
-            SecurityContext context = SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authentication);
-            SecurityContextHolder.setContext(context);
-
-            beforeInvocation(call.getMethodDescriptor());
-
-            Context ctx = Context.current()
-                    .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
-
-            return Contexts.interceptCall(ctx, call, headers, next);
-        } catch (AccessDeniedException e) {
-            return fail(next, call, headers, Status.PERMISSION_DENIED, e);
-        } catch (Exception e) {
-            return fail(next, call, headers, Status.UNAUTHENTICATED, e);
+            final Context grpcSecurityContext;
+            try {
+                grpcSecurityContext = setupGRpcSecurityContext(call, authorization);
+            } catch (AccessDeniedException e) {
+                return fail(next, call, headers, Status.PERMISSION_DENIED, e);
+            } catch (Exception e) {
+                return fail(next, call, headers, Status.UNAUTHENTICATED, e);
+            }
+            return Contexts.interceptCall(grpcSecurityContext, call, headers, next);
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
@@ -105,19 +95,35 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     }
 
-    private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers,final Status status, Exception exception) {
+    private Context setupGRpcSecurityContext(ServerCall<?, ?> call, CharSequence authorization) {
+        final Authentication authentication = null == authorization ? null :
+                schemeSelector.getAuthScheme(authorization)
+                        .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
+
+        beforeInvocation(call.getMethodDescriptor());
+
+        return Context.current()
+                .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, final Status status, Exception exception) {
 
         if (authCfg.isFailFast()) {
-            throw closeCall(null,errorHandler,call,headers,status,exception);
+             closeCall(null, errorHandler, call, headers, status, exception);
+             return new ServerCall.Listener<ReqT>() {
+                // noop
+            };
+
 
         } else {
-
-           return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call,headers))  {
+            return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call, headers)) {
                 @Override
                 public void onMessage(ReqT message) {
-                   throw  closeCall(message, errorHandler, call, headers, status, exception);
-
-
+                    closeCall(message, errorHandler, call, headers, status, exception);
                 }
             };
 
