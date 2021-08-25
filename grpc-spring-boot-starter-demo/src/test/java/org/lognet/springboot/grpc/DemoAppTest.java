@@ -69,7 +69,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, TestConfig.class}, webEnvironment = RANDOM_PORT
         , properties = {"grpc.enableReflection=true",
-        "grpc.shutdownGrace=-1"
+        "grpc.shutdownGrace=-1",
+        "spring.main.web-application-type=servlet"
 })
 @ActiveProfiles({"disable-security", "measure"})
 

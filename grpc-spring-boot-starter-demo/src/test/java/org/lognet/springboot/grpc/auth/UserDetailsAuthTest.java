@@ -9,9 +9,13 @@ import io.grpc.StatusRuntimeException;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
+import io.grpc.examples.GreeterOuterClass;
 import io.grpc.examples.SecuredCalculatorGrpc;
+import io.grpc.examples.SecuredGreeterGrpc;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -25,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +40,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -98,6 +105,32 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
         assertNotNull("Reply should not be null",reply);
         assertTrue(String.format("Reply should contain name '%s'",user.getUsername()),reply.contains(user.getUsername()));
 
+
+    }
+
+    @Test
+    @Ignore("@PreAuthorize is not supported yet")
+    public void preAuthorizeTest() {
+        final GreeterGrpc.GreeterBlockingStub greeterBlockingStub = GreeterGrpc.newBlockingStub(getChannel(false));
+
+
+        final GreeterOuterClass.HelloReply helloReply = greeterBlockingStub
+                .sayPreAuthHello(GreeterOuterClass.Person.newBuilder()
+                        .setName("Frodo")
+                        .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Shire"))
+                        .setAge(11)
+                        .build());
+        assertThat(helloReply.getMessage(),not(emptyOrNullString()));
+
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
+            greeterBlockingStub
+                    .sayPreAuthHello(GreeterOuterClass.Person.newBuilder()
+                            .setName("Aragorn")
+                            .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Isildur"))
+                            .setAge(45)
+                            .build());
+        });
+        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
 
     }
 

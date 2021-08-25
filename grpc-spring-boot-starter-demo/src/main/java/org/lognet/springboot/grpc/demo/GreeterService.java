@@ -7,9 +7,13 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.util.Assert;
 
 @Slf4j
 @GRpcService(interceptors = { LogInterceptor.class })
@@ -29,7 +33,9 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
 
         final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
+        Assert.isTrue(SecurityContextHolder.getContext().getAuthentication() == auth,()->"Authentication object should be the same as in GRPC context");
         if(null!=auth) {
+
             String user = auth.getName();
             if (auth instanceof JwtAuthenticationToken) {
                 user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
@@ -39,6 +45,17 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
             responseObserver.onNext(GreeterOuterClass.HelloReply.newBuilder().setMessage("Hello").build());
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    @PreAuthorize("#person.getAge()<12")
+    public void sayPreAuthHello(GreeterOuterClass.Person person, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+        responseObserver.onNext(GreeterOuterClass.HelloReply
+                .newBuilder()
+                .setMessage("Only kids are welcome!")
+                .build());
+        responseObserver.onCompleted();
+
     }
 
     @Override
