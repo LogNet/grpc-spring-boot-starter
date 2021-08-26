@@ -102,10 +102,11 @@ public class GRpcServerRunner implements SmartLifecycle {
 
             configurator.accept(serverBuilder);
             server = serverBuilder.build().start();
-            applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
-
-            log.info("gRPC Server started, listening on port {}.", server.getPort());
+            isRunning.set(true);
             startDaemonAwaitThread();
+            log.info("gRPC Server started, listening on port {}.", server.getPort());
+
+            applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
         }catch (Exception e){
             throw  new RuntimeException("Failed to start GRPC server",e);
         }
@@ -158,7 +159,7 @@ public class GRpcServerRunner implements SmartLifecycle {
     private void startDaemonAwaitThread() {
         Thread awaitThread = new Thread(() -> {
             try {
-                isRunning.set(true);
+
                 latch.await();
             } catch (InterruptedException e) {
                 log.error("gRPC server awaiter interrupted.", e);

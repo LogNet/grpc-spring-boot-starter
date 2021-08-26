@@ -39,7 +39,6 @@ import java.util.function.Consumer;
 @Import({GRpcValidationConfiguration.class,
         NettyServerBuilderSelector.class
 })
-@Slf4j
 public class GRpcAutoConfiguration {
 
     @Autowired
