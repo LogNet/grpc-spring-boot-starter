@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.5'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.6'
 }
 
 
@@ -713,6 +713,12 @@ To obtain  `Authentication` object in the implementation of *secured method*, pl
 final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
 ----
 
+Starting from `4.5.6`, the `Authentication` object can also be obtained via standard Spring API :
+
+[source,java]
+----
+final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+----
 
 === Custom  authentication failure handling
 

@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.6](#version-456)| 1.40.0        |2.5.0               |
 | [4.5.5](#version-455)| 1.39.0        |2.5.0               |
 | [4.5.4](#version-454)| 1.38.0        |2.5.0               |
 | [4.5.3](#version-453)| 1.38.0        |2.5.0               |
@@ -23,6 +24,21 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.6
+## :star: New Features
+
+- Propagate Authentication to SecurityContextHolder [#234](https://github.com/LogNet/grpc-spring-boot-starter/issues/234)
+
+## :beetle: Bug Fixes
+
+- grpc boot gradle plugin configures  wrong generated source dir [#237](https://github.com/LogNet/grpc-spring-boot-starter/issues/237)
+- SecurityInterceptor rewrites the status and double-closes if other Interceptors close the call [#231](https://github.com/LogNet/grpc-spring-boot-starter/issues/231)
+- SecurityInterceptor does not consult the GRpcErrorHandler for auth scheme selection errors [#229](https://github.com/LogNet/grpc-spring-boot-starter/issues/229)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade to grpc 1.40.0 [#235](https://github.com/LogNet/grpc-spring-boot-starter/issues/235)
 
 # Version 4.5.5
 
