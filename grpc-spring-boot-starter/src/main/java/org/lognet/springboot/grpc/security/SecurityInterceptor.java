@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc.security;
 
 import io.grpc.Context;
 import io.grpc.Contexts;
+import io.grpc.ForwardingServerCall;
 import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
+import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements FailureHandlingServerInterceptor, Ordered {
 
+    private static final Context.Key<InterceptorStatusToken> INTERCEPTOR_STATUS_TOKEN =  Context.key("INTERCEPTOR_STATUS_TOKEN");
 
     private final GrpcSecurityMetadataSource securedMethods;
 
@@ -68,6 +71,20 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
     }
 
     @Override
+    /**
+     *   Execute the same interceptor flow as original   FilterSecurityInterceptor/MethodSecurityInterceptor
+     *   {
+     *    InterceptorStatusToken token = super.beforeInvocation(mi);
+     * 		Object result;
+     * 		try {
+     * 			result = mi.proceed();
+     *        }
+     * 		finally {
+     * 			super.finallyInvocation(token);
+     *        }
+     * 		return super.afterInvocation(token, result);
+     *    }
+     */
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
             ServerCall<ReqT, RespT> call,
             Metadata headers,
@@ -93,10 +110,12 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         }
 
 
+
+
     }
     private <ReqT, RespT> ServerCallHandler<ReqT, RespT> authenticationPropagatingHandler(ServerCallHandler<ReqT, RespT> next) {
 
-        return (call, headers) -> new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call, headers)) {
+        return (call, headers) -> new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(afterInvocationPropagator(call), headers)) {
 
             @Override
             public void onMessage(ReqT message) {
@@ -105,7 +124,11 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
             @Override
             public void onHalfClose() {
-                propagateAuthentication(super::onHalfClose);
+                try {
+                    propagateAuthentication(super::onHalfClose);
+                }finally {
+                    finallyInvocation(INTERCEPTOR_STATUS_TOKEN.get());
+                }
             }
 
             @Override
@@ -133,7 +156,15 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             }
 
         };
+    }
 
+    private <RespT, ReqT> ServerCall<RespT, ReqT> afterInvocationPropagator(ServerCall<RespT, ReqT> call){
+        return new ForwardingServerCall.SimpleForwardingServerCall<RespT, ReqT>(call) {
+            @Override
+            public void sendMessage(ReqT message) {
+                super.sendMessage((ReqT) afterInvocation(INTERCEPTOR_STATUS_TOKEN.get(), message));
+            }
+        };
     }
 
     private Context setupGRpcSecurityContext(ServerCall<?, ?> call, CharSequence authorization) {
@@ -145,10 +176,11 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
 
-        beforeInvocation(call.getMethodDescriptor());
+        final InterceptorStatusToken interceptorStatusToken = beforeInvocation(call.getMethodDescriptor());
 
         return Context.current()
-                .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication());
+                .withValues(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication(),
+                            INTERCEPTOR_STATUS_TOKEN,interceptorStatusToken);
     }
 
     private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, final Status status, Exception exception) {

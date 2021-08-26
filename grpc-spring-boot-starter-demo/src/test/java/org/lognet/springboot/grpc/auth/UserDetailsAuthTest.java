@@ -55,8 +55,6 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     @TestConfiguration
     static class TestCfg   extends GrpcSecurityConfigurerAdapter {
-
-
             static final String pwd="strongPassword1";
             @Bean
             public PasswordEncoder passwordEncoder() {
@@ -75,8 +73,6 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
-
-
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
@@ -108,31 +104,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     }
 
-    @Test
-    @Ignore("@PreAuthorize is not supported yet")
-    public void preAuthorizeTest() {
-        final GreeterGrpc.GreeterBlockingStub greeterBlockingStub = GreeterGrpc.newBlockingStub(getChannel(false));
 
-
-        final GreeterOuterClass.HelloReply helloReply = greeterBlockingStub
-                .sayPreAuthHello(GreeterOuterClass.Person.newBuilder()
-                        .setName("Frodo")
-                        .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Shire"))
-                        .setAge(11)
-                        .build());
-        assertThat(helloReply.getMessage(),not(emptyOrNullString()));
-
-        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
-            greeterBlockingStub
-                    .sayPreAuthHello(GreeterOuterClass.Person.newBuilder()
-                            .setName("Aragorn")
-                            .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Isildur"))
-                            .setAge(45)
-                            .build());
-        });
-        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
-
-    }
 
     @Test
     public void shouldFailWithPermissionDenied() {

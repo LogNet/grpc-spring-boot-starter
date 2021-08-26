@@ -9,6 +9,7 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,11 +50,10 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
     @Override
     @PreAuthorize("#person.getAge()<12")
-    public void sayPreAuthHello(GreeterOuterClass.Person person, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
-        responseObserver.onNext(GreeterOuterClass.HelloReply
-                .newBuilder()
-                .setMessage("Only kids are welcome!")
-                .build());
+    @PostAuthorize("returnObject.getAge()>5")
+    public void sayPreAuthHello(GreeterOuterClass.Person person, StreamObserver<GreeterOuterClass.Person> responseObserver) {
+
+        responseObserver.onNext(person.toBuilder().setNickName("dummy").build());
         responseObserver.onCompleted();
 
     }
