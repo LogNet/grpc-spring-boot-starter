@@ -25,6 +25,13 @@ sourceSets.configureEach{s->
         srcDir project.buildDir.toPath()
                 .resolve("protoGen")
                 .resolve(s.name)
+                .resolve("java")
+                .toFile()
+
+        srcDir project.buildDir.toPath()
+                .resolve("protoGen")
+                .resolve(s.name)
+                .resolve("grpc")
                 .toFile()
     }
 }
