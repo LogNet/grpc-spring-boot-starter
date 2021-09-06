@@ -1,12 +1,21 @@
 package org.lognet.springboot.grpc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.junit.Assert.assertThrows;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
+
+import java.util.Locale;
+
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
@@ -17,17 +26,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.junit.Assert.assertThrows;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = {"grpc.port=0"})
 @Import(ValidationTest.TestCfg.class)
 @ActiveProfiles("disable-security")
 public class ValidationTest extends GrpcServerTestBase {
-
     @TestConfiguration
     static class TestCfg {
         @Bean
@@ -43,7 +46,18 @@ public class ValidationTest extends GrpcServerTestBase {
     }
     private  GreeterGrpc.GreeterBlockingStub stub;
 
+    private static Locale systemDefaultLocale;
 
+    @BeforeClass
+    public static void setLocaleToEnglish() {
+        systemDefaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @AfterClass
+    public static void resetDefaultLocale() {
+        Locale.setDefault(systemDefaultLocale);
+    }
 
     @Before
     public void setUp() throws Exception {
