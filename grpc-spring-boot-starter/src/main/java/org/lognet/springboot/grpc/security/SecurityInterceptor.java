@@ -1,5 +1,9 @@
 package org.lognet.springboot.grpc.security;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall;
@@ -21,10 +25,6 @@ import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 @Slf4j
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements FailureHandlingServerInterceptor, Ordered {
@@ -193,9 +193,10 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
 
         } else {
-            return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(call, headers)) {
+            return new MessageBlockingServerCallListener<ReqT>(next.startCall(call, headers)) {
                 @Override
                 public void onMessage(ReqT message) {
+                    blockMessage();
                     closeCall(message, errorHandler, call, headers, status, exception);
                 }
             };

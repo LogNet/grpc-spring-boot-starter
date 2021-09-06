@@ -1,7 +1,12 @@
 package org.lognet.springboot.grpc.validation;
 
+import java.util.Optional;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+
 import io.grpc.ForwardingServerCall;
-import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
@@ -14,12 +19,6 @@ import org.lognet.springboot.grpc.validation.group.RequestMessage;
 import org.lognet.springboot.grpc.validation.group.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import java.util.Optional;
-import java.util.Set;
 
 
 public class ValidatingInterceptor implements FailureHandlingServerInterceptor, Ordered {
@@ -53,14 +52,14 @@ public class ValidatingInterceptor implements FailureHandlingServerInterceptor, 
                 }
             }
         }, headers);
-        return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(listener) {
+        return new MessageBlockingServerCallListener<ReqT>(listener) {
 
             @Override
             public void onMessage(ReqT message) {
                 final Set<ConstraintViolation<ReqT>> violations = validator.validate(message, RequestMessage.class);
                 if (!violations.isEmpty()) {
-                     closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
-
+                    blockMessage();
+                    closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
                 } else {
                     super.onMessage(message);
                 }
