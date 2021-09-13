@@ -22,7 +22,7 @@ Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",w
 
 == Features
 
-Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application. +
+Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application (https://github.com/LogNet/grpc-spring-boot-starter/blob/master/images/demo.gif[short video])
 
 == Setup
 
