@@ -1,33 +1,39 @@
 package org.lognet.springboot.grpc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
+
+import java.util.Locale;
+
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.junit.Assert.assertThrows;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = {"grpc.port=0"})
 @Import(ValidationTest.TestCfg.class)
 @ActiveProfiles("disable-security")
 public class ValidationTest extends GrpcServerTestBase {
-
     @TestConfiguration
     static class TestCfg {
         @Bean
@@ -43,7 +49,21 @@ public class ValidationTest extends GrpcServerTestBase {
     }
     private  GreeterGrpc.GreeterBlockingStub stub;
 
+    @SpyBean
+    HalfCloseInterceptor halfCloseInterceptor;
 
+    private static Locale systemDefaultLocale;
+
+    @BeforeClass
+    public static void setLocaleToEnglish() {
+        systemDefaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @AfterClass
+    public static void resetDefaultLocale() {
+        Locale.setDefault(systemDefaultLocale);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -147,7 +167,6 @@ public class ValidationTest extends GrpcServerTestBase {
     @Test
     public void invalidResponseMessageValidationTest() {
         StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
-
             stub.helloPersonInvalidResponse(GreeterOuterClass.Person.newBuilder()
                     .setAge(3)//valid
                     .setName("Dexter")//valid
@@ -164,6 +183,17 @@ public class ValidationTest extends GrpcServerTestBase {
 
     }
 
+    @Test
+    public void noHalfCloseAfterFailedValidation() {
+        StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
+            stub.helloPersonValidResponse(GreeterOuterClass.Person.newBuilder()
+                .setAge(49)// valid
+                .clearName() //invalid
+                .build());
+        });
+        assertThat(e.getStatus().getCode(), Matchers.is(Status.Code.INVALID_ARGUMENT));
+        verify(halfCloseInterceptor, never()).onHalfClose();
+    }
 
     String getFieldName(int fieldNumber) {
         return GreeterOuterClass.Person.getDescriptor().findFieldByNumber(fieldNumber).getName();
