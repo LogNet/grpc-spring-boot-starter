@@ -5,7 +5,11 @@ import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.SecuredCalculatorGrpc;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.autoconfigure.scope.GRpcRequestScope;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.access.annotation.Secured;
 
 @Configuration
@@ -57,5 +61,11 @@ public class DemoAppConfiguration {
         }
 
 
+    }
+
+    @Bean
+    @Scope(scopeName = GRpcRequestScope.GRPC_REQUEST_SCOPE_NAME, proxyMode = ScopedProxyMode.TARGET_CLASS)
+    public RandomUUID testRequestScopeBean() {
+        return new RandomUUID();
     }
 }

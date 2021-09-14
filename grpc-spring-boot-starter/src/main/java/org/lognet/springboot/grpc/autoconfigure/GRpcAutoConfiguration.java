@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.autoconfigure.scope.GRpcRequestScope;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -121,7 +122,15 @@ public class GRpcAutoConfiguration {
         };
     }
 
-
+    /**
+     * A scope that is valid for the duration of a grpc request.
+     *
+     * @return The grpc request scope bean.
+     */
+    @Bean
+    public static GRpcRequestScope grpcRequestScope() {
+        return new GRpcRequestScope();
+    }
 
 
 }
