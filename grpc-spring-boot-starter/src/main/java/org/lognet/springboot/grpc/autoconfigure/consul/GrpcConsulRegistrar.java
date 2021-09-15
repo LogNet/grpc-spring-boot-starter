@@ -1,68 +1,43 @@
 package org.lognet.springboot.grpc.autoconfigure.consul;
 
-import com.ecwid.consul.v1.agent.model.NewService;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
-import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.event.EventListener;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GrpcConsulRegistrar implements SmartLifecycle {
 
     private final ConsulServiceRegistry consulServiceRegistry;
 
-    private ConsulRegistration registration;
+    private List<ConsulRegistration> registrations;
 
     public GrpcConsulRegistrar(ConsulServiceRegistry consulServiceRegistry) {
         this.consulServiceRegistry = consulServiceRegistry;
     }
 
     @EventListener
-    public void onGrpcServerStarted(GRpcServerInitializedEvent initializedEvent) {
-        registration = getRegistration(initializedEvent);
-        consulServiceRegistry.register(registration);
-    }
+    public void onGrpcServerStarted(GRpcServerInitializedEvent event) {
 
-    private ConsulRegistration getRegistration(GRpcServerInitializedEvent event) {
         ApplicationContext applicationContext = event.getApplicationContext();
-
-
         ConsulDiscoveryProperties consulProperties = applicationContext.getBean(ConsulDiscoveryProperties.class);
-        GRpcServerProperties gRpcServerProperties = event.getApplicationContext().getBean(GRpcServerProperties.class);
+        final ServiceRegistrationStrategy registrationStrategy = applicationContext.getBean(GRpcServerProperties.class).getConsul().getRegistrationMode();
 
-        NewService grpcService = new NewService();
-        grpcService.setPort(event.getServer().getPort());
-        if (!consulProperties.isPreferAgentAddress()) {
-            grpcService.setAddress(consulProperties.getHostname());
-        }
-        String appName = "grpc-" + ConsulAutoRegistration.getAppName(consulProperties, applicationContext.getEnvironment());
-        grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
-        grpcService.setId("grpc-" + ConsulAutoRegistration.getInstanceId(consulProperties, applicationContext));
-        grpcService.setTags(consulProperties.getTags());
+        registrations = registrationStrategy.createServices(event.getServer(),applicationContext)
+                .stream()
+                .map(s->new ConsulRegistration(s, consulProperties))
+                .collect(Collectors.toList());
 
-        if(consulProperties.isRegisterHealthCheck()) {
-            GRpcConsulHealthCheck health = GRpcConsulHealthCheck.builder()
-                    .socketAddr(consulProperties.getHostname() + ":" + event.getServer().getPort())
-                    .grpcUseTlc(Objects.nonNull(gRpcServerProperties.getSecurity()))
-                    .interval(consulProperties.getHealthCheckInterval())
-                    .timeout(consulProperties.getHealthCheckTimeout())
-                    .build();
-
-            health.setDeregisterCriticalServiceAfter(consulProperties.getHealthCheckCriticalTimeout());
-
-            grpcService.setCheck(health);
-        }
-
-
-
-        return new ConsulRegistration(grpcService, consulProperties);
+        registrations.forEach(consulServiceRegistry::register);
     }
+
+
 
 
     @Override
@@ -84,15 +59,15 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
     @Override
     public synchronized void stop() {
 
-        consulServiceRegistry.deregister(registration);
+        registrations.forEach(consulServiceRegistry::deregister);
         consulServiceRegistry.close();
-        registration = null;
+        registrations = null;
 
     }
 
     @Override
     public synchronized boolean isRunning() {
-        return null != registration;
+        return null != registrations;
     }
 
     @Override

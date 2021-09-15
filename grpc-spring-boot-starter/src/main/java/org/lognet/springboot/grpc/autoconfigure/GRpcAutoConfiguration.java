@@ -2,11 +2,11 @@ package org.lognet.springboot.grpc.autoconfigure;
 
 import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.services.HealthStatusManager;
-import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.health.DefaultHealthStatusManager;
+import org.lognet.springboot.grpc.health.GRpcHealthStatusManager;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 })
 public class GRpcAutoConfiguration {
 
+
     @Autowired
     private GRpcServerProperties grpcServerProperties;
 
@@ -58,8 +59,9 @@ public class GRpcAutoConfiguration {
     }
 
     @Bean
-    public HealthStatusManager healthStatusManager() {
-        return new HealthStatusManager();
+    @ConditionalOnMissingBean
+    public GRpcHealthStatusManager  healthStatusManager() {
+        return new DefaultHealthStatusManager();
     }
 
     @Bean

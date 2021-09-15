@@ -3,6 +3,7 @@ package org.lognet.springboot.grpc.autoconfigure;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
@@ -32,6 +33,8 @@ public class GRpcServerProperties {
     private SecurityProperties security;
 
     private NettyServerProperties nettyServer;
+
+    private ConsulProperties consul = new ConsulProperties();
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -90,6 +93,11 @@ public class GRpcServerProperties {
         }
     }
 
+    @Getter
+    @Setter
+    public static class ConsulProperties {
+        ServiceRegistrationMode registrationMode = ServiceRegistrationMode.SINGLE_SERVER_WITH_GLOBAL_CHECK;
+    }
     @Getter
     @Setter
     public static class NettyServerProperties {

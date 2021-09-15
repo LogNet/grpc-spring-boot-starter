@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+    consul:
+      discovery:
+        enabled: true
+      enabled: true
+    service-registry:
+      auto-registration:
+        enabled: true

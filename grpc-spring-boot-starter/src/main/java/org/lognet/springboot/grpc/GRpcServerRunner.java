@@ -8,10 +8,10 @@ import io.grpc.ServerInterceptors;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.protobuf.services.ProtoReflectionService;
-import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
+import org.lognet.springboot.grpc.health.GRpcHealthStatusManager;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,9 +41,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class GRpcServerRunner implements SmartLifecycle {
 
-    private AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
     @Autowired
-    private HealthStatusManager healthStatusManager;
+    private Optional<GRpcHealthStatusManager> healthStatusManager;
 
     @Autowired
     private AbstractApplicationContext applicationContext;
@@ -67,7 +67,7 @@ public class GRpcServerRunner implements SmartLifecycle {
 
     @Override
     public void start() {
-        if(isRunning()){
+        if (isRunning()) {
             return;
         }
         log.info("Starting gRPC Server ...");
@@ -78,7 +78,9 @@ public class GRpcServerRunner implements SmartLifecycle {
                     .collect(Collectors.toList());
 
             // Adding health service
-            serverBuilder.addService(healthStatusManager.getHealthService());
+            healthStatusManager
+                    .map(GRpcHealthStatusManager::getHealthService)
+                    .ifPresent(serverBuilder::addService);
 
             // find and register all GRpcService-enabled beans
             getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class)
@@ -89,7 +91,9 @@ public class GRpcServerRunner implements SmartLifecycle {
                         serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
                         serverBuilder.addService(serviceDefinition);
                         String serviceName = serviceDefinition.getServiceDescriptor().getName();
-                        healthStatusManager.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING);
+                        healthStatusManager.ifPresent(m ->
+                                m.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING)
+                        );
 
                         log.info("'{}' service has been registered.", srv.getClass().getName());
 
@@ -107,8 +111,8 @@ public class GRpcServerRunner implements SmartLifecycle {
             log.info("gRPC Server started, listening on port {}.", server.getPort());
 
             applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
-        }catch (Exception e){
-            throw  new RuntimeException("Failed to start GRPC server",e);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to start GRPC server", e);
         }
 
     }
@@ -126,8 +130,8 @@ public class GRpcServerRunner implements SmartLifecycle {
                 });
 
         List<ServerInterceptor> interceptors = Stream.concat(
-                gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
-                privateInterceptors)
+                        gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
+                        privateInterceptors)
                 .distinct()
                 .sorted(serverInterceptorOrderComparator())
                 .collect(Collectors.toList());
@@ -144,12 +148,12 @@ public class GRpcServerRunner implements SmartLifecycle {
                             .filter(RootBeanDefinition.class::isInstance)
                             .map(RootBeanDefinition.class::cast);
 
-                            rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
-                                    .ifPresent(sources::add);
+                    rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
+                            .ifPresent(sources::add);
 
-                            rootBeanDefinition.map(RootBeanDefinition::getTargetType)
-                                    .filter(t -> t != o.getClass())
-                                    .ifPresent(sources::add);
+                    rootBeanDefinition.map(RootBeanDefinition::getTargetType)
+                            .filter(t -> t != o.getClass())
+                            .ifPresent(sources::add);
 
                     return sources.toArray();
                 })
@@ -163,7 +167,7 @@ public class GRpcServerRunner implements SmartLifecycle {
                 latch.await();
             } catch (InterruptedException e) {
                 log.error("gRPC server awaiter interrupted.", e);
-            }finally {
+            } finally {
                 isRunning.set(false);
             }
         });
@@ -176,7 +180,8 @@ public class GRpcServerRunner implements SmartLifecycle {
     public void stop() {
         Optional.ofNullable(server).ifPresent(s -> {
             log.info("Shutting down gRPC server ...");
-            s.getServices().forEach(def -> healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
+            healthStatusManager.ifPresent(GRpcHealthStatusManager::onShutdown);
+
             s.shutdown();
             int shutdownGrace = gRpcServerProperties.getShutdownGrace();
             try {
