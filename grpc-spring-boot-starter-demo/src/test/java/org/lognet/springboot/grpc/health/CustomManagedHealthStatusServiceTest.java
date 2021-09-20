@@ -6,12 +6,13 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -23,24 +24,22 @@ import static org.hamcrest.Matchers.isA;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DemoApp.class, CustomGRpcHealthStatusManagerTest.Cfg.class}, webEnvironment = NONE)
+@SpringBootTest(classes = {DemoApp.class, CustomManagedHealthStatusServiceTest.Cfg.class}, webEnvironment = NONE)
 @ActiveProfiles("disable-security")
-public class CustomGRpcHealthStatusManagerTest extends GrpcServerTestBase {
+public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
     @TestConfiguration
     static class Cfg{
-        static class MyCustomHealthStatusManager extends DefaultHealthStatusManager{}
-        @Bean
-        public GRpcHealthStatusManager myCustom(){
-            return new MyCustomHealthStatusManager();
-        }
+        @GRpcService
+        static class MyCustomHealthStatusService extends DefaultHealthStatusService {}
+
     }
 
-    @Autowired
-    private  GRpcHealthStatusManager healthStatusManager;
+    @SpyBean
+    private ManagedHealthStatusService healthStatusManager;
 
     @Test
     public void contextLoads() {
-        assertThat(healthStatusManager,isA(Cfg.MyCustomHealthStatusManager.class));
+        assertThat(healthStatusManager,isA(Cfg.MyCustomHealthStatusService.class));
     }
 
     @Test
@@ -50,5 +49,8 @@ public class CustomGRpcHealthStatusManagerTest extends GrpcServerTestBase {
         final HealthCheckResponse.ServingStatus servingStatus = healthFutureStub.check(healthCheckRequest).get().getStatus();
 
         assertThat(servingStatus, is(HealthCheckResponse.ServingStatus.SERVING));
+
+        Mockito.verify(healthStatusManager,Mockito.atLeast(1))
+                .setStatus(Mockito.any(String.class),Mockito.eq(HealthCheckResponse.ServingStatus.SERVING));
     }
 }

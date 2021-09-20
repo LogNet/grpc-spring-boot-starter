@@ -5,8 +5,8 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
-import org.lognet.springboot.grpc.health.DefaultHealthStatusManager;
-import org.lognet.springboot.grpc.health.GRpcHealthStatusManager;
+import org.lognet.springboot.grpc.health.DefaultHealthStatusService;
+import org.lognet.springboot.grpc.health.ManagedHealthStatusService;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -60,8 +60,8 @@ public class GRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public GRpcHealthStatusManager  healthStatusManager() {
-        return new DefaultHealthStatusManager();
+    public ManagedHealthStatusService healthStatusManager() {
+        return new DefaultHealthStatusService();
     }
 
     @Bean
