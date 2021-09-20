@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -26,6 +27,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, CustomManagedHealthStatusServiceTest.Cfg.class}, webEnvironment = NONE)
 @ActiveProfiles("disable-security")
+
 public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
     @TestConfiguration
     static class Cfg{
@@ -38,11 +40,13 @@ public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
     private ManagedHealthStatusService healthStatusManager;
 
     @Test
+    @DirtiesContext
     public void contextLoads() {
         assertThat(healthStatusManager,isA(Cfg.MyCustomHealthStatusService.class));
     }
 
     @Test
+    @DirtiesContext
     public void testHealthCheck() throws ExecutionException, InterruptedException {
         final HealthCheckRequest healthCheckRequest = HealthCheckRequest.newBuilder().setService(GreeterGrpc.getServiceDescriptor().getName()).build();
         final HealthGrpc.HealthFutureStub healthFutureStub = HealthGrpc.newFutureStub(channel);

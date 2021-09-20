@@ -5,7 +5,13 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
 import io.grpc.protobuf.services.HealthStatusManager;
 import io.grpc.stub.StreamObserver;
+import org.lognet.springboot.grpc.GRpcService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Configuration;
 
+@GRpcService
+@Configuration
+@ConditionalOnMissingBean(ManagedHealthStatusService.class)
 public class DefaultHealthStatusService extends ManagedHealthStatusService {
     private final HealthStatusManager healthStatusManager = new HealthStatusManager();
     private final HealthGrpc.HealthImplBase service = (HealthGrpc.HealthImplBase) healthStatusManager.getHealthService();

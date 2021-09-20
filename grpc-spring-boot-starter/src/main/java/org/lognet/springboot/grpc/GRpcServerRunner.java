@@ -98,7 +98,11 @@ public class GRpcServerRunner implements SmartLifecycle {
                                         HealthGrpc.HealthImplBase.class.getName()
                                         ));
                             }
-                            healthStatusManager = Optional.of((ManagedHealthStatusService)srv);
+                            if(healthStatusManager.isPresent()){
+                                throw new FatalBeanException(String.format("Only 1 single %s service instance is allowed",ManagedHealthStatusService.class.getName()));
+                            }else {
+                                healthStatusManager = Optional.of((ManagedHealthStatusService) srv);
+                            }
                         } else {
                             serviceNames.add(serviceDefinition.getServiceDescriptor().getName());
                         }

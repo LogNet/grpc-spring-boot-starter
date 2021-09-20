@@ -6,7 +6,6 @@ import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.health.DefaultHealthStatusService;
-import org.lognet.springboot.grpc.health.ManagedHealthStatusService;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +36,8 @@ import java.util.function.Consumer;
 @ConditionalOnBean(annotation = GRpcService.class)
 @EnableConfigurationProperties({GRpcServerProperties.class})
 @Import({GRpcValidationConfiguration.class,
-        NettyServerBuilderSelector.class
+        NettyServerBuilderSelector.class,
+        DefaultHealthStatusService.class
 })
 public class GRpcAutoConfiguration {
 
@@ -58,11 +58,7 @@ public class GRpcAutoConfiguration {
         return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ManagedHealthStatusService healthStatusManager() {
-        return new DefaultHealthStatusService();
-    }
+
 
     @Bean
     @ConditionalOnMissingBean(GRpcServerBuilderConfigurer.class)
