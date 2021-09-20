@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.7](#version-457)| 1.40.1        |2.5.0               |
 | [4.5.6](#version-456)| 1.40.0        |2.5.0               |
 | [4.5.5](#version-455)| 1.39.0        |2.5.0               |
 | [4.5.4](#version-454)| 1.38.0        |2.5.0               |
@@ -24,6 +25,23 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.7
+## :star: New Features
+
+- Support RequestAwareGRpcMetricsTagsContributor for Multiary Calls [#244](https://github.com/LogNet/grpc-spring-boot-starter/issues/244)
+- Custom service health check support [#242](https://github.com/LogNet/grpc-spring-boot-starter/issues/242)
+
+## :beetle: Bug Fixes
+
+- Interceptors do not block onHalfClose if they block the message [#240](https://github.com/LogNet/grpc-spring-boot-starter/issues/240)
+- Potential race condition when reporting running status of grpc server [#238](https://github.com/LogNet/grpc-spring-boot-starter/issues/238)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to v1.40.1 [#243](https://github.com/LogNet/grpc-spring-boot-starter/issues/243)
+
+
 
 # Version 4.5.6
 ## :star: New Features
