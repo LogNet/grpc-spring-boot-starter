@@ -1,19 +1,5 @@
 package org.lognet.springboot.grpc;
 
-import static io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
-
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 import io.grpc.Attributes;
 import io.grpc.MethodDescriptor;
 import io.grpc.Status;
@@ -42,6 +28,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+
+import static io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE, properties = {"grpc.port=0"})
@@ -175,7 +175,7 @@ public class GrpcMeterTest extends GrpcServerTestBase {
                 @Override
                 public void onCompleted() {}
             });
-        Arrays.asList("a", "b", "c", "d").stream()
+        Stream.of("a", "b", "c", "d")
             .map(name -> GreeterOuterClass.HelloRequest.newBuilder().setName(name).build())
             .forEach(helloInput::onNext);
         helloInput.onCompleted();
@@ -185,13 +185,13 @@ public class GrpcMeterTest extends GrpcServerTestBase {
             .ignoreExceptionsInstanceOf(MeterNotFoundException.class)
             .until(
                 () -> registry.get("grpc.server.calls")
-                    .tags("method", "Greeter/SayManyHellos")
+                    .tags("method", GreeterGrpc.getSayManyHellosMethod().getFullMethodName())
                     .timer(),
                 Objects::nonNull
             );
 
         assertThat(timer.totalTime(TimeUnit.MILLISECONDS), greaterThan(0d));
         assertThat(timer.getId().getTag("many-hellos"), is("a, b, c, d"));
-        assertThat(timer.getId().getTag("endTag"), is("OK"));
+        assertThat(timer.getId().getTag("endTag"), is(Status.OK.getCode().name()));
     }
 }

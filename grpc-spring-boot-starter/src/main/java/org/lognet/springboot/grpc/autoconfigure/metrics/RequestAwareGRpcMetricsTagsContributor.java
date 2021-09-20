@@ -1,18 +1,17 @@
 package org.lognet.springboot.grpc.autoconfigure.metrics;
 
-import static java.util.Collections.emptyList;
-
-import static io.grpc.MethodDescriptor.MethodType.UNARY;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
 import io.grpc.Attributes;
 import io.grpc.MethodDescriptor;
 import io.grpc.Status;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
+import static io.grpc.MethodDescriptor.MethodType.UNARY;
+import static java.util.Collections.emptyList;
 
 public abstract class RequestAwareGRpcMetricsTagsContributor<ReqT> implements GRpcMetricsTagsContributor  {
     private final Set<MethodDescriptor.MethodType> methodTypes;
@@ -58,13 +57,21 @@ public abstract class RequestAwareGRpcMetricsTagsContributor<ReqT> implements GR
 
     /**
      * Contribute tags when receiving the request message.
+     * For streaming calls, this method is invoked several times (once per message). The implementation should NOT concatenate existing tags with newly produced tags.
+     * It's supposed to produce new tags or accumulate existing tag's value.
+     * @param request current request message
+     * @param methodDescriptor
+     * @param attributes
+     * @param existingTags currently accumulated tags
+     * @return new tags
      */
     public Iterable<Tag> addTags(ReqT request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Tags existingTags) {
         return Tags.concat(getTags(request, methodDescriptor, attributes));
     }
 
     /**
-     * Prefer overriding {@link #addTags(Object, MethodDescriptor, Attributes, Tags)}.
+     * Prefer overriding {@link #addTags(Object, MethodDescriptor, Attributes, Tags)} if you want to get a hold of already added tags(for streaming calls) and
+     * accumulate tag's value.
      */
     @Deprecated
     public Iterable<Tag> getTags(ReqT request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes) {
