@@ -7,7 +7,6 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +25,27 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
         responseObserver.onNext(replyBuilder.build());
         responseObserver.onCompleted();
         log.info("Returning " +message);
+    }
+
+    @Override public StreamObserver<GreeterOuterClass.HelloRequest> sayManyHellos(
+        StreamObserver<GreeterOuterClass.HelloReply> responseObserver
+    ) {
+        return new StreamObserver<GreeterOuterClass.HelloRequest>() {
+            @Override public void onNext(GreeterOuterClass.HelloRequest request) {
+                String message = "Hello " + request.getName();
+                final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage(message);
+                responseObserver.onNext(replyBuilder.build());
+                log.info("Returning " + message);
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
     }
 
     @Override
