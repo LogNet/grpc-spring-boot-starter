@@ -31,6 +31,7 @@
 
 - Support RequestAwareGRpcMetricsTagsContributor for Multiary Calls [#244](https://github.com/LogNet/grpc-spring-boot-starter/issues/244)
 - Custom service health check support [#242](https://github.com/LogNet/grpc-spring-boot-starter/issues/242)
+- Support [various consul registrations and checks modes](https://github.com/LogNet/grpc-spring-boot-starter#9-consul-integration)
 
 ## :beetle: Bug Fixes
 
