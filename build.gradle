@@ -99,5 +99,9 @@ task codeCoverageReport(type: JacocoReport) {
 codeCoverageReport.dependsOn {
     subprojects*.test
 }
-
+subprojects {
+    tasks.withType(Test,{t->
+        t.environment.put("TESTCONTAINERS_REUSE_ENABLE","true")
+    })
+}
 
