@@ -80,35 +80,54 @@ public abstract class ConsulRegistrationBaseTest {
 
 
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
-        assertThat(instances, Matchers.not(Matchers.empty()));
 
-        ServiceInstance serviceInstance = instances.get(0);
+        final ServiceRegistrationMode registrationMode = applicationContext.getBean(GRpcServerProperties.class)
+                .getConsul().getRegistrationMode();
 
-        channel = ManagedChannelBuilder.forAddress(serviceInstance.getHost(), serviceInstance.getPort())
-                .usePlaintext()
-                .build();
+        if(!ServiceRegistrationMode.NOOP.equals(registrationMode)) {
 
-        final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
-        final GreeterOuterClass.HelloRequest helloRequest = GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
-        final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
-        assertThat("Reply should not be null", reply, Matchers.notNullValue(String.class));
+
+            assertThat(instances, Matchers.not(Matchers.empty()));
+
+            ServiceInstance serviceInstance = instances.get(0);
+
+            channel = ManagedChannelBuilder.forAddress(serviceInstance.getHost(), serviceInstance.getPort())
+                    .usePlaintext()
+                    .build();
+
+            final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(channel);
+            final GreeterOuterClass.HelloRequest helloRequest = GreeterOuterClass.HelloRequest.newBuilder().setName("Bob").build();
+            final String reply = greeterFutureStub.sayHello(helloRequest).get().getMessage();
+            assertThat("Reply should not be null", reply, Matchers.notNullValue(String.class));
+        }
     }
 
     @After
     public void tearDown() throws Exception {
-        channel.shutdownNow();
-        channel.awaitTermination(1, TimeUnit.SECONDS);
+        if(null!=channel) {
+            channel.shutdownNow();
+            channel.awaitTermination(1, TimeUnit.SECONDS);
+        }
         applicationContext.stop();
     }
 
     @Test
     public void contextLoads() {
 
-
-        int expectedRegistrations = applicationContext.getBean(GRpcServerProperties.class)
+        int minExpectedRegistrations;
+        switch (applicationContext.getBean(GRpcServerProperties.class)
                 .getConsul()
-                .getRegistrationMode().equals(ServiceRegistrationMode.STANDALONE_SERVICES) ?
-                getServicesDefinitions().size() : 1;
+                .getRegistrationMode()) {
+            case STANDALONE_SERVICES:
+                minExpectedRegistrations = getServicesDefinitions().size();
+                break;
+            case NOOP:
+                minExpectedRegistrations = 0;
+                break;
+            default:
+                minExpectedRegistrations = 1;
+        }
+
 
         final List<HealthService> healthServices = Awaitility.await()
                 .atMost(Duration.ofSeconds(20))
@@ -119,7 +138,7 @@ public abstract class ConsulRegistrationBaseTest {
                                         .build())
                                 .getValue()
 
-                        , Matchers.hasSize(Matchers.greaterThanOrEqualTo(expectedRegistrations)));
+                        , Matchers.hasSize(Matchers.greaterThanOrEqualTo(minExpectedRegistrations)));
 
         doTest(healthServices);
 

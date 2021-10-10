@@ -18,6 +18,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum ServiceRegistrationMode implements ServiceRegistrationStrategy {
+    NOOP{
+        @Override
+        public Collection<NewService> createServices(Server grpcServer, ApplicationContext applicationContext) {
+            return Collections.emptyList();
+        }
+    },
     SINGLE_SERVER_WITH_GLOBAL_CHECK {
         @Override
         public Collection<NewService> createServices(Server grpcServer, ApplicationContext applicationContext) {
