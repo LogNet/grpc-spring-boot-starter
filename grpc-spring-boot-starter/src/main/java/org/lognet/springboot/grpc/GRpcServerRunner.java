@@ -1,6 +1,5 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
@@ -16,19 +15,15 @@ import org.lognet.springboot.grpc.health.ManagedHealthStatusService;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -53,6 +48,9 @@ public class GRpcServerRunner implements SmartLifecycle {
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
 
+    @Autowired
+    private GRpcServicesRegistry registry;
+
     private final Consumer<ServerBuilder<?>> configurator;
 
     private Server server;
@@ -75,16 +73,14 @@ public class GRpcServerRunner implements SmartLifecycle {
         log.info("Starting gRPC Server ...");
         latch = new CountDownLatch(1);
         try {
-            Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
-                    .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
-                    .collect(Collectors.toList());
+            Collection<ServerInterceptor> globalInterceptors = registry.getGlobalInterceptors();
 
 
             // find and register all GRpcService-enabled beans
             List<String> serviceNames = new ArrayList<>();
-            getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class)
-                    .forEach(name -> {
-                        BindableService srv = applicationContext.getBeanFactory().getBean(name, BindableService.class);
+
+            registry.getBeanNameToServiceBeanMap()
+                    .forEach((name,srv) -> {
                         ServerServiceDefinition serviceDefinition = srv.bindService();
                         GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name, GRpcService.class);
                         serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
@@ -218,23 +214,7 @@ public class GRpcServerRunner implements SmartLifecycle {
 
     }
 
-    private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {
 
-        return Stream.of(applicationContext.getBeanNamesForType(beanType))
-                .filter(name -> {
-                    final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
-                    final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
-
-                    if (beansWithAnnotation.containsKey(name)) {
-                        return true;
-                    } else if (beanDefinition.getSource() instanceof AnnotatedTypeMetadata) {
-                        return AnnotatedTypeMetadata.class.cast(beanDefinition.getSource()).isAnnotated(annotationType.getName());
-
-                    }
-
-                    return false;
-                });
-    }
 
 
     @Override

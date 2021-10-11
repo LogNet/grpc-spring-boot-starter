@@ -2,10 +2,15 @@ package org.lognet.springboot.grpc.autoconfigure;
 
 import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
 import org.lognet.springboot.grpc.GRpcService;
+import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.health.DefaultHealthStatusService;
+import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerInterceptor;
+import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerMethodResolver;
+import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
@@ -24,6 +30,7 @@ import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,6 +43,7 @@ import java.util.function.Consumer;
 @ConditionalOnBean(annotation = GRpcService.class)
 @EnableConfigurationProperties({GRpcServerProperties.class})
 @Import({GRpcValidationConfiguration.class,
+
         NettyServerBuilderSelector.class,
         DefaultHealthStatusService.class
 })
@@ -47,7 +55,7 @@ public class GRpcAutoConfiguration {
 
     @Bean
     @OnGrpcServerEnabled
-    public GRpcServerRunner grpcServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator,ServerBuilder<?> serverBuilder) {
+    public GRpcServerRunner grpcServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator, ServerBuilder<?> serverBuilder) {
         return new GRpcServerRunner(configurator, serverBuilder);
     }
 
@@ -59,6 +67,19 @@ public class GRpcAutoConfiguration {
     }
 
 
+    @Bean
+    public GRpcServicesRegistry grpcServicesRegistry() {
+        return new GRpcServicesRegistry();
+    }
+
+    @Bean
+    @GRpcGlobalInterceptor
+    public GRpcExceptionHandlerInterceptor exceptionHandlerInterceptor(GRpcServicesRegistry gRpcServicesRegistry, ApplicationContext applicationContext) {
+        final Collection<Object> advices = applicationContext.getBeansWithAnnotation(GRpcServiceAdvice.class).values();
+
+        final GRpcExceptionHandlerMethodResolver methodResolver = new GRpcExceptionHandlerMethodResolver(gRpcServicesRegistry, advices);
+        return new GRpcExceptionHandlerInterceptor(methodResolver);
+    }
 
     @Bean
     @ConditionalOnMissingBean(GRpcServerBuilderConfigurer.class)
@@ -105,12 +126,12 @@ public class GRpcAutoConfiguration {
                         break;
                     case 2:
                         port = Integer.parseInt(chunks[1]);
-                        if(port<1){
+                        if (port < 1) {
                             port = SocketUtils.findAvailableTcpPort();
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException(source +" can't be converted to socket address");
+                        throw new IllegalArgumentException(source + " can't be converted to socket address");
 
                 }
 
@@ -118,8 +139,6 @@ public class GRpcAutoConfiguration {
             }
         };
     }
-
-
 
 
 }
