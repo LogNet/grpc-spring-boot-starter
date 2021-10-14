@@ -1,19 +1,23 @@
 package org.lognet.springboot.grpc.recovery;
 
+import io.grpc.ForwardingServerCall;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
-import org.lognet.springboot.grpc.FailureHandlingServerInterceptor;
+import io.grpc.ServerInterceptor;
+import org.lognet.springboot.grpc.FailureHandlingSupport;
+import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
 import org.springframework.core.Ordered;
 
-import java.util.Optional;
-
-public class GRpcExceptionHandlerInterceptor implements FailureHandlingServerInterceptor, Ordered {
+public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Ordered {
 
     private final GRpcExceptionHandlerMethodResolver methodResolver;
+    private final FailureHandlingSupport failureHandlingSupport;
 
-    public GRpcExceptionHandlerInterceptor(GRpcExceptionHandlerMethodResolver methodResolver) {
+
+    public GRpcExceptionHandlerInterceptor(GRpcExceptionHandlerMethodResolver methodResolver,FailureHandlingSupport failureHandlingSupport) {
         this.methodResolver = methodResolver;
+        this.failureHandlingSupport = failureHandlingSupport;
     }
 
 
@@ -22,54 +26,58 @@ public class GRpcExceptionHandlerInterceptor implements FailureHandlingServerInt
         if (!methodResolver.hasErrorHandlers()) {
             return next.startCall(call, headers);
         }
-        return new MessageBlockingServerCallListener<ReqT>(next.startCall(call, headers)) {
-            private ReqT request;
-            private volatile boolean closed = false;
+
+
+        final ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT> errorHandlingCall = new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
 
             @Override
-            public void onMessage(ReqT message) {
+            public void sendMessage(RespT message) {
                 try {
-                    request = message;
-                    super.onMessage(message);
+                    super.sendMessage(message);
                 } catch (RuntimeException e) {
-                    blockMessage();
-                    fail(e);
+                    failureHandlingSupport.closeCall(e, this, headers, b -> b.response(message));
                 }
             }
+        };
+        try {
+            final ServerCall.Listener<ReqT> listener = next.startCall(errorHandlingCall, headers);
 
-            @Override
-            public void onHalfClose() {
-                try {
-                    super.onHalfClose();
-                } catch (RuntimeException e) {
-                    fail(e);
-                }
-            }
+            return new MessageBlockingServerCallListener<ReqT>(listener) {
+                private ReqT request;
 
-
-            public void fail(RuntimeException e) throws RuntimeException {
-                if (!closed) {
-                    closed = true;
-                    final Optional<HandlerMethod> handlerMethod = methodResolver.resolveMethodByThrowable(call.getMethodDescriptor().getServiceName(), e);
-                    if (handlerMethod.isPresent()) {
-                        final GRpcExceptionScope exceptionScope = GRpcExceptionScope.builder()
-                                .callHeaders(headers)
-                                .methodCallAttributes(call.getAttributes())
-                                .methodDescriptor(call.getMethodDescriptor())
-                                .request(request)
-                                .build();
-                        closeCall(call, GRpcExceptionHandlerMethodResolver.unwrap(e), exceptionScope, handlerMethod.get());
-
-                    } else {
-                        throw e;
+                @Override
+                public void onMessage(ReqT message) {
+                    try {
+                        request = message;
+                        super.onMessage(message);
+                    } catch (RuntimeException e) {
+                        blockMessage();
+                        failureHandlingSupport.closeCall(e, errorHandlingCall, headers, b -> b.request(request));
                     }
                 }
 
+                @Override
+                public void onHalfClose() {
+                    try {
+                        super.onHalfClose();
+                    } catch (RuntimeException e) {
+                        failureHandlingSupport.closeCall(e,  errorHandlingCall, headers, b -> b.request(request));
+                    }
+                }
 
-            }
+            };
+        } catch (RuntimeException e) {
+            failureHandlingSupport.closeCall(e,  errorHandlingCall, headers, (b) -> {
+            });
+        }
+        return new ServerCall.Listener<ReqT>() {
+
         };
 
+
     }
+
+
 
     @Override
     public int getOrder() {

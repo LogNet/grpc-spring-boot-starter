@@ -1,12 +1,5 @@
 package org.lognet.springboot.grpc.autoconfigure.metrics;
 
-import static java.util.stream.Collectors.toList;
-
-import java.net.SocketAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 import io.grpc.ForwardingServerCall;
 import io.grpc.ForwardingServerCallListener;
 import io.grpc.Grpc;
@@ -41,6 +34,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
+import java.net.SocketAddress;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
+
 @Configuration
 @AutoConfigureAfter({MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class, GRpcAutoConfiguration.class})
 @ConditionalOnClass({MeterRegistry.class})
@@ -71,7 +71,7 @@ public class GRpcMetricsAutoConfiguration {
         private final Collection<GRpcMetricsTagsContributor> tagsContributors;
         @Getter
         private Tags additionalTags = Tags.empty();
-        private volatile boolean closed = false;
+
 
         protected MonitoringServerCall(ServerCall<ReqT, RespT> delegate, MeterRegistry registry, Collection<GRpcMetricsTagsContributor> tagsContributors) {
             super(delegate);
@@ -82,16 +82,15 @@ public class GRpcMetricsAutoConfiguration {
 
         @Override
         public void close(Status status, Metadata trailers) {
-            if (!closed) { //close is called twice , first time with actual status
-                closed = true;
-                final Timer.Builder timerBuilder = Timer.builder("grpc.server.calls");
-                tagsContributors.forEach(c ->
-                    timerBuilder.tags(c.getTags(status, getMethodDescriptor(), getAttributes()))
-                );
-                Optional.ofNullable(additionalTags)
-                    .ifPresent(timerBuilder::tags);
-                start.stop(timerBuilder.register(registry));
-            }
+
+            final Timer.Builder timerBuilder = Timer.builder("grpc.server.calls");
+            tagsContributors.forEach(c ->
+                timerBuilder.tags(c.getTags(status, getMethodDescriptor(), getAttributes()))
+            );
+            Optional.ofNullable(additionalTags)
+                .ifPresent(timerBuilder::tags);
+            start.stop(timerBuilder.register(registry));
+
             super.close(status, trailers);
         }
 

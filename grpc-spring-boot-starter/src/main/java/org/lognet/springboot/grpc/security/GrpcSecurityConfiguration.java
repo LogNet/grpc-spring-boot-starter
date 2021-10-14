@@ -1,17 +1,29 @@
 package org.lognet.springboot.grpc.security;
 
 import io.grpc.ServerInterceptor;
+import io.grpc.Status;
+import lombok.extern.slf4j.Slf4j;
+import org.lognet.springboot.grpc.GRpcErrorHandler;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
+import org.lognet.springboot.grpc.autoconfigure.ConditionalOnMissingErrorHandler;
+import org.lognet.springboot.grpc.recovery.ErrorHandlerAdapter;
+import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
+import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
+import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.core.AuthenticationException;
 
 import java.util.Collection;
+import java.util.Optional;
+
+
 
 @Configuration
 public class GrpcSecurityConfiguration {
@@ -27,6 +39,40 @@ public class GrpcSecurityConfiguration {
     private GrpcSecurity grpcSecurity;
 
 
+    @ConditionalOnMissingErrorHandler(AccessDeniedException.class)
+    @Configuration
+    static  class DefaultAccessDeniedErrorHandlerConfig{
+        @GRpcServiceAdvice
+        @Slf4j
+        public static class DefaultAccessDeniedErrorHandler extends ErrorHandlerAdapter {
+
+            public DefaultAccessDeniedErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
+                super(errorHandler);
+            }
+
+            @GRpcExceptionHandler
+            public Status handle(AccessDeniedException e, GRpcExceptionScope scope){
+                return handle(e,Status.PERMISSION_DENIED,scope);
+            }
+        }
+    }
+
+    @ConditionalOnMissingErrorHandler(AuthenticationException.class)
+    @Configuration
+    static  class DefaultAuthErrorHandlerConfig{
+        @GRpcServiceAdvice
+        @Slf4j
+        public static class DefaultAuthErrorHandler  extends ErrorHandlerAdapter {
+            public DefaultAuthErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
+                super(errorHandler);
+            }
+
+            @GRpcExceptionHandler
+            public Status handle(AuthenticationException e, GRpcExceptionScope scope){
+                return handle(e,Status.UNAUTHENTICATED,scope);
+            }
+        }
+    }
 
     @Bean
     @ConditionalOnMissingBean(GrpcSecurityConfigurerAdapter.class)
@@ -37,7 +83,7 @@ public class GrpcSecurityConfiguration {
 
     @Bean
     @GRpcGlobalInterceptor
-    public ServerInterceptor springGrpcSecurityInterceptor() throws Exception   {
+    public ServerInterceptor    springGrpcSecurityInterceptor() throws Exception   {
         boolean hasConfigurers = grpcSecurityConfigurers != null && !grpcSecurityConfigurers.isEmpty();
         if (!hasConfigurers) {
             GrpcSecurityConfigurerAdapter adapter = objectObjectPostProcessor.postProcess(new GrpcSecurityConfigurerAdapter() {

@@ -5,7 +5,6 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.examples.SecuredGreeterGrpc;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
@@ -28,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
@@ -48,8 +46,6 @@ public class CustomSecurityTest extends GrpcServerTestBase {
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
-
-
                 builder.authorizeRequests()
                         .withSecuredAnnotation()
                         .authenticationSchemeSelector(scheme ->
@@ -63,7 +59,6 @@ public class CustomSecurityTest extends GrpcServerTestBase {
                         )
                         .authenticationProvider(new TestingAuthenticationProvider());
             }
-
 
         }
 
@@ -88,7 +83,7 @@ public class CustomSecurityTest extends GrpcServerTestBase {
 
     }
 
-    private String invoke(String userName, String authority)  {
+    private String invoke(String userName, String authority) {
         AuthCallCredentials callCredentials = new AuthCallCredentials(
                 AuthHeader.builder().authScheme(MY_CUSTOM_SCHEME_NAME).tokenSupplier(() ->
                         ByteBuffer.wrap(String.format("%s#%s", userName, authority).getBytes()))

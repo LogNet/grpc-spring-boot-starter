@@ -71,6 +71,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
     protected ServerInterceptor performBuild() throws Exception {
 
 
+
         final SecurityInterceptor securityInterceptor = new SecurityInterceptor(getSharedObject(GrpcSecurityMetadataSource.class),
                 getAuthenticationSchemeService());
         securityInterceptor.setAuthenticationManager(getSharedObject(AuthenticationManagerBuilder.class).build());

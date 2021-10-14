@@ -55,7 +55,7 @@ public class GRpcExceptionHandlerMethodResolver {
                 final HandlerMethod handlerMethod = HandlerMethod.create(advice, method);
                 final Class<? extends Throwable> exceptionType = handlerMethod.getExceptionType();
                 HandlerMethod oldHandler = this.mappedHandlers.put(exceptionType, handlerMethod);
-                if (oldHandler != null) {
+                if (null!=oldHandler) {
                     throw new IllegalStateException("Ambiguous @GRpcExceptionHandler method mapped for [" +
                             exceptionType + "]: {" + oldHandler.getMethod() + ", " + handlerMethod.getMethod() + "}");
                 }
@@ -65,7 +65,7 @@ public class GRpcExceptionHandlerMethodResolver {
 
 
     public Optional<HandlerMethod> resolveMethodByThrowable(String grpcServiceName, Throwable exc) {
-        Throwable exception = unwrap(exc);
+        Throwable exception = GRpcRuntimeExceptionWrapper.unwrap(exc);
 
         Optional<HandlerMethod> method = Optional.ofNullable(privateResolvers)
                 .map(r -> r.get(grpcServiceName))
@@ -122,7 +122,6 @@ public class GRpcExceptionHandlerMethodResolver {
         return null;
     }
 
-    public static Throwable unwrap(Throwable exc){
-        return (exc instanceof GRpcRuntimeExceptionWrapper) ? exc.getCause() : exc;
-    }
+
+
 }

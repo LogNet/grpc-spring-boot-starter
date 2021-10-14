@@ -4,6 +4,13 @@ import io.grpc.Metadata;
 import io.grpc.Status;
 import lombok.extern.slf4j.Slf4j;
 
+
+
+/**
+ *
+ * Please use {@link org.lognet.springboot.grpc.recovery.GRpcExceptionHandler} instead
+ */
+@Deprecated
 @Slf4j
 public class GRpcErrorHandler {
 

@@ -1,57 +1,62 @@
 package org.lognet.springboot.grpc.validation;
 
-import java.util.Optional;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-
 import io.grpc.ForwardingServerCall;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.lognet.springboot.grpc.FailureHandlingServerInterceptor;
-import org.lognet.springboot.grpc.GRpcErrorHandler;
+import org.lognet.springboot.grpc.FailureHandlingSupport;
+import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
+import org.lognet.springboot.grpc.recovery.GRpcRuntimeExceptionWrapper;
 import org.lognet.springboot.grpc.validation.group.RequestMessage;
 import org.lognet.springboot.grpc.validation.group.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import java.util.Optional;
+import java.util.Set;
 
-public class ValidatingInterceptor implements FailureHandlingServerInterceptor, Ordered {
-    private Validator validator;
+
+public class ValidatingInterceptor implements ServerInterceptor, Ordered {
+    private final Validator validator;
+
     @Setter
     @Accessors(fluent = true)
     private Integer order;
 
-    private GRpcErrorHandler errorHandler;
+    private final FailureHandlingSupport failureHandlingSupport;
 
-    public ValidatingInterceptor(Validator validator) {
+
+    public ValidatingInterceptor(Validator validator,FailureHandlingSupport failureHandlingSupport) {
         this.validator = validator;
+        this.failureHandlingSupport = failureHandlingSupport;
     }
-    @Autowired
-    public void setErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
-        this.errorHandler = errorHandler.orElseGet(()->new GRpcErrorHandler() {});
-    }
+
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
 
-        ServerCall.Listener<ReqT> listener = next.startCall(new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
+        final ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT> validationServerCall = new ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(call) {
+
             @Override
             public void sendMessage(RespT message) {
                 final Set<ConstraintViolation<RespT>> violations = validator.validate(message, ResponseMessage.class);
                 if (!violations.isEmpty()) {
-                    closeCall(message, errorHandler, delegate(), headers, Status.FAILED_PRECONDITION, new ConstraintViolationException(violations));
+                    GRpcRuntimeExceptionWrapper exception = new GRpcRuntimeExceptionWrapper(new ConstraintViolationException(violations), Status.FAILED_PRECONDITION);
+                    failureHandlingSupport.closeCall(exception, this , headers, b -> b.response(message));
                 } else {
                     super.sendMessage(message);
                 }
             }
-        }, headers);
+        };
+        ServerCall.Listener<ReqT> listener = next.startCall(validationServerCall, headers);
+
         return new MessageBlockingServerCallListener<ReqT>(listener) {
 
             @Override
@@ -59,7 +64,8 @@ public class ValidatingInterceptor implements FailureHandlingServerInterceptor, 
                 final Set<ConstraintViolation<ReqT>> violations = validator.validate(message, RequestMessage.class);
                 if (!violations.isEmpty()) {
                     blockMessage();
-                    closeCall(message,errorHandler,call,headers,Status.INVALID_ARGUMENT,new ConstraintViolationException(violations));
+                    final GRpcRuntimeExceptionWrapper exception = new GRpcRuntimeExceptionWrapper(new ConstraintViolationException(violations), Status.INVALID_ARGUMENT);
+                    failureHandlingSupport.closeCall(exception,  validationServerCall, headers, b -> b.request(message));
                 } else {
                     super.onMessage(message);
                 }

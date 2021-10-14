@@ -1,9 +1,5 @@
 package org.lognet.springboot.grpc.security;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall;
@@ -12,24 +8,30 @@ import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
-import io.grpc.Status;
+import io.grpc.ServerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.lognet.springboot.grpc.FailureHandlingServerInterceptor;
-import org.lognet.springboot.grpc.GRpcErrorHandler;
+import org.lognet.springboot.grpc.FailureHandlingSupport;
+import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@Slf4j
-public class SecurityInterceptor extends AbstractSecurityInterceptor implements FailureHandlingServerInterceptor, Ordered {
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
-    private static final Context.Key<InterceptorStatusToken> INTERCEPTOR_STATUS_TOKEN =  Context.key("INTERCEPTOR_STATUS_TOKEN");
+@Slf4j
+public class SecurityInterceptor extends AbstractSecurityInterceptor implements ServerInterceptor, Ordered {
+
+    private static final Context.Key<InterceptorStatusToken> INTERCEPTOR_STATUS_TOKEN = Context.key("INTERCEPTOR_STATUS_TOKEN");
 
     private final GrpcSecurityMetadataSource securedMethods;
 
@@ -37,18 +39,18 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     private GRpcServerProperties.SecurityProperties.Auth authCfg;
 
+    private FailureHandlingSupport failureHandlingSupport;
 
-    private GRpcErrorHandler errorHandler;
 
-    public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods, AuthenticationSchemeSelector schemeSelector) {
+    public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods,AuthenticationSchemeSelector schemeSelector) {
         this.securedMethods = securedMethods;
         this.schemeSelector = schemeSelector;
     }
 
+
     @Autowired
-    public void setErrorHandler(Optional<GRpcErrorHandler> errorHandler) {
-        this.errorHandler = errorHandler.orElseGet(() -> new GRpcErrorHandler() {
-        });
+    public void setFailureHandlingSupport(@Lazy FailureHandlingSupport failureHandlingSupport) {
+        this.failureHandlingSupport = failureHandlingSupport;
     }
 
     public void setConfig(GRpcServerProperties.SecurityProperties.Auth authCfg) {
@@ -57,7 +59,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Override
     public int getOrder() {
-        return Optional.ofNullable(authCfg.getInterceptorOrder()).orElse(Ordered.HIGHEST_PRECEDENCE+1);
+        return Optional.ofNullable(authCfg.getInterceptorOrder()).orElse(Ordered.HIGHEST_PRECEDENCE + 1);
     }
 
     @Override
@@ -99,10 +101,11 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             final Context grpcSecurityContext;
             try {
                 grpcSecurityContext = setupGRpcSecurityContext(call, authorization);
-            } catch (AccessDeniedException e) {
-                return fail(next, call, headers, Status.PERMISSION_DENIED, e);
+            } catch (AccessDeniedException | AuthenticationException e) {
+                return fail(next, call, headers, e);
             } catch (Exception e) {
-                return fail(next, call, headers, Status.UNAUTHENTICATED, e);
+                return fail(next, call, headers, new AuthenticationException("Authentication failure.", e) {
+                });
             }
             return Contexts.interceptCall(grpcSecurityContext, call, headers, authenticationPropagatingHandler(next));
         } finally {
@@ -110,9 +113,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         }
 
 
-
-
     }
+
     private <ReqT, RespT> ServerCallHandler<ReqT, RespT> authenticationPropagatingHandler(ServerCallHandler<ReqT, RespT> next) {
 
         return (call, headers) -> new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(next.startCall(afterInvocationPropagator(call), headers)) {
@@ -126,7 +128,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             public void onHalfClose() {
                 try {
                     propagateAuthentication(super::onHalfClose);
-                }finally {
+                } finally {
                     finallyInvocation(INTERCEPTOR_STATUS_TOKEN.get());
                 }
             }
@@ -158,7 +160,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         };
     }
 
-    private <RespT, ReqT> ServerCall<RespT, ReqT> afterInvocationPropagator(ServerCall<RespT, ReqT> call){
+    private <RespT, ReqT> ServerCall<RespT, ReqT> afterInvocationPropagator(ServerCall<RespT, ReqT> call) {
         return new ForwardingServerCall.SimpleForwardingServerCall<RespT, ReqT>(call) {
             @Override
             public void sendMessage(ReqT message) {
@@ -180,30 +182,29 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
         return Context.current()
                 .withValues(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication(),
-                            INTERCEPTOR_STATUS_TOKEN,interceptorStatusToken);
+                        INTERCEPTOR_STATUS_TOKEN, interceptorStatusToken);
     }
 
-    private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, final Status status, Exception exception) {
+    private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, RuntimeException exception) throws RuntimeException {
 
         if (authCfg.isFailFast()) {
-             closeCall(null, errorHandler, call, headers, status, exception);
-             return new ServerCall.Listener<ReqT>() {
-                // noop
+            failureHandlingSupport.closeCall(exception, call, headers, b -> {
+
+            });
+
+            return new ServerCall.Listener<ReqT>() {
+
             };
-
-
         } else {
+
             return new MessageBlockingServerCallListener<ReqT>(next.startCall(call, headers)) {
                 @Override
                 public void onMessage(ReqT message) {
                     blockMessage();
-                    closeCall(message, errorHandler, call, headers, status, exception);
+                    failureHandlingSupport.closeCall(exception, call, headers, b -> b.request(message));
                 }
             };
-
         }
-
     }
-
 
 }

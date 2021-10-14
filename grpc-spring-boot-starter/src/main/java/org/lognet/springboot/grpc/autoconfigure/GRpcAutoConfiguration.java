@@ -2,6 +2,7 @@ package org.lognet.springboot.grpc.autoconfigure;
 
 import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import org.lognet.springboot.grpc.FailureHandlingSupport;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.GRpcServerBuilderConfigurer;
 import org.lognet.springboot.grpc.GRpcServerRunner;
@@ -43,7 +44,6 @@ import java.util.function.Consumer;
 @ConditionalOnBean(annotation = GRpcService.class)
 @EnableConfigurationProperties({GRpcServerProperties.class})
 @Import({GRpcValidationConfiguration.class,
-
         NettyServerBuilderSelector.class,
         DefaultHealthStatusService.class
 })
@@ -59,13 +59,11 @@ public class GRpcAutoConfiguration {
         return new GRpcServerRunner(configurator, serverBuilder);
     }
 
-
     @Bean
     @ConditionalOnProperty(prefix = "grpc", name = "inProcessServerName")
     public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator) {
         return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
     }
-
 
     @Bean
     public GRpcServicesRegistry grpcServicesRegistry() {
@@ -73,12 +71,21 @@ public class GRpcAutoConfiguration {
     }
 
     @Bean
-    @GRpcGlobalInterceptor
-    public GRpcExceptionHandlerInterceptor exceptionHandlerInterceptor(GRpcServicesRegistry gRpcServicesRegistry, ApplicationContext applicationContext) {
+    public GRpcExceptionHandlerMethodResolver exceptionHandlerMethodResolver(GRpcServicesRegistry gRpcServicesRegistry, ApplicationContext applicationContext){
         final Collection<Object> advices = applicationContext.getBeansWithAnnotation(GRpcServiceAdvice.class).values();
+        return new GRpcExceptionHandlerMethodResolver(gRpcServicesRegistry, advices);
+    }
 
-        final GRpcExceptionHandlerMethodResolver methodResolver = new GRpcExceptionHandlerMethodResolver(gRpcServicesRegistry, advices);
-        return new GRpcExceptionHandlerInterceptor(methodResolver);
+    @Bean
+    public FailureHandlingSupport failureHandlingSupport(GRpcExceptionHandlerMethodResolver methodResolver){
+        return  new FailureHandlingSupport(methodResolver);
+    }
+
+    @Bean
+    @GRpcGlobalInterceptor
+    public GRpcExceptionHandlerInterceptor exceptionHandlerInterceptor(FailureHandlingSupport failureHandlingSupport,
+                                                                       GRpcExceptionHandlerMethodResolver methodResolver) {
+        return new GRpcExceptionHandlerInterceptor(methodResolver,failureHandlingSupport);
     }
 
     @Bean
