@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 /**
  * Marks the annotated method eligible for handling the specific exception type.
  * The signature of the method HAS to be as follows:
- * <br>
+ * <br/>
  * {@code Status handlerName(Exception type,GRpcExceptionScope scope)}
- * </br>, example:
- * </br>
+ * <br/>, example:
+ * <br/>
  * <pre>
  * {@code public io.grpc.Status handlerName(MyCustomException ex,GRpcExceptionScope scope){
  *     ...
