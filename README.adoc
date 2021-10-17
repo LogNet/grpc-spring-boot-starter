@@ -266,14 +266,16 @@ public  class B implements ServerInterceptor{
 }
 ----
 
-The starter uses built-in interceptors to implement Spring `Security`, `Validation` and `Metrics` integration.
+The starter uses built-in interceptors to implement error handling, Spring `Security`, `Validation` and `Metrics` integration.
 Their order can also be controlled by below properties :
 
-* `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE`)
+* `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+1`)
 * `grpc.validation.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+10`)
 * `grpc.metrics.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+20`)
 
-This gives you the ability to setup the desired order of built-in and your custom interceptors.
+This gives you the ability to set up the desired order of built-in and your custom interceptors.
+
+Error handling interceptor has the highest precedence.
 
 *Keep on reading !!! There is more*
 
@@ -450,6 +452,112 @@ If you enable both `NettyServer` and `in-process` servers, the `configure` metho
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
 
+== Error handling
+
+The starter registers the `GRpcExceptionHandlerInterceptor` which is responsible to propagate the service-thrown exception to the error handlers. +
+The error handling method could be registered by having `@GRpcServiceAdvice` annotated bean with methods annotated with `@GRpcExceptionHandler` annotations. +
+These are considered as `global` error handlers and the method with exception type parameter nearest by the type hierarchy to the thrown exception is invoked. +
+The signature of the error handler has to follow the below pattern:
+
+|===
+|Return type |Parameter 1 |Parameter 2
+
+|io.grpc.Status
+|any `Exception` type
+|GRpcExceptionScope
+
+
+
+|===
+
+
+
+[source,java]
+.Sample
+----
+@GRpcServiceAdvice
+class MyHandler1{
+    @GRpcExceptionHandler
+    public Status handle (MyCustomExcpetion exc, GRpcExceptionScope scope){
+
+    }
+    @GRpcExceptionHandler
+    public Status handle (IllegalArgumentException exc, GRpcExceptionScope scope){
+
+    }
+
+}
+@GRpcServiceAdvice
+class MyHandler2 {
+    @GRpcExceptionHandler
+   public Status anotherHandler (NullPointerException npe,GRpcExceptionScope scope){
+
+   }
+}
+----
+
+You can have as many `advice` beans and handler methods as you want as long as they don't interfere with each other and don't create handled exception type ambiguity.
+
+The `grpc` service bean is also discovered for error handlers, having the higher precedence than global error handling methods discovered in  `@GRpcServiceAdvice` beans. The service-level error handling methods are considered `private` and invoked only when the exception is thrown by *this* service:
+
+[source,java]
+.Sample
+----
+class SomeException extends Exception{
+
+}
+class SomeRuntimeException extends RuntimeException{
+
+}
+
+@GRpcService
+public  class HelloService extends GreeterGrpc.GreeterImplBase{
+    @Override
+    public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+        ...
+    throw new GRpcRuntimeExceptionWrapper(new SomeException()) ;  <1>
+//or
+    throw new GRpcRuntimeExceptionWrapper(new SomeException(),"myHint") <2>
+//or
+     throw new SomeRuntimeException() <3>
+    }
+    @GRpcExceptionHandler
+   public Status privateHandler (SomeException npe,GRpcExceptionScope scope){
+        // INVOKED when thrown from  HelloService service
+        String myHint = scope.getHintAs(String.class);    <4>
+        scope.getResponseHeaders().put(Metadata.Key.of("custom", Metadata.ASCII_STRING_MARSHALLER), "Value"); <5>
+   }
+   @GRpcExceptionHandler
+   public Status privateHandler (SomeRuntimeException npe,GRpcExceptionScope scope){
+        // INVOKED when thrown from  HelloService service
+
+   }
+}
+@GRpcServiceAdvice
+class MyHandler  {
+   @GRpcExceptionHandler
+   public Status anotherHandler (SomeException npe,GRpcExceptionScope scope){
+        // NOT INVOKED when thrown from  HelloService service
+   }
+   @GRpcExceptionHandler
+   public Status anotherHandler (SomeRuntimeException npe,GRpcExceptionScope scope){
+        // NOT INVOKED when thrown from  HelloService service
+   }
+
+}
+----
+<1> Because the nature of `grpc` service API that doesn't allow throwing checked exception, the special runtime exception type is provided to wrap the checked exception. It's then getting unwrapped when looking for the handler method.
+<2> When throwing the `GRpcRuntimeExceptionWrapper` exception, you can also pass the `hint` object which is then accessible from the `scope` object in `handler` method.
+<3> Runtime exception can be thrown as-is and doesn't need to be wrapped.
+<4> Obtain the hint object.
+<5> Send custom headers to the client.
+
+Authentication failure is propagated via `AuthenticationException` and authorization failure  - via `AccessDeniedException`.
+
+Validation failure is propagated via `ConstraintViolationException`: for  failed request - with `Status.INVALID_ARGUMENT` as a  hint , and for  failed response  - with `Status.FAILED_PRECONDITION` as a hint.
+
+The demo is link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/recovery/GRpcRecoveryTest.java[here]
+
 == Implementing message validation
 
 Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration support via https://beanvalidation.org/2.0/spec/#xml[XML deployment descriptor] , it's possible to
@@ -514,7 +622,6 @@ Demo is https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spri
 
 
 
-By adding `GRpcErrorHandler` bean to your application, you get  a chance to send your custom response headers. The error handler will be called with `Status.INVALID_ARGUMENT` and incoming request message that is failed.
 
 
 == GRPC response observer  and Spring @Transactional caveats
@@ -575,6 +682,10 @@ class MyGrpcService extends ...{
 <3> Reply *after* transaction is committed.
 
 By following this approach you also decouple the transport layer and business logic that now can be tested separately.
+
+
+
+
 
 
 == Spring Security Integration
@@ -720,14 +831,6 @@ Starting from `4.5.6`, the `Authentication` object can also be obtained via stan
 final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 ----
 
-=== Custom  authentication failure handling
-
-By adding `GRpcErrorHandler` bean to your application, you get  a chance to provide your custom response headers. The error handler will be called with `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` (and incoming request message , if you set `grpc.security.auth.fail-fast` property to `false`). +
-The demo is link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtRoleTest.java[here]
-
-
-
-
 
 === Client side configuration support
 
@@ -809,11 +912,11 @@ Starting from version `3.3.0`, the starter will auto-register the running grpc s
 
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
 
-Setting `spring.cloud.consul.discovery.register-health-check` to true will register GRPC health check service in Consul.
+Setting `spring.cloud.consul.discovery.register-health-check` to true will register GRPC health check service with Consul.
 
 Tags could be set by defining `spring.cloud.consul.discovery.tags` property.
 
-There are 3 supported registration  modes :
+There are 4 supported registration  modes :
 
 . `SINGLE_SERVER_WITH_GLOBAL_CHECK` (default) +
  In this mode the running grpc server is registered as single service with single `grpc` check with empty `serviceId`. +
@@ -822,6 +925,7 @@ Please note that default implementation https://github.com/grpc/grpc-java/blob/b
 In this mode the running grpc server is registered as single service with check per each discovered `grpc` service.
 . `STANDALONE_SERVICES` +
 In this mode each discovered grpc service is  registered as single service with single check. Each registered service is tagged by its own service name.
+. `NOOP` - no grpc services registered. This mode is usefull if you serve both `rest` and `grpc` services in your application, but for some reason, only `rest` services should be registered with Consul.
 
 [source,yml]
 .You can control the desired mode from application.properties

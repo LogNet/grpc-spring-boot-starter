@@ -19,44 +19,47 @@ public class FailureHandlingSupport {
         this.methodResolver = methodResolver;
     }
 
+    public void closeCall(RuntimeException e, ServerCall<?, ?> call, Metadata headers) throws RuntimeException {
+        closeCall(e,call,headers,null);
+    }
     public void closeCall(RuntimeException e, ServerCall<?, ?> call, Metadata headers, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer) throws RuntimeException {
 
 
-            final Optional<HandlerMethod> handlerMethod = methodResolver.resolveMethodByThrowable(call.getMethodDescriptor().getServiceName(), e);
-            if (handlerMethod.isPresent()) {
-                final GRpcExceptionScope.GRpcExceptionScopeBuilder exceptionScopeBuilder = GRpcExceptionScope.builder()
-                        .callHeaders(headers)
-                        .methodCallAttributes(call.getAttributes())
-                        .methodDescriptor(call.getMethodDescriptor())
-                        .hint(GRpcRuntimeExceptionWrapper.getHint(e));
-                customizer.accept(exceptionScopeBuilder);
+        final Optional<HandlerMethod> handlerMethod = methodResolver.resolveMethodByThrowable(call.getMethodDescriptor().getServiceName(), e);
+        if (handlerMethod.isPresent()) {
+            final GRpcExceptionScope.GRpcExceptionScopeBuilder exceptionScopeBuilder = GRpcExceptionScope.builder()
+                    .callHeaders(headers)
+                    .methodCallAttributes(call.getAttributes())
+                    .methodDescriptor(call.getMethodDescriptor())
+                    .hint(GRpcRuntimeExceptionWrapper.getHint(e));
+            Optional.ofNullable(customizer)
+                    .ifPresent(c -> c.accept(exceptionScopeBuilder));
 
-                final GRpcExceptionScope excScope = exceptionScopeBuilder.build();
+            final GRpcExceptionScope excScope = exceptionScopeBuilder.build();
 
-                final HandlerMethod handler = handlerMethod.get();
-
-
-                Status statusToSend = Status.INTERNAL;
-                try {
-                    statusToSend = handler.invoke(GRpcRuntimeExceptionWrapper.unwrap(e),excScope );
-                }catch (Exception handlerException){
-
-                    org.slf4j.LoggerFactory.getLogger(this.getClass())
-                            .error("Caught exception while executing handler method {}, returning {} status.",
-                                    handler.getMethod(),
-                                    statusToSend,
-                                    handlerException);
-
-                }
-                call.close(statusToSend, excScope.getResponseHeaders());
+            final HandlerMethod handler = handlerMethod.get();
 
 
-            } else {
-                call.close(Status.INTERNAL,new Metadata());
+            Status statusToSend = Status.INTERNAL;
+            try {
+                statusToSend = handler.invoke(GRpcRuntimeExceptionWrapper.unwrap(e), excScope);
+            } catch (Exception handlerException) {
+
+                org.slf4j.LoggerFactory.getLogger(this.getClass())
+                        .error("Caught exception while executing handler method {}, returning {} status.",
+                                handler.getMethod(),
+                                statusToSend,
+                                handlerException);
+
             }
+            call.close(statusToSend, excScope.getResponseHeaders());
+
+
+        } else {
+            call.close(Status.INTERNAL, new Metadata());
+        }
 
     }
-
 
 
 }

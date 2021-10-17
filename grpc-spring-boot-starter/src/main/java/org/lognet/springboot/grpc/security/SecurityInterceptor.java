@@ -188,9 +188,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
     private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, RuntimeException exception) throws RuntimeException {
 
         if (authCfg.isFailFast()) {
-            failureHandlingSupport.closeCall(exception, call, headers, b -> {
-
-            });
+            failureHandlingSupport.closeCall(exception, call, headers);
 
             return new ServerCall.Listener<ReqT>() {
 

@@ -67,8 +67,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 
             };
         } catch (RuntimeException e) {
-            failureHandlingSupport.closeCall(e,  errorHandlingCall, headers, (b) -> {
-            });
+            failureHandlingSupport.closeCall(e,  errorHandlingCall, headers);
         }
         return new ServerCall.Listener<ReqT>() {
 

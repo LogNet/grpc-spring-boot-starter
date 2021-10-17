@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.8](#version-458)| 1.41.0        |2.5.0               |
 | [4.5.7](#version-457)| 1.40.1        |2.5.0               |
 | [4.5.6](#version-456)| 1.40.0        |2.5.0               |
 | [4.5.5](#version-455)| 1.39.0        |2.5.0               |
@@ -25,6 +26,20 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.8
+## :star: New Features
+
+- Support NOOP consul registration  strategy [#251](https://github.com/LogNet/grpc-spring-boot-starter/issues/251)
+- Global error handling support [#223](https://github.com/LogNet/grpc-spring-boot-starter/issues/223)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to  1.41.0 [#252](https://github.com/LogNet/grpc-spring-boot-starter/issues/252)
+
+## :watch: Deprecations
+
+-  `GRpcErrorHandler` is deprecated in favor of `@GRpcServiceAdvice` and `@GRpcExceptionHandler` annotations.
 
 # Version 4.5.7
 ## :star: New Features
