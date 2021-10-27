@@ -6,53 +6,52 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.function.SingletonSupplier;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class GRpcServicesRegistry implements InitializingBean , ApplicationContextAware {
+public class GRpcServicesRegistry implements InitializingBean, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
 
-    private    Map<String, BindableService> beanNameToServiceBean;
+    private Supplier<Map<String, BindableService>> beanNameToServiceBean;
 
-    private    Map<String, BindableService> serviceNameToServiceBean;
+    private Supplier<Map<String, BindableService>> serviceNameToServiceBean;
 
-    private    Collection<ServerInterceptor> grpcGlobalInterceptors;
-
+    private Supplier<Collection<ServerInterceptor>> grpcGlobalInterceptors;
 
 
     /**
-     *
      * @return service name to grpc service bean
      */
     public Map<String, BindableService> getServiceNameToServiceBeanMap() {
-        return serviceNameToServiceBean;
+        return serviceNameToServiceBean.get();
     }
 
     /**
-     *
      * @return spring bean name to grpc service bean
      */
     public Map<String, BindableService> getBeanNameToServiceBeanMap() {
-        return beanNameToServiceBean;
+        return beanNameToServiceBean.get();
     }
 
     Collection<ServerInterceptor> getGlobalInterceptors() {
 
-        return grpcGlobalInterceptors;
+        return grpcGlobalInterceptors.get();
     }
 
-    private <T> Map<String,T> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) {
+    private <T> Map<String, T> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) {
 
         return applicationContext.getBeansWithAnnotation(annotationType)
                 .entrySet()
                 .stream()
-                .filter(e-> beanType.isInstance(e.getValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey,e->beanType.cast(e.getValue())));
+                .filter(e -> beanType.isInstance(e.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> beanType.cast(e.getValue())));
 
     }
 
@@ -60,21 +59,27 @@ public class GRpcServicesRegistry implements InitializingBean , ApplicationConte
     public void afterPropertiesSet() throws Exception {
 
 
-
-        beanNameToServiceBean = getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class);
-
-        serviceNameToServiceBean = beanNameToServiceBean
-                .values()
-                .stream()
-                .collect(Collectors.toMap(s->s.bindService().getServiceDescriptor().getName(),Function.identity()));
+        beanNameToServiceBean = SingletonSupplier.of(() ->
+                getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class)
+        );
 
 
-        grpcGlobalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
-                .values();
+        serviceNameToServiceBean = SingletonSupplier.of(() ->
+                beanNameToServiceBean
+                        .get()
+                        .values()
+                        .stream()
+                        .collect(Collectors.toMap(s -> s.bindService().getServiceDescriptor().getName(), Function.identity()))
+        );
+
+        grpcGlobalInterceptors = SingletonSupplier.of(() ->
+                getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
+                        .values()
+        );
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext =   applicationContext;
+        this.applicationContext = applicationContext;
     }
 }

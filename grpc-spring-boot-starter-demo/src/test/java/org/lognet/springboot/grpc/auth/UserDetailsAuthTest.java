@@ -26,8 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -39,7 +37,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 
-@SpringBootTest(classes = DemoApp.class)
+@SpringBootTest(classes = DemoApp.class,webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
 @Import({UserDetailsAuthTest.TestCfg.class})
 public class UserDetailsAuthTest extends GrpcServerTestBase {
@@ -48,16 +46,12 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     @TestConfiguration
     static class TestCfg   extends GrpcSecurityConfigurerAdapter {
             static final String pwd="strongPassword1";
-            @Bean
-            public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-            }
 
             @Bean
-            public UserDetails user(PasswordEncoder passwordEncoder) {
-                return User.
-                        withUsername("user1")
-                        .password(passwordEncoder.encode(pwd))
+            public UserDetails user() {
+                return User.withDefaultPasswordEncoder()
+                        .username("user1")
+                        .password(pwd)
                         .roles("reader")
                         .build();
             }
