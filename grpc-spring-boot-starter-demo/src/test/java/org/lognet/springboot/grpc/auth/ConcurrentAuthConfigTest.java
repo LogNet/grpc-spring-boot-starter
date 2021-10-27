@@ -13,7 +13,6 @@ import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthCallCredentials;
 import org.lognet.springboot.grpc.security.AuthHeader;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -73,7 +72,6 @@ public class ConcurrentAuthConfigTest extends GrpcServerTestBase {
 
     @Test
     public void concurrentTest() throws InterruptedException {
-        System.out.println();
 
         final SecuredGreeterGrpc.SecuredGreeterBlockingStub unsecuredFutureStub = SecuredGreeterGrpc
                 .newBlockingStub(selectedChanel);

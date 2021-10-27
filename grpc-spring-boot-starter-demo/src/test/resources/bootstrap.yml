@@ -12,6 +12,9 @@ spring:
     config:
       uri: http://localhost:${config.port:8888}
 embedded:
+  consul:
+    enabled: false
+    reuse-container: true
   keycloak:
     enabled: false
     wait-timeout-in-seconds: 120

@@ -8,11 +8,9 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.GreeterOuterClass;
+import io.grpc.examples.SecuredGreeterGrpc;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GRpcErrorHandler;
@@ -34,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import io.grpc.examples.SecuredGreeterGrpc;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -109,34 +107,7 @@ public class SecurityInterceptorTest extends GrpcServerTestBase {
         verify(errorHandler).handle(any(),eq(Status.UNAUTHENTICATED), any(),any(),any());
     }
 
-    @Test
-    @Ignore("@PreAuthorize is not supported yet")
-    public void preAuthorizeTest() {
-        final GreeterGrpc.GreeterBlockingStub greeterBlockingStub = GreeterGrpc.newBlockingStub(getChannel())
-                .withCallCredentials(userCredentials());
 
-
-        final GreeterOuterClass.Person personIn = GreeterOuterClass.Person.newBuilder()
-                .setName("Frodo")
-                .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Shire"))
-                .setAge(11)
-                .build();
-        final GreeterOuterClass.Person personOut = greeterBlockingStub.sayPreAuthHello(personIn);
-        assertThat(personOut.toBuilder().clearNickName().build(),
-                Matchers.is(personIn)
-        );
-
-        final StatusRuntimeException statusRuntimeException = Assert.assertThrows(StatusRuntimeException.class, () -> {
-
-            greeterBlockingStub.sayPreAuthHello(GreeterOuterClass.Person.newBuilder()
-                    .setName("Aragorn")
-                    .setAddress(GreeterOuterClass.Address.newBuilder().setCity("Isildur"))
-                    .setAge(2)
-                    .build());
-        });
-        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
-
-    }
     private  AuthCallCredentials userCredentials(){
         return new AuthCallCredentials(
                 AuthHeader.builder()

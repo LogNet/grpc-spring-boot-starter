@@ -5,8 +5,6 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
-import com.pszymczyk.consul.ConsulProcess;
-import com.pszymczyk.consul.ConsulStarterBuilder;
 import io.grpc.BindableService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -17,9 +15,7 @@ import io.grpc.health.v1.HealthGrpc;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
@@ -28,11 +24,9 @@ import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.SocketUtils;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -41,25 +35,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @ActiveProfiles("consul-test")
 public abstract class ConsulRegistrationBaseTest {
-    private static ConsulProcess consul;
-
-    @BeforeClass
-    public static void startConsul() {
-        int port = SocketUtils.findAvailableTcpPort();
-
-
-        consul = ConsulStarterBuilder.consulStarter().withHttpPort(port).build().start();
-        System.setProperty("spring.cloud.consul.port", String.valueOf(port));
-
-    }
-
-    @AfterClass
-    public static void clear() {
-        System.clearProperty("spring.cloud.consul.port");
-        Optional.ofNullable(consul).ifPresent(ConsulProcess::close);
-
-    }
-
 
     @Autowired
     protected DiscoveryClient discoveryClient;
@@ -75,8 +50,9 @@ public abstract class ConsulRegistrationBaseTest {
     @Before
     public void setUp() throws Exception {
 
-
-        consulClient = new ConsulClient("localhost", Integer.parseInt(System.getProperty("spring.cloud.consul.port")));
+        final String port = applicationContext.getEnvironment().getProperty("embedded.consul.port");
+        final String host = applicationContext.getEnvironment().getProperty("embedded.consul.host");
+        consulClient = new ConsulClient(host, Integer.parseInt(port));
 
 
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
@@ -108,6 +84,8 @@ public abstract class ConsulRegistrationBaseTest {
             channel.shutdownNow();
             channel.awaitTermination(1, TimeUnit.SECONDS);
         }
+        // explicitly close the context  to trigger services de-registration
+        // since we share the same instance of Consul between tests
         applicationContext.stop();
     }
 

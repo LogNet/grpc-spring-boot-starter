@@ -11,7 +11,6 @@ service Greeter {
     rpc SayManyHellos (stream HelloRequest) returns (stream HelloReply) {}
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc SayAuthOnlyHello ( google.protobuf.Empty) returns (  HelloReply) {}
-    rpc SayPreAuthHello ( Person) returns (  Person) {}
     rpc HelloPersonValidResponse ( Person) returns (  Person) {}
     rpc HelloPersonInvalidResponse ( Person) returns (  Person) {}
 

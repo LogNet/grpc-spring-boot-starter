@@ -65,6 +65,9 @@ public class GRpcExceptionHandlerMethodResolver {
 
 
     public Optional<HandlerMethod> resolveMethodByThrowable(String grpcServiceName, Throwable exc) {
+        if(null==exc){
+            return Optional.empty();
+        }
         Throwable exception = GRpcRuntimeExceptionWrapper.unwrap(exc);
 
         Optional<HandlerMethod> method = Optional.ofNullable(privateResolvers)

@@ -14,7 +14,7 @@ public class AuthenticatedAttributeVoter implements AccessDecisionVoter<Object> 
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return io.grpc.MethodDescriptor.class.equals(clazz);
+        return true;
     }
 
     @Override

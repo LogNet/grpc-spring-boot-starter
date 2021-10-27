@@ -2,10 +2,23 @@ package org.lognet.springboot.grpc.security;
 
 import io.grpc.Context;
 import io.grpc.ServerInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.ExpressionBasedAnnotationAttributeFactory;
+import org.springframework.security.access.expression.method.ExpressionBasedPostInvocationAdvice;
+import org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice;
+import org.springframework.security.access.intercept.AfterInvocationManager;
+import org.springframework.security.access.intercept.AfterInvocationProviderManager;
+import org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource;
+import org.springframework.security.access.prepost.PostInvocationAdviceProvider;
+import org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter;
+import org.springframework.security.access.prepost.PrePostAnnotationSecurityMetadataSource;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,6 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterceptor, GrpcSecurity>
@@ -34,7 +48,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
     public GrpcServiceAuthorizationConfigurer.Registry authorizeRequests()
             throws Exception {
 
-        return getOrApply(new GrpcServiceAuthorizationConfigurer (applicationContext))
+        return getOrApply(new GrpcServiceAuthorizationConfigurer (applicationContext.getBean(GRpcServicesRegistry.class)))
                 .getRegistry();
     }
 
@@ -72,12 +86,42 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
 
 
 
-        final SecurityInterceptor securityInterceptor = new SecurityInterceptor(getSharedObject(GrpcSecurityMetadataSource.class),
-                getAuthenticationSchemeService());
+        final GrpcSecurityMetadataSource metadataSource =getSharedObject(GrpcSecurityMetadataSource.class);
+        final DelegatingMethodSecurityMetadataSource compositeMDS = new DelegatingMethodSecurityMetadataSource(Arrays.asList(
+                metadataSource,
+                new PrePostAnnotationSecurityMetadataSource(
+                        new ExpressionBasedAnnotationAttributeFactory(
+                            new DefaultMethodSecurityExpressionHandler()
+                        )
+                )
+        ));
+        final SecurityInterceptor securityInterceptor = new SecurityInterceptor(compositeMDS,getAuthenticationSchemeService());
+        securityInterceptor.setAfterInvocationManager(afterInvocationManager());
         securityInterceptor.setAuthenticationManager(getSharedObject(AuthenticationManagerBuilder.class).build());
         final RoleVoter scopeVoter = new RoleVoter();
         scopeVoter.setRolePrefix("SCOPE_");
-        securityInterceptor.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter(),scopeVoter, new AuthenticatedAttributeVoter())));
+
+
+
+        ExpressionBasedPreInvocationAdvice expressionAdvice = new ExpressionBasedPreInvocationAdvice();
+        expressionAdvice.setExpressionHandler(new DefaultMethodSecurityExpressionHandler());
+
+
+        final AffirmativeBased accessDecisionManager = new AffirmativeBased(Arrays.asList(
+                new RoleVoter(),
+                scopeVoter,
+                new AuthenticatedAttributeVoter(),
+                new PreInvocationAuthorizationAdviceVoter(expressionAdvice){
+                    @Override
+                    public int vote(Authentication authentication, MethodInvocation method, Collection<ConfigAttribute> attributes) {
+                        // first time invoked without arguments
+                        return null==method.getArguments() ? ACCESS_GRANTED: super.vote(authentication, method, attributes);
+                    }
+                }
+
+        ));
+
+        securityInterceptor.setAccessDecisionManager(accessDecisionManager);
         final GRpcServerProperties.SecurityProperties.Auth authCfg = Optional.of(applicationContext.getBean(GRpcServerProperties.class))
                 .map(GRpcServerProperties::getSecurity)
                 .map(GRpcServerProperties.SecurityProperties::getAuth)
@@ -99,4 +143,28 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
     private AuthenticationSchemeService getAuthenticationSchemeService() {
         return getSharedObject(AuthenticationSchemeService.class);
     }
+
+    protected AfterInvocationManager afterInvocationManager() {
+
+            AfterInvocationProviderManager invocationProviderManager = new AfterInvocationProviderManager();
+            ExpressionBasedPostInvocationAdvice postAdvice = new ExpressionBasedPostInvocationAdvice(
+                    new DefaultMethodSecurityExpressionHandler());
+            PostInvocationAdviceProvider postInvocationAdviceProvider = new PostInvocationAdviceProvider(postAdvice){
+                @Override
+                public boolean supports(Class<?> clazz) {
+                    return MethodInvocation.class.isAssignableFrom(clazz); //todo : remove once fixed https://github.com/spring-projects/spring-security/issues/10236
+                }
+            };
+
+
+
+            invocationProviderManager.setProviders(Arrays.asList(
+                    postInvocationAdviceProvider
+            ));
+            invocationProviderManager.afterPropertiesSet();
+            return invocationProviderManager;
+
+    }
+
+
 }

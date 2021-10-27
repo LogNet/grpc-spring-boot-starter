@@ -6,6 +6,8 @@ spring:
       discovery:
         enabled: true
       enabled: true
+      port: ${embedded.consul.port}
+      host: ${embedded.consul.host}
     service-registry:
       auto-registration:
         enabled: true

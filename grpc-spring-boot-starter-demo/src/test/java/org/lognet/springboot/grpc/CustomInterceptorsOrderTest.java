@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.lognet.springboot.grpc.security.SecurityInterceptor;

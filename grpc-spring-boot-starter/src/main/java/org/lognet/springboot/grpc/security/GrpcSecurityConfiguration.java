@@ -1,8 +1,10 @@
 package org.lognet.springboot.grpc.security;
 
+import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
 import io.grpc.Status;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.lognet.springboot.grpc.GRpcErrorHandler;
 import org.lognet.springboot.grpc.GRpcGlobalInterceptor;
 import org.lognet.springboot.grpc.autoconfigure.ConditionalOnMissingErrorHandler;
@@ -10,13 +12,16 @@ import org.lognet.springboot.grpc.recovery.ErrorHandlerAdapter;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
 import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.AuthenticationException;
 
@@ -38,6 +43,23 @@ public class GrpcSecurityConfiguration {
 
     private GrpcSecurity grpcSecurity;
 
+    @Bean
+    public BeanPostProcessor bypassMethodInterceptorForGrpcMethodInvocation(){
+        return new BeanPostProcessor() {
+            @Override
+            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+                if(bean instanceof MethodSecurityInterceptor){
+                    return (MethodInterceptor) invocation -> {
+                        if (BindableService.class.isAssignableFrom(invocation.getMethod().getDeclaringClass())){
+                            return invocation.proceed();
+                        }
+                        return ((MethodSecurityInterceptor) bean).invoke(invocation);
+                    };
+                }
+                return bean;
+            }
+        };
+    }
 
     @ConditionalOnMissingErrorHandler(AccessDeniedException.class)
     @Configuration
@@ -83,7 +105,7 @@ public class GrpcSecurityConfiguration {
 
     @Bean
     @GRpcGlobalInterceptor
-    public ServerInterceptor    springGrpcSecurityInterceptor() throws Exception   {
+    public ServerInterceptor springGrpcSecurityInterceptor() throws Exception   {
         boolean hasConfigurers = grpcSecurityConfigurers != null && !grpcSecurityConfigurers.isEmpty();
         if (!hasConfigurers) {
             GrpcSecurityConfigurerAdapter adapter = objectObjectPostProcessor.postProcess(new GrpcSecurityConfigurerAdapter() {

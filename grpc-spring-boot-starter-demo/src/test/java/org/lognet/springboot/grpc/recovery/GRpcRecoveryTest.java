@@ -21,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -150,7 +152,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
 
     @Test
-    public void streamingServiceErrorHandlerTest() throws ExecutionException, InterruptedException {
+    public void streamingServiceErrorHandlerTest() throws ExecutionException, InterruptedException, TimeoutException {
 
 
 
@@ -181,7 +183,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
 
 
-        final Throwable actual = errorFuture.get();
+        final Throwable actual = errorFuture.get(20, TimeUnit.SECONDS);
         assertThat(actual, notNullValue());
         assertThat(actual, isA(StatusRuntimeException.class));
         assertThat(((StatusRuntimeException)actual).getStatus(), is(Status.RESOURCE_EXHAUSTED));

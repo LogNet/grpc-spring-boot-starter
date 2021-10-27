@@ -82,15 +82,15 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
     testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-    testCompile 'com.pszymczyk.consul:embedded-consul:2.2.1'
     testCompile 'org.awaitility:awaitility:4.0.3'
     testCompile "org.springframework.cloud:spring-cloud-config-server"
     testCompile "org.springframework.cloud:spring-cloud-config-client"
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
-    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.14"
+    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.16"
+    testCompile "com.playtika.testcontainers:embedded-consul:2.0.16"
 
-    testImplementation 'org.hamcrest:hamcrest:2.1'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
     customSecurityTestCompile  sourceSets.test.output

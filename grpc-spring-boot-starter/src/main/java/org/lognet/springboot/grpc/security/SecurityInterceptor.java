@@ -1,5 +1,6 @@
 package org.lognet.springboot.grpc.security;
 
+import io.grpc.BindableService;
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall;
@@ -9,44 +10,123 @@ import io.grpc.MethodDescriptor;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.FailureHandlingSupport;
+import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.MethodIntrospector;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.util.SimpleMethodInvocation;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Slf4j
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements ServerInterceptor, Ordered {
 
     private static final Context.Key<InterceptorStatusToken> INTERCEPTOR_STATUS_TOKEN = Context.key("INTERCEPTOR_STATUS_TOKEN");
+    private static final Context.Key<GrpcMethodInvocation<?,?>> METHOD_INVOCATION = Context.key("METHOD_INVOCATION");
 
-    private final GrpcSecurityMetadataSource securedMethods;
+    private final SecurityMetadataSource securityMetadataSource;
 
     private final AuthenticationSchemeSelector schemeSelector;
 
     private GRpcServerProperties.SecurityProperties.Auth authCfg;
 
     private FailureHandlingSupport failureHandlingSupport;
+    private Map<GrpcServiceMethodKey, Map.Entry<Object, Method>> keyedMethods;
+
+    static class GrpcMethodInvocation<ReqT, RespT> extends SimpleMethodInvocation {
+        final private ServerCall<ReqT, RespT> call;
+        final private Metadata headers;
+        final private ServerCallHandler<ReqT, RespT> next;
+        @Getter
+        @Setter
+        private Object[] arguments;
+
+        public GrpcMethodInvocation(Map.Entry<Object, Method> handler, ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+            super(handler.getKey(), handler.getValue());
+            this.call = call;
+            this.headers = headers;
+            this.next = next;
+        }
+
+        @Override
+        public Object proceed() {
+            return next.startCall(call, headers);
+        }
+
+        ServerCall<ReqT, RespT> getCall() {
+            return call;
+        }
+    }
+
+    @Getter
+    @EqualsAndHashCode
+    static class GrpcServiceMethodKey {
+
+        public GrpcServiceMethodKey(MethodDescriptor<?, ?> methodDescriptor) {
+            this.serviceName = methodDescriptor.getServiceName();
+            this.methodName = methodDescriptor.getBareMethodName();
+        }
+
+        @EqualsAndHashCode.Include
+        final private String serviceName;
+
+        @EqualsAndHashCode.Include
+        final private String methodName;
+
+    }
 
 
-    public SecurityInterceptor(GrpcSecurityMetadataSource securedMethods,AuthenticationSchemeSelector schemeSelector) {
-        this.securedMethods = securedMethods;
+    public SecurityInterceptor(SecurityMetadataSource securityMetadataSource, AuthenticationSchemeSelector schemeSelector) {
+        this.securityMetadataSource = securityMetadataSource;
         this.schemeSelector = schemeSelector;
     }
 
+
+    @Autowired
+    public void setGRpcServicesRegistry(GRpcServicesRegistry registry) {
+
+        final Map<GrpcServiceMethodKey, Map.Entry<Object, Method>> map = new HashMap<>();
+
+        Function<String, ReflectionUtils.MethodFilter> filterFactory = name ->
+                method -> method.getName().equalsIgnoreCase(name);
+
+        for (BindableService service : registry.getBeanNameToServiceBeanMap().values()) {
+            for (MethodDescriptor<?, ?> d : service.bindService().getServiceDescriptor().getMethods()) {
+                final Method method = MethodIntrospector
+                        .selectMethods(service.getClass(), filterFactory.apply(d.getBareMethodName()))
+                        .iterator().next();
+                map.put(new GrpcServiceMethodKey(d),
+                        new AbstractMap.SimpleImmutableEntry<>(service, method));
+
+            }
+        }
+        keyedMethods = Collections.unmodifiableMap(map);
+    }
 
     @Autowired
     public void setFailureHandlingSupport(@Lazy FailureHandlingSupport failureHandlingSupport) {
@@ -64,12 +144,12 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Override
     public Class<?> getSecureObjectClass() {
-        return MethodDescriptor.class;
+        return GrpcMethodInvocation.class;
     }
 
     @Override
-    public GrpcSecurityMetadataSource obtainSecurityMetadataSource() {
-        return securedMethods;
+    public SecurityMetadataSource obtainSecurityMetadataSource() {
+        return securityMetadataSource;
     }
 
     @Override
@@ -100,7 +180,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         try {
             final Context grpcSecurityContext;
             try {
-                grpcSecurityContext = setupGRpcSecurityContext(call, authorization);
+                grpcSecurityContext = setupGRpcSecurityContext(call, headers, next, authorization);
             } catch (AccessDeniedException | AuthenticationException e) {
                 return fail(next, call, headers, e);
             } catch (Exception e) {
@@ -111,8 +191,6 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
-
-
     }
 
     private <ReqT, RespT> ServerCallHandler<ReqT, RespT> authenticationPropagatingHandler(ServerCallHandler<ReqT, RespT> next) {
@@ -121,7 +199,41 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
             @Override
             public void onMessage(ReqT message) {
-                propagateAuthentication(() -> super.onMessage(message));
+                propagateAuthentication(() -> {
+                            try {
+                                switch (call.getMethodDescriptor().getType()) {
+                                    // server streaming and unary calls generated with 2 parameters,
+                                    // first one is the actual input
+                                    case SERVER_STREAMING:
+                                    case UNARY:
+                                        METHOD_INVOCATION.get().setArguments(new Object[]{message, null});
+                                        break;
+                                    // client  streaming and bidi streaming  calls generated with 1 parameter
+                                    case BIDI_STREAMING:
+                                    case CLIENT_STREAMING:
+                                    case UNKNOWN:
+                                        METHOD_INVOCATION.get().setArguments(new Object[]{message});
+                                        break;
+                                    default:
+                                        fail(next,call,headers, new AuthenticationException("Unsupported call type "+call.getMethodDescriptor().getType()) {
+                                        });
+                                }
+
+                                beforeInvocation(METHOD_INVOCATION.get());
+                            } catch (AccessDeniedException | AuthenticationException e) {
+                                fail(next, call, headers, e);
+                                return;
+                            } catch (Exception e) {
+                                fail(next, call, headers, new AuthenticationException("", e) {
+                                });
+                                return;
+                            } finally {
+                                METHOD_INVOCATION.get().setArguments(null);
+                            }
+
+                            super.onMessage(message);
+                        }
+                );
             }
 
             @Override
@@ -169,7 +281,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         };
     }
 
-    private Context setupGRpcSecurityContext(ServerCall<?, ?> call, CharSequence authorization) {
+    private <RespT, ReqT> Context setupGRpcSecurityContext(ServerCall<RespT, ReqT> call, Metadata headers,
+                                                           ServerCallHandler<RespT, ReqT> next, CharSequence authorization) {
         final Authentication authentication = null == authorization ? null :
                 schemeSelector.getAuthScheme(authorization)
                         .orElseThrow(() -> new RuntimeException("Can't get authentication from authorization header"));
@@ -178,11 +291,15 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
 
-        final InterceptorStatusToken interceptorStatusToken = beforeInvocation(call.getMethodDescriptor());
+        final Map.Entry<Object, Method> methodHandler = keyedMethods.get(new GrpcServiceMethodKey(call.getMethodDescriptor()));
+
+        final GrpcMethodInvocation<RespT, ReqT> methodInvocation = new GrpcMethodInvocation<>(methodHandler, call, headers, next);
+        final InterceptorStatusToken interceptorStatusToken = beforeInvocation(methodInvocation);
 
         return Context.current()
-                .withValues(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication(),
-                        INTERCEPTOR_STATUS_TOKEN, interceptorStatusToken);
+                .withValue(GrpcSecurity.AUTHENTICATION_CONTEXT_KEY, SecurityContextHolder.getContext().getAuthentication())
+                .withValue(INTERCEPTOR_STATUS_TOKEN, interceptorStatusToken)
+                .withValue(METHOD_INVOCATION, methodInvocation);
     }
 
     private <RespT, ReqT> ServerCall.Listener<ReqT> fail(ServerCallHandler<ReqT, RespT> next, ServerCall<ReqT, RespT> call, Metadata headers, RuntimeException exception) throws RuntimeException {
@@ -191,10 +308,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
             failureHandlingSupport.closeCall(exception, call, headers);
 
             return new ServerCall.Listener<ReqT>() {
-
             };
         } else {
-
             return new MessageBlockingServerCallListener<ReqT>(next.startCall(call, headers)) {
                 @Override
                 public void onMessage(ReqT message) {

@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -68,15 +66,6 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
         responseObserver.onCompleted();
     }
 
-    @Override
-    @PreAuthorize("#person.getAge()<12")
-    @PostAuthorize("returnObject.getAge()>5")
-    public void sayPreAuthHello(GreeterOuterClass.Person person, StreamObserver<GreeterOuterClass.Person> responseObserver) {
-
-        responseObserver.onNext(person.toBuilder().setNickName("dummy").build());
-        responseObserver.onCompleted();
-
-    }
 
     @Override
     @Secured({})
