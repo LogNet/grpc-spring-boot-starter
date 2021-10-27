@@ -215,23 +215,20 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
                                         METHOD_INVOCATION.get().setArguments(new Object[]{message});
                                         break;
                                     default:
-                                        fail(next,call,headers, new AuthenticationException("Unsupported call type "+call.getMethodDescriptor().getType()) {
-                                        });
+                                        throw  new AuthenticationException("Unsupported call type "+call.getMethodDescriptor().getType()) {};
                                 }
 
                                 beforeInvocation(METHOD_INVOCATION.get());
+                                super.onMessage(message);
                             } catch (AccessDeniedException | AuthenticationException e) {
-                                fail(next, call, headers, e);
-                                return;
+                                failureHandlingSupport.closeCall(e,call,headers);
                             } catch (Exception e) {
-                                fail(next, call, headers, new AuthenticationException("", e) {
-                                });
-                                return;
+                                failureHandlingSupport.closeCall( new AuthenticationException("", e) {},call, headers);
                             } finally {
                                 METHOD_INVOCATION.get().setArguments(null);
                             }
 
-                            super.onMessage(message);
+
                         }
                 );
             }
