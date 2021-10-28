@@ -34,6 +34,7 @@ import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
@@ -113,12 +114,17 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         final Map<GrpcServiceMethodKey, Map.Entry<Object, Method>> map = new HashMap<>();
 
         Function<String, ReflectionUtils.MethodFilter> filterFactory = name ->
-                method -> method.getName().equalsIgnoreCase(name);
+                method ->  method.getName().equalsIgnoreCase(name) ;
 
         for (BindableService service : registry.getBeanNameToServiceBeanMap().values()) {
             for (MethodDescriptor<?, ?> d : service.bindService().getServiceDescriptor().getMethods()) {
+                Class<?> abstractBaseClass = service.getClass();
+                while (!Modifier.isAbstract(abstractBaseClass.getModifiers())){
+                    abstractBaseClass = abstractBaseClass.getSuperclass();
+                }
+
                 final Method method = MethodIntrospector
-                        .selectMethods(service.getClass(), filterFactory.apply(d.getBareMethodName()))
+                        .selectMethods(abstractBaseClass, filterFactory.apply(d.getBareMethodName()))
                         .iterator().next();
                 map.put(new GrpcServiceMethodKey(d),
                         new AbstractMap.SimpleImmutableEntry<>(service, method));
