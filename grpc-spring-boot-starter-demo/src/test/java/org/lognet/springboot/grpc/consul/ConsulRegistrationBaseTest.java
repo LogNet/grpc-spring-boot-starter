@@ -108,7 +108,7 @@ public abstract class ConsulRegistrationBaseTest {
 
 
         final List<HealthService> healthServices = Awaitility.await()
-                .atMost(Duration.ofSeconds(20))
+                .atMost(Duration.ofMinutes(1))
                 .pollInterval(Duration.ofSeconds(3))
                 .until(() -> consulClient.getHealthServices(serviceId, HealthServicesRequest.newBuilder()
                                         .setPassing(true)
