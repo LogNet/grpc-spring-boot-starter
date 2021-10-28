@@ -1,16 +1,13 @@
 package org.lognet.springboot.grpc.security;
 
-import io.grpc.BindableService;
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall;
 import io.grpc.ForwardingServerCallListener;
 import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,6 @@ import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.MethodIntrospector;
 import org.springframework.core.Ordered;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.SecurityMetadataSource;
@@ -31,18 +27,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Slf4j
 public class SecurityInterceptor extends AbstractSecurityInterceptor implements ServerInterceptor, Ordered {
@@ -57,7 +45,9 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
     private GRpcServerProperties.SecurityProperties.Auth authCfg;
 
     private FailureHandlingSupport failureHandlingSupport;
-    private Map<GrpcServiceMethodKey, Map.Entry<Object, Method>> keyedMethods;
+
+    private GRpcServicesRegistry registry;
+
 
     static class GrpcMethodInvocation<ReqT, RespT> extends SimpleMethodInvocation {
         final private ServerCall<ReqT, RespT> call;
@@ -67,8 +57,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         @Setter
         private Object[] arguments;
 
-        public GrpcMethodInvocation(Map.Entry<Object, Method> handler, ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-            super(handler.getKey(), handler.getValue());
+        public GrpcMethodInvocation(GRpcServicesRegistry.GrpcServiceMethod serviceMethod, ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+            super(serviceMethod.getService(), serviceMethod.getMethod());
             this.call = call;
             this.headers = headers;
             this.next = next;
@@ -84,22 +74,7 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         }
     }
 
-    @Getter
-    @EqualsAndHashCode
-    static class GrpcServiceMethodKey {
 
-        public GrpcServiceMethodKey(MethodDescriptor<?, ?> methodDescriptor) {
-            this.serviceName = methodDescriptor.getServiceName();
-            this.methodName = methodDescriptor.getBareMethodName();
-        }
-
-        @EqualsAndHashCode.Include
-        final private String serviceName;
-
-        @EqualsAndHashCode.Include
-        final private String methodName;
-
-    }
 
 
     public SecurityInterceptor(SecurityMetadataSource securityMetadataSource, AuthenticationSchemeSelector schemeSelector) {
@@ -110,28 +85,8 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
 
     @Autowired
     public void setGRpcServicesRegistry(GRpcServicesRegistry registry) {
+        this.registry = registry;
 
-        final Map<GrpcServiceMethodKey, Map.Entry<Object, Method>> map = new HashMap<>();
-
-        Function<String, ReflectionUtils.MethodFilter> filterFactory = name ->
-                method ->  method.getName().equalsIgnoreCase(name) ;
-
-        for (BindableService service : registry.getBeanNameToServiceBeanMap().values()) {
-            for (MethodDescriptor<?, ?> d : service.bindService().getServiceDescriptor().getMethods()) {
-                Class<?> abstractBaseClass = service.getClass();
-                while (!Modifier.isAbstract(abstractBaseClass.getModifiers())){
-                    abstractBaseClass = abstractBaseClass.getSuperclass();
-                }
-
-                final Method method = MethodIntrospector
-                        .selectMethods(abstractBaseClass, filterFactory.apply(d.getBareMethodName()))
-                        .iterator().next();
-                map.put(new GrpcServiceMethodKey(d),
-                        new AbstractMap.SimpleImmutableEntry<>(service, method));
-
-            }
-        }
-        keyedMethods = Collections.unmodifiableMap(map);
     }
 
     @Autowired
@@ -294,9 +249,9 @@ public class SecurityInterceptor extends AbstractSecurityInterceptor implements 
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
 
-        final Map.Entry<Object, Method> methodHandler = keyedMethods.get(new GrpcServiceMethodKey(call.getMethodDescriptor()));
+        final GRpcServicesRegistry.GrpcServiceMethod grpcServiceMethod = registry.getGrpServiceMethod(call.getMethodDescriptor());
 
-        final GrpcMethodInvocation<RespT, ReqT> methodInvocation = new GrpcMethodInvocation<>(methodHandler, call, headers, next);
+        final GrpcMethodInvocation<RespT, ReqT> methodInvocation = new GrpcMethodInvocation<>(grpcServiceMethod , call, headers, next);
         final InterceptorStatusToken interceptorStatusToken = beforeInvocation(methodInvocation);
 
         return Context.current()
