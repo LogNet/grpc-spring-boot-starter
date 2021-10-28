@@ -115,7 +115,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
                     @Override
                     public int vote(Authentication authentication, MethodInvocation method, Collection<ConfigAttribute> attributes) {
                         // first time invoked without arguments
-                        return null==method.getArguments() ? ACCESS_GRANTED: super.vote(authentication, method, attributes);
+                        return null==method.getArguments() ? ACCESS_ABSTAIN: super.vote(authentication, method, attributes);
                     }
                 }
 
