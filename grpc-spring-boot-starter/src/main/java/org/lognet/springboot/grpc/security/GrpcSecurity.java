@@ -118,8 +118,8 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
                         return null==method.getArguments() ? ACCESS_ABSTAIN: super.vote(authentication, method, attributes);
                     }
                 }
-
         ));
+        accessDecisionManager.setAllowIfAllAbstainDecisions(true);
 
         securityInterceptor.setAccessDecisionManager(accessDecisionManager);
         final GRpcServerProperties.SecurityProperties.Auth authCfg = Optional.of(applicationContext.getBean(GRpcServerProperties.class))
