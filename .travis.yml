@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk11
+  - openjdk8
 #sudo: false
 dist: trusty
 before_cache:
