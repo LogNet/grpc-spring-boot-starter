@@ -24,6 +24,7 @@ facets {
     bothPureAndShadedNettyTest
     noConsulDependenciesTest
 }
+
 grpcSpringBoot {
     grpcSpringBootStarterVersion.set((String)null)
 }
@@ -53,25 +54,14 @@ configurations.findAll{ cfg ->
 }
 
 
-configurations {
-    pureNettyTestCompile.extendsFrom( testCompile)
-    pureNettyTestRuntime.extendsFrom(testRuntime)
+extensions.facets.each{
+    if(it.name.endsWith("Test")) {
+        configurations.getByName("${it.name}Compile").extendsFrom(configurations.testCompile)
+        configurations.getByName("${it.name}Runtime").extendsFrom(configurations.testRuntime)
 
-    customSecurityTestCompile.extendsFrom( testCompile)
-    customSecurityTestRuntime.extendsFrom(testRuntime)
-
-    bothPureAndShadedNettyTestCompile.extendsFrom( testCompile)
-    bothPureAndShadedNettyTestRuntime.extendsFrom( testRuntime)
-
-    kafkaStreamTestCompile.extendsFrom( testCompile)
-    kafkaStreamTestRuntime.extendsFrom(testRuntime)
-
-    noConsulDependenciesTestCompile.extendsFrom( testCompile)
-    noConsulDependenciesTestRuntime.extendsFrom(testRuntime)
-
-
+        dependencies.add("${it.name}Compile", sourceSets.test.output)
+    }
 }
-
 
 dependencies {
 
@@ -104,21 +94,16 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
-    customSecurityTestCompile  sourceSets.test.output
 
-    pureNettyTestCompile sourceSets.test.output
     pureNettyTestCompile "io.grpc:grpc-netty"
 
 
-    bothPureAndShadedNettyTestCompile sourceSets.test.output
     bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
 
-    kafkaStreamTestCompile sourceSets.test.output
     kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
     kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
 
 
-    noConsulDependenciesTestCompile sourceSets.test.output
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 
