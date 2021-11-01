@@ -8,11 +8,15 @@ import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +32,9 @@ public enum ServiceRegistrationMode implements ServiceRegistrationStrategy {
         @Override
         public Collection<NewService> createServices(Server grpcServer, ApplicationContext applicationContext) {
             GRpcServerProperties gRpcServerProperties = applicationContext.getBean(GRpcServerProperties.class);
-            ConsulDiscoveryProperties consulProperties = applicationContext.getBean(ConsulDiscoveryProperties.class);
+            ConsulDiscoveryProperties consulProperties = gRpcServerProperties.getConsul().getDiscovery();
+
+
 
             NewService grpcService = new NewService();
             grpcService.setPort(grpcServer.getPort());
@@ -39,7 +45,8 @@ public enum ServiceRegistrationMode implements ServiceRegistrationStrategy {
             grpcService.setName(ConsulAutoRegistration.normalizeForDns(appName));
             grpcService.setId("grpc-" + ConsulAutoRegistration.getInstanceId(consulProperties, applicationContext));
             grpcService.setTags(consulProperties.getTags());
-
+            grpcService.setMeta(getMetadata(consulProperties,gRpcServerProperties));
+            grpcService.setEnableTagOverride(consulProperties.getEnableTagOverride());
             if (consulProperties.isRegisterHealthCheck()) {
 
                 final NewService.Check healthCheck = new NewService.Check();
@@ -54,6 +61,24 @@ public enum ServiceRegistrationMode implements ServiceRegistrationStrategy {
 
 
             return Collections.singleton(grpcService);
+        }
+
+        private Map<String, String> getMetadata(ConsulDiscoveryProperties properties,GRpcServerProperties gRpcServerProperties) {
+            LinkedHashMap<String, String> metadata = new LinkedHashMap<>();
+            if (!CollectionUtils.isEmpty(properties.getMetadata())) {
+                metadata.putAll(properties.getMetadata());
+            }
+
+            if (StringUtils.hasText(properties.getInstanceZone())) {
+                metadata.put(properties.getDefaultZoneMetadataName(), properties.getInstanceZone());
+            }
+            if (StringUtils.hasText(properties.getInstanceGroup())) {
+                metadata.put("group", properties.getInstanceGroup());
+            }
+
+            metadata.put("secure", Boolean.toString(null!=gRpcServerProperties.getSecurity()));
+
+            return metadata;
         }
     },
     SINGLE_SERVER_WITH_CHECK_PER_SERVICE {

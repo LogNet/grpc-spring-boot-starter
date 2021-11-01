@@ -22,6 +22,7 @@ facets {
     kafkaStreamTest
     customSecurityTest
     bothPureAndShadedNettyTest
+    noConsulDependenciesTest
 }
 grpcSpringBoot {
     grpcSpringBootStarterVersion.set((String)null)
@@ -42,6 +43,11 @@ configurations.findAll{ cfg ->
         cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-resource-server'
         cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-jose'
     }
+    if (cfg.name.startsWith("noConsulDependencies")) {
+        cfg.exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-consul-discovery'
+
+    }
+
 
 
 }
@@ -59,6 +65,11 @@ configurations {
 
     kafkaStreamTestCompile.extendsFrom( testCompile)
     kafkaStreamTestRuntime.extendsFrom(testRuntime)
+
+    noConsulDependenciesTestCompile.extendsFrom( testCompile)
+    noConsulDependenciesTestRuntime.extendsFrom(testRuntime)
+
+
 }
 
 
@@ -106,6 +117,8 @@ dependencies {
     kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
     kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
 
+
+    noConsulDependenciesTestCompile sourceSets.test.output
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 

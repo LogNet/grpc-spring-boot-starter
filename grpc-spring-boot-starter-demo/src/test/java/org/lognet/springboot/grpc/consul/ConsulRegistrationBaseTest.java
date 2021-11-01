@@ -21,8 +21,9 @@ import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.consul.discovery.ConsulDiscoveryClient;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
@@ -34,25 +35,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 
 @ActiveProfiles("consul-test")
+@DirtiesContext
 public abstract class ConsulRegistrationBaseTest {
 
     @Autowired
-    protected DiscoveryClient discoveryClient;
+    protected ConsulDiscoveryClient discoveryClient;
 
     @Autowired
     protected ConfigurableApplicationContext applicationContext;
 
     protected final String serviceId = "grpc-grpc-demo";
 
+    @Autowired
     protected ConsulClient consulClient;
+
     private ManagedChannel channel;
 
     @Before
     public void setUp() throws Exception {
-
-        final String port = applicationContext.getEnvironment().getProperty("embedded.consul.port");
-        final String host = applicationContext.getEnvironment().getProperty("embedded.consul.host");
-        consulClient = new ConsulClient(host, Integer.parseInt(port));
 
 
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
@@ -84,9 +84,6 @@ public abstract class ConsulRegistrationBaseTest {
             channel.shutdownNow();
             channel.awaitTermination(1, TimeUnit.SECONDS);
         }
-        // explicitly close the context  to trigger services de-registration
-        // since we share the same instance of Consul between tests
-        applicationContext.stop();
     }
 
     @Test

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
 import org.springframework.util.SocketUtils;
@@ -97,6 +99,8 @@ public class GRpcServerProperties {
     @Setter
     public static class ConsulProperties {
         ServiceRegistrationMode registrationMode = ServiceRegistrationMode.SINGLE_SERVER_WITH_GLOBAL_CHECK;
+        @NestedConfigurationProperty
+        ConsulDiscoveryProperties discovery;
     }
     @Getter
     @Setter
