@@ -1,0 +1,18 @@
+@startuml(id=main)
+!$color = "#orange"
+participant interceptor_1 $color
+
+interceptor_1 -> interceptor_2 :intercept
+interceptor_2 -> interceptor_3 :intercept
+interceptor_3 -> interceptor_3 :intercept
+
+interceptor_1 -> interceptor_2 :onMessage
+interceptor_2 -> interceptor_3 :onMessage
+interceptor_3 -> interceptor_3 :onMessage
+interceptor_3 -> service : actual call
+@enduml
+
+@startuml
+!$color = "#red"
+!include   interceptors.txt!main
+@enduml
