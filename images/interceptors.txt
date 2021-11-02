@@ -13,6 +13,7 @@ interceptor_3 -> service : actual call
 @enduml
 
 @startuml
-!$color = "#red"
-!include   interceptors.txt!main
+' '!$color = "#red"
+' !include   interceptors.txt!main
+Bob -> Alice
 @enduml
