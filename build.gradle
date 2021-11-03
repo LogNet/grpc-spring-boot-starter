@@ -56,10 +56,11 @@ subprojects {
     })
 
 
-    test {
-     //   forkEvery = 1
+    tasks.withType(Test) {
+        //forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
+            showStandardStreams = true
         }
     }
 

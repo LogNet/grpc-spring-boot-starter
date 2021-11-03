@@ -7,15 +7,12 @@ on:
   push:
     branches:
       - master
-      - github-ci
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: checkout project
       uses: actions/checkout@v2
@@ -27,4 +24,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build ; docker images
+      env:
+        GRPC_CONSUL_DISCOVERY_PREFER_IP_ADDRESS: true
+      run: ./gradlew build
