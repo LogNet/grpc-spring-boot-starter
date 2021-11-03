@@ -1,22 +1,124 @@
+' to generate png files : download the latest jar from https://github.com/plantuml/plantuml/releases  and run  java -jar plantuml-1.2021.13.jar intercepts.txt
+
 @startdef(id=main)
-participant interceptor_1 $color
+participant $interceptorName1 as interceptor_1
+participant $interceptorName2 as interceptor_2
+participant $interceptorName3 as interceptor_3
 
-interceptor_1 -> interceptor_2 :intercept
-interceptor_2 -> interceptor_3 :intercept
-interceptor_3 -> interceptor_3 :intercept
+[-> interceptor_1 : start call
+activate interceptor_1
 
-interceptor_1 -> interceptor_2 :onMessage
-interceptor_2 -> interceptor_3 :onMessage
-interceptor_3 -> interceptor_3 :onMessage
-interceptor_3 -> service : actual call
+interceptor_1 $arrow1_2  interceptor_2: $intStyle1_2 intercept $intStyle1_2
+activate interceptor_2
+
+interceptor_2 $arrow2_3 interceptor_3: $intStyle2_3 intercept $intStyle2_3
+activate interceptor_3
+
+interceptor_3 $arrow3_3 interceptor_3: $intStyle3_3 intercept $intStyle3_3
+return  $intReturn2
+return  $intReturn1
+
+deactivate interceptor_3
+deactivate interceptor_2
+[<-  interceptor_1 : $intResponseStyle return listener $intResponseStyle
+deactivate interceptor_1
+
+
+
+[-> interceptor_1 : $reqStyle request $reqStyle
+activate interceptor_1
+
+interceptor_1 $msgArrow1_2 interceptor_2   :$msgStyle1_2 onMessage $msgStyle1_2
+activate interceptor_2
+
+interceptor_2 $msgArrow2_3 interceptor_3   : $msgStyle2_3 onMessage $msgStyle2_3
+activate interceptor_3
+
+interceptor_3 $msgArrow3 service : $msgStyle3 actual call $msgStyle3
+return $msgReturn2
+return $msgReturn1
+[<-  interceptor_1 : $responseStyle response $responseStyle
+
+deactivate interceptor_3
+deactivate interceptor_2
+deactivate interceptor_1
+
 @enddef
 
 @startuml
-!$color = "#red"
+!$arrow1_2  = "->"
+!$arrow2_3  = "->"
+!$arrow3_3  = "->"
+!$intStyle1_2  = ""
+!$intStyle2_3  = ""
+!$intStyle3_3  = ""
+!$msgArrow1_2  = "->"
+!$msgArrow2_3  = "->"
+!$msgArrow3    = "->"
+!$msgStyle1_2  = ""
+!$msgStyle2_3  = ""
+!$msgStyle3    = ""
+!$reqStyle           = ""
+!$responseStyle      = ""
+!$intResponseStyle   = ""
+!$intReturn1   = ""
+!$intReturn2   = ""
+!$msgReturn1  = ""
+!$msgReturn2  = ""
+!$interceptorName1  = "interceptor_1"
+!$interceptorName2  = "interceptor_2"
+!$interceptorName3  = "interceptor_3"
 !includedef  main
 @enduml
 
 @startuml
-!$color = "#Blue"
+!$arrow1_2 = "->"
+!$arrow2_3 = "x->"
+!$arrow3_3 = "x->"
+!$intStyle1_2 = ""
+!$intStyle2_3 = "---"
+!$intStyle3_3 = "---"
+!$msgArrow1_2 = "x->"
+!$msgArrow2_3 = "x->"
+!$msgArrow3 = "x->"
+!$msgStyle1_2 = "---"
+!$msgStyle2_3 = "---"
+!$msgStyle3 = "---"
+!$reqStyle = "---"
+!$responseStyle = "---"
+!$intResponseStyle = "---"
+!$intReturn1 = "close call"
+!$intReturn2 = ""
+!$msgReturn1 = ""
+!$msgReturn2 = ""
+!$interceptorName1 = "interceptor_1"
+!$interceptorName2 = "securityInterceptor"
+!$interceptorName3 = "interceptor_3"
+!includedef  main
+@enduml
+
+@startuml
+!$arrow1_2 = "->"
+!$arrow2_3 = "->"
+!$arrow3_3 = "->"
+!$intStyle1_2= ""
+!$intStyle2_3= ""
+!$intStyle3_3= ""
+!$msgArrow1_2 = "->"
+!$msgArrow2_3 = "x->"
+!$msgArrow3 = "x->"
+!$msgStyle1_2 = ""
+!$msgStyle2_3 = "---"
+!$msgStyle3 = "---"
+!$reqStyle = ""
+!$responseStyle = "---"
+!$intResponseStyle= ""
+!$intReturn1 = ""
+!$intReturn2 = ""
+!$msgReturn1 = "close call"
+!$msgReturn2 = ""
+!$interceptorName1 = "interceptor_1"
+!$interceptorName2 = "securityInterceptor"
+!$interceptorName3 = "interceptor_3"
 !includedef  main
 @enduml
