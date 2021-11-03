@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.8'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.9'
 }
 
 
@@ -683,24 +683,24 @@ By following this approach you also decouple the transport layer and business lo
 === Setup
 
 .Dependencies to implement authentiction scheme (to be added to server-side project)
-[cols="a,a"]
+[cols="1,4"]
 |===
 |Scheme |Dependencies
 
 |Basic
-|
+a|
 * `org.springframework.security:spring-security-config`
 
 
 |Bearer
-|
+a|
 * `org.springframework.security:spring-security-config`
 * `org.springframework.security:spring-security-oauth2-jose`
 * `org.springframework.security:spring-security-oauth2-resource-server`
 
 
 |_Custom_
-|
+a|
 * `org.springframework.security:spring-security-config`
 * `your.custom.lib`
 
@@ -805,6 +805,71 @@ public AuthenticationSchemeSelector myCustomSchemeSelector(){
 
 <<Client side configuration support>> section explains how to pass custom authorization scheme and claim from GRPC client.
 
+=== @PreAuthorize() and @PostAuthorize() support
+Starting from version `4.5.9` you can also use standard `@PreAuthorize` and `@PostAuthorize` annotations on grpc service methods and grpc service types.
+
+.Referencing input/output object in expression
+[cols="1,1,2,6"]
+|===
+|Call Type |Input object ref  |Output object ref | Sample
+
+|Unary +
+(request-response)
+|By parameter name
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#person.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public void unary(Person person, StreamObserver<Assignment> responseObserver) {
+    }
+----
+
+|Input stream, +
+single response
+a|`#p0` or `#a0`
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#p0.getAge()<12")
+@PostAuthorize("returnObject.description.length()>0")
+public StreamObserver<Person> inStream(StreamObserver<Assignment> responseObserver) {
+    }
+----
+
+|Single request, +
+output stream
+|By parameter name
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#person.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public void outStream(Person person, StreamObserver<Assignment> responseObserver) {
+}
+----
+
+|Bidi stream
+|`#p0` or `#a0`
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#p0.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public StreamObserver<Person> bidiStream(StreamObserver<Assignment> responseObserver) {
+}
+----
+|===
+
+
 === Obtaining Authentication details
 
 To obtain  `Authentication` object in the implementation of *secured method*, please use below snippet
@@ -902,9 +967,30 @@ Starting from version `3.3.0`, the starter will auto-register the running grpc s
 
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
 
-Setting `spring.cloud.consul.discovery.register-health-check` to true will register GRPC health check service with Consul.
+`ConsulDiscoveryProperties` are bound from configuration properties prefixed by  `spring.cloud.consul.discovery` and then the values are overwritten by `grpc.consul.discovery` prefixed properties (if set). This allows you to have separate consul discovery configuration for `rest` and `grpc` services if you choose to expose both from your application.
 
-Tags could be set by defining `spring.cloud.consul.discovery.tags` property.
+[source,yml]
+----
+spring:
+  cloud:
+    consul:
+      discovery:
+        metadata:
+          myKey: myValue <1>
+        tags:
+          - myWebTag <2>
+grpc:
+  consul:
+    discovery:
+      tags:
+        - myGrpcTag <3>
+----
+<1> Both `rest` and `grpc` services are registered with metadata `myKey=myValue`
+<2> Rest services are registered with  `myWebTag`
+<3> Grpc services are registered with  `myGrpcTag`
+
+Setting `spring.cloud.consul.discovery.register-health-check` (or `grpc.consul.discovery.register-health-check`) to `true` will register GRPC health check service with Consul.
+
 
 There are 4 supported registration  modes :
 
@@ -915,7 +1001,7 @@ Please note that default implementation https://github.com/grpc/grpc-java/blob/b
 In this mode the running grpc server is registered as single service with check per each discovered `grpc` service.
 . `STANDALONE_SERVICES` +
 In this mode each discovered grpc service is  registered as single service with single check. Each registered service is tagged by its own service name.
-. `NOOP` - no grpc services registered. This mode is usefull if you serve both `rest` and `grpc` services in your application, but for some reason, only `rest` services should be registered with Consul.
+. `NOOP` - no grpc services registered. This mode is useful if you serve both `rest` and `grpc` services in your application, but for some reason, only `rest` services should be registered with Consul.
 
 [source,yml]
 .You can control the desired mode from application.properties

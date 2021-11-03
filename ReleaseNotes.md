@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.9](#version-459)| 1.41.0        |2.5.6               |
 | [4.5.8](#version-458)| 1.41.0        |2.5.0               |
 | [4.5.7](#version-457)| 1.40.1        |2.5.0               |
 | [4.5.6](#version-456)| 1.40.0        |2.5.0               |
@@ -26,6 +27,21 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.9
+## :star: New Features
+
+- Support separate consul discovery properties for grpc and http  services [#250](https://github.com/LogNet/grpc-spring-boot-starter/issues/250)
+- Add metadata to consul service discovery [#249](https://github.com/LogNet/grpc-spring-boot-starter/issues/249)
+- Spring security SPEL expressions support (`@PreAuthorize` and `@PostAuthorize`) [#175](https://github.com/LogNet/grpc-spring-boot-starter/issues/175)
+
+## :lady_beetle: Bug Fixes
+
+- Circular bean dependency since 4.5.8 [#253](https://github.com/LogNet/grpc-spring-boot-starter/issues/253)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade spring boot to  2.5.6 [#255](https://github.com/LogNet/grpc-spring-boot-starter/issues/255)
 
 # Version 4.5.8
 ## :star: New Features
