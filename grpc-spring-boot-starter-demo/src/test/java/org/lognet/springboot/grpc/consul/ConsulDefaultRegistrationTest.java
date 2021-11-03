@@ -48,6 +48,7 @@ public class ConsulDefaultRegistrationTest extends ConsulRegistrationBaseTest{
         ConsulServiceInstance consulServiceInstance = (ConsulServiceInstance) instances.get(0);
         final Map<String, String> metadata = consulServiceInstance.getMetadata();
         assertThat(metadata.get("secure"),Matchers.is(Boolean.FALSE.toString()));
+        assertThat(metadata.get("key1"),Matchers.is("value1"));
         assertThat(consulServiceInstance.getTags(),Matchers.containsInAnyOrder("1","grpc=true","customTagName=A"));
 
 

@@ -15,4 +15,6 @@ spring:
           - a
           - b
         instance-zone: zone1
+        metadata:
+          key1: value1
 
