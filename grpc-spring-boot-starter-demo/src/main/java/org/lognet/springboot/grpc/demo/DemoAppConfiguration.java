@@ -2,11 +2,9 @@ package org.lognet.springboot.grpc.demo;
 
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
-import io.grpc.examples.SecuredCalculatorGrpc;
 import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.annotation.Secured;
 
 @Configuration
 public class DemoAppConfiguration {
@@ -21,7 +19,7 @@ public class DemoAppConfiguration {
 
 
         }
-        static CalculatorOuterClass.CalculatorResponse calculate(CalculatorOuterClass.CalculatorRequest request){
+        public static CalculatorOuterClass.CalculatorResponse calculate(CalculatorOuterClass.CalculatorRequest request){
             CalculatorOuterClass.CalculatorResponse.Builder resultBuilder = CalculatorOuterClass.CalculatorResponse.newBuilder();
             switch (request.getOperation()){
                 case ADD:
@@ -45,17 +43,5 @@ public class DemoAppConfiguration {
 
     }
 
-    @GRpcService(interceptors = NotSpringBeanInterceptor.class)
-    @Secured({})
-    public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
-        @Override
-        public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
-            responseObserver.onNext(CalculatorService.calculate(request));
-            responseObserver.onCompleted();
 
-
-        }
-
-
-    }
 }

@@ -2,6 +2,8 @@ package org.lognet.springboot.grpc.auth;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.examples.CalculatorOuterClass;
+import io.grpc.examples.SecuredCalculatorGrpc;
 import io.grpc.examples.tasks.Assignment;
 import io.grpc.examples.tasks.Person;
 import io.grpc.examples.tasks.TaskServiceGrpc;
@@ -10,9 +12,12 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.demo.DemoAppConfiguration;
 import org.lognet.springboot.grpc.demo.ITaskService;
+import org.lognet.springboot.grpc.demo.NotSpringBeanInterceptor;
 import org.lognet.springboot.grpc.security.AuthCallCredentials;
 import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
@@ -22,6 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -75,6 +81,17 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
 
     @TestConfiguration
     static class TestCfg extends GrpcSecurityConfigurerAdapter {
+        @GRpcService(interceptors = NotSpringBeanInterceptor.class)
+        @PreAuthorize("isAuthenticated()")
+        public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
+            @Override
+            public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
+                responseObserver.onNext(DemoAppConfiguration.CalculatorService.calculate(request));
+                responseObserver.onCompleted();
+
+
+            }
+        }
         @Override
         public void configure(GrpcSecurity builder) throws Exception {
             builder.authorizeRequests()
@@ -118,6 +135,33 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
 
     @MockBean
     private ITaskService service;
+
+    @Test
+    public void preAuthAnnotationOnClassTest() {
+
+
+        final SecuredCalculatorGrpc.SecuredCalculatorBlockingStub stub = SecuredCalculatorGrpc
+                .newBlockingStub(selectedChanel);
+
+        final CalculatorOuterClass.CalculatorResponse response = stub
+                .withCallCredentials(user2Credentials())
+                .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                        .setNumber1(1)
+                        .setNumber2(1)
+                        .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                        .build());
+        assertThat(response.getResult(),Matchers.is(2d));
+
+        final StatusRuntimeException statusRuntimeException = Assert.assertThrows(StatusRuntimeException.class, () -> {
+            stub.withCallCredentials(unAuthUserCredentials())
+                    .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
+                            .setNumber1(1)
+                            .setNumber2(1)
+                            .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                            .build());
+        });
+        assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.UNAUTHENTICATED));
+    }
 
     @Test
     public void unaryPreAuthorizeCallTest() {

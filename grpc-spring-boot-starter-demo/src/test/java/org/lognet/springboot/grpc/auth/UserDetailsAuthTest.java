@@ -10,11 +10,15 @@ import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.SecuredCalculatorGrpc;
+import io.grpc.stub.StreamObserver;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.demo.DemoAppConfiguration;
+import org.lognet.springboot.grpc.demo.NotSpringBeanInterceptor;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
@@ -24,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -45,6 +50,18 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     @TestConfiguration
     static class TestCfg   extends GrpcSecurityConfigurerAdapter {
+
+        @GRpcService(interceptors = NotSpringBeanInterceptor.class)
+        @Secured({})
+        public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
+            @Override
+            public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
+                responseObserver.onNext(DemoAppConfiguration.CalculatorService.calculate(request));
+                responseObserver.onCompleted();
+
+
+            }
+        }
             static final String pwd="strongPassword1";
 
             @Bean
