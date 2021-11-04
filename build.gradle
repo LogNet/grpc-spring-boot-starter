@@ -60,7 +60,7 @@ subprojects {
         //forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
-            showStandardStreams = true
+          //  showStandardStreams = true
         }
     }
 

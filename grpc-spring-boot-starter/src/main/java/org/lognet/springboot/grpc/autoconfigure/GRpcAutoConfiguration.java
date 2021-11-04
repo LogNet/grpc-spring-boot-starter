@@ -13,18 +13,23 @@ import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerInterceptor;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerMethodResolver;
 import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBindHandlerAdvisor;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.AbstractBindHandler;
+import org.springframework.boot.context.properties.bind.BindContext;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.util.SocketUtils;
@@ -42,16 +47,12 @@ import java.util.function.Consumer;
 @AutoConfigureOrder
 @AutoConfigureAfter(ValidationAutoConfiguration.class)
 @ConditionalOnBean(annotation = GRpcService.class)
-@EnableConfigurationProperties({GRpcServerProperties.class})
 @Import({GRpcValidationConfiguration.class,
         NettyServerBuilderSelector.class,
         DefaultHealthStatusService.class
 })
+@Configuration
 public class GRpcAutoConfiguration {
-
-
-    @Autowired
-    private GRpcServerProperties grpcServerProperties;
 
     @Bean
     @OnGrpcServerEnabled
@@ -61,8 +62,8 @@ public class GRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "grpc", name = "inProcessServerName")
-    public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator) {
-        return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(grpcServerProperties.getInProcessServerName()));
+    public GRpcServerRunner grpcInprocessServerRunner(@Qualifier("grpcInternalConfigurator") Consumer<ServerBuilder<?>> configurator,GRpcServerProperties gRpcServerProperties) {
+        return new GRpcServerRunner(configurator, InProcessServerBuilder.forName(gRpcServerProperties.getInProcessServerName()));
     }
 
     @Bean
@@ -94,8 +95,27 @@ public class GRpcAutoConfiguration {
         return new GRpcServerBuilderConfigurer();
     }
 
+    @Bean
+    public GRpcServerProperties gRpcServerProperties(){
+        return  new GRpcServerProperties();
+    }
+
+    @ConditionalOnMissingClass("org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties")
+    @Bean
+    public ConfigurationPropertiesBindHandlerAdvisor skipConsulDiscoveryBinding( ){
+        return  bindHandler-> new AbstractBindHandler(bindHandler) {
+            private final ConfigurationPropertyName grpcConsulConfigProperty = ConfigurationPropertyName.of("grpc.consul");
+            @Override
+            public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+                // otherwise, it will try to instantiate grpc.consul property and discovery field class doesn't exist
+                return grpcConsulConfigProperty.equals(name)? null : super.onStart(name, target, context);
+            }
+        } ;
+    }
+
+
     @Bean(name = "grpcInternalConfigurator")
-    public Consumer<ServerBuilder<?>> configurator(GRpcServerBuilderConfigurer configurer) {
+    public Consumer<ServerBuilder<?>> configurator(GRpcServerBuilderConfigurer configurer,GRpcServerProperties grpcServerProperties) {
         return serverBuilder -> {
             if (grpcServerProperties.isEnabled()) {
                 Optional.ofNullable(grpcServerProperties.getSecurity())
