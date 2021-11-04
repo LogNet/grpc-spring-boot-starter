@@ -1,0 +1,24 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jmx:
+    enabled: false
+  cloud:
+    consul:
+      discovery:
+        enabled: false
+    service-registry:
+      auto-registration:
+        enabled: false
+  application:
+    name: Demo
+
+security:
+  basic:
+    enabled: false
+management:
+  security:
+    enabled: false
+
+grpc:
+  enable-reflection: true

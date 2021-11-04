@@ -1,0 +1,78 @@
+apply plugin: 'com.google.protobuf'
+
+java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().getOrNull())
+        .ifPresent {v->
+            project.dependencies {
+                implementation("io.github.lognet:grpc-spring-boot-starter:${v}")
+            }
+        }
+
+def grpcDeps = ["grpc-netty-shaded","grpc-netty","grpc-services"]
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if ("io.grpc".equalsIgnoreCase(details.requested.group) &&
+            grpcDeps.contains(details.requested.name.toLowerCase())) {
+                details.useVersion grpcSpringBoot.grpcVersion.get()
+        }
+    }
+
+}
+
+
+sourceSets.configureEach{s->
+    java {
+        srcDir project.buildDir.toPath()
+                .resolve("protoGen")
+                .resolve(s.name)
+                .resolve("java")
+                .toFile()
+
+        srcDir project.buildDir.toPath()
+                .resolve("protoGen")
+                .resolve(s.name)
+                .resolve("grpc")
+                .toFile()
+    }
+}
+
+
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcSpringBoot.grpcVersion.get()}"
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                   option "annotate_code"
+                }
+            }
+            task.plugins {
+                grpc {
+
+                }
+            }
+        }
+    }
+
+    generatedFilesBaseDir = "${project.buildDir}/protoGen"
+}
+
+
+
+
+
+
+
+
+
+
+

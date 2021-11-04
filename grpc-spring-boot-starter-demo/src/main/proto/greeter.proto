@@ -8,6 +8,7 @@ option java_package = "io.grpc.examples";
 service Greeter {
     // Sends a greeting
     rpc SayHello ( HelloRequest) returns (  HelloReply) {}
+    rpc SayManyHellos (stream HelloRequest) returns (stream HelloReply) {}
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc SayAuthOnlyHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc HelloPersonValidResponse ( Person) returns (  Person) {}
@@ -17,6 +18,7 @@ service Greeter {
 service SecuredGreeter {
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc SayAuthHello2 ( google.protobuf.Empty) returns (  HelloReply) {}
+
 
 }
 

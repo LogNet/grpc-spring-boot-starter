@@ -1,0 +1,14 @@
+<configuration>
+<include resource="/org/springframework/boot/logging/logback/base.xml"/>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+        <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+        </pattern>
+    </encoder>
+</appender>
+<root level="error">
+    <appender-ref ref="STDOUT"/>
+</root>
+<logger name="org.lognet" level="debug"/>
+<logger name="com.playtika" level="warn"/>
+</configuration>

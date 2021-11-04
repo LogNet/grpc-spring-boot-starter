@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     repositories {
         gradlePluginPortal()
@@ -10,6 +12,12 @@ buildscript {
 }
 plugins {
     id "de.undercouch.download" version "4.1.1"
+    id "com.github.sherter.google-java-format" version "0.9"
+    id "io.github.lognet.grpc-spring-boot"
+
+}
+grpcSpringBoot {
+    grpcSpringBootStarterVersion.set((String)null)
 }
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
@@ -19,6 +27,12 @@ apply plugin: 'signing'
 apply plugin: "de.marcphilipp.nexus-publish"
 apply plugin: 'io.franzbecker.gradle-lombok'
 
+configurations{
+    testCompile {
+        exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
+        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+    }
+}
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
@@ -26,45 +40,67 @@ dependencyManagement {
     }
 }
 task generateReleaseNotes(type: JavaExec, group: "documentation") {
-    def m =  java.util.regex.Pattern.compile("(\\d+\\.\\d+\\.\\d+).*").matcher(version.toString())
+    def m = java.util.regex.Pattern.compile("(\\d+\\.\\d+\\.\\d+).*").matcher(version.toString())
     def milestoneLabel = ""
-    if(m.find()) {
-         milestoneLabel  = m.group(1)
+    if (m.find()) {
+        milestoneLabel = m.group(1)
     }
 
     def generator = file("changelog/github-changelog-generator.jar")
     classpath(generator.absolutePath)
-    args  (
+    args(
             milestoneLabel
-            ,"changelog/changelog.md"
+            , "changelog/changelog.md"
             , "--changelog.repository=LogNet/grpc-spring-boot-starter"
     )
     doFirst {
         download {
-            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.6/github-changelog-generator.jar'
+            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.7/github-changelog-generator.jar'
             dest generator
             onlyIfModified true
         }
     }
 }
 
+lombok {
+    version = "${lombokVersion}"
+}
+
+def delombokOutputDir = file("$buildDir/delombok")
+
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
-    def outputDir = file("$buildDir/delombok")
-    outputs.dir(outputDir)
+    outputs.dir(delombokOutputDir)
     for (srcDir in project.sourceSets.main.java.srcDirs) {
-        inputs.dir(srcDir)
-        args(srcDir, "-d", outputDir)
+        if(srcDir.exists()) {
+            inputs.dir(srcDir)
+            args(srcDir, "-d", delombokOutputDir)
+        }
     }
     doFirst {
-        outputDir.deleteDir()
+        delombokOutputDir.deleteDir()
     }
 }
 
-task sourceJar(type: Jar) {
-    classifier "sources"
-    from delombok
+googleJavaFormat {
+    toolVersion = '1.9'
+    source = delombokOutputDir
+    include '**/*.java'
 }
-
+tasks.verifyGoogleJavaFormat {
+    enabled false
+}
+tasks.googleJavaFormat {
+    dependsOn tasks.delombok
+}
+task sourceJar(type: Jar) {
+    dependsOn(tasks.googleJavaFormat)
+    classifier "sources"
+    from delombokOutputDir
+}
+javadoc {
+    dependsOn tasks.googleJavaFormat
+    source = delombokOutputDir
+}
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier "javadoc"
     from javadoc.destinationDir
@@ -78,7 +114,12 @@ artifacts {
 signing {
     sign configurations.archives
 }
-
+test {
+    useJUnitPlatform {
+//        includeTags 'fast'
+//        excludeTags 'slow'
+    }
+}
 
 nexusPublishing {
     clientTimeout = java.time.Duration.ofMinutes(7)
@@ -87,12 +128,85 @@ nexusPublishing {
     }
 
 }
+task testDependencyFatJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar) {
+    dependsOn testClasses,classes
+
+    mainClass =  'org.lognet.grpc.demo.DemoApp'
+    setClasspath(configurations.testCompile)
+    doFirst {
+        classpath sourceSets.getByName("test").java.outputDir
+        classpath sourceSets.getByName("main").output
+    }
+    archiveClassifier.convention("bootable-test")
+}
+
 jar {
     enabled = true
+    archiveClassifier.convention("")
+
+
+    // generate native config by executing test app in graalvm docker image
+    // then grab generated json files and filter to include class from `org.lognet.springboot.grpc` package only
+    dependsOn testDependencyFatJar
+    File aotDir = new File(buildDir, "native-configs");
+    File transformed = new File(aotDir, "transformed")
+    transformed.mkdirs()
+    from(transformed) {
+        into("META-INF/native-image/io.github.lognet/grpc-spring-boot-starter")
+        include "*.*"
+    }
+    doFirst {
+        exec {
+            commandLine("docker",
+                    "run", "--rm",
+                    "-v", "${tasks.testDependencyFatJar.archiveFile.get().getAsFile().parent}:/tmp",
+                    "-v", "${aotDir}:/out",
+                    "findepi/graalvm:java11-native",
+                    "java",
+                    "-agentlib:native-image-agent=config-output-dir=/out/",
+                    "-jar", "/tmp/${tasks.testDependencyFatJar.archiveFileName.get()}",
+                    "--auto-close=true",
+                    "--spring.cloud.consul.discovery.enabled=false",
+                    "--spring.cloud.consul.enabled=false",
+                    "--spring.cloud.service-registry.auto-registration.enabled=false"
+            )
+        }
+        new File(transformed, "reflection-config.json").withWriter { w ->
+            new File(aotDir, "reflect-config.json").withInputStream { is ->
+                def filtered = new JsonSlurper().parse(is)
+                        .findAll { it.name.contains("org.lognet.springboot.grpc") }
+                def finalJson = new groovy.json.JsonBuilder()
+                finalJson.call(filtered)
+                finalJson.writeTo(w)
+            }
+        }
+        new File(transformed, "resource-config.json").withWriter { w ->
+            new File(aotDir, "resource-config.json").withInputStream { is ->
+                def obj = new JsonSlurper().parse(is)
+
+                def filtered = obj.resources.includes
+                        .findAll { it.pattern.contains("org/lognet/springboot/grpc") }
+
+                def finalJson = new groovy.json.JsonBuilder()
+                finalJson{
+                    resources{
+                        includes (filtered)
+                    }
+                }
+                finalJson.writeTo(w)
+
+            }
+        }
+
+    }
+
 }
+
+
 
 bootJar {
     enabled = false
+    archiveClassifier.convention('boot')
 }
 publishing {
     publications {
@@ -139,6 +253,7 @@ publishing {
     }
 }
 
+
 signing {
     required {
         // signing is required if this is a release version and the artifacts are to be published
@@ -167,7 +282,25 @@ dependencies {
     compileOnly 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
 
+    testCompile "io.grpc:grpc-netty"
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+
 }
-compileJava.dependsOn(processResources)
+
+
+if (null != System.getenv("CI")) {
+    compileJava {
+        dependsOn(processResources, tasks.googleJavaFormat)
+        source googleJavaFormat.source
+        include { FileTreeElement e ->
+            def included = true
+            if (e.name.toLowerCase().endsWith("java")) {
+                included = e.file.absolutePath.startsWith(delombokOutputDir.absolutePath)
+            }
+
+            return included
+        }
+    }
+}
 
 

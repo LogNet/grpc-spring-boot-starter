@@ -1,19 +1,21 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven { url 'http://repo.spring.io/plugins-release' }
         maven { url "https://plugins.gradle.org/m2/" }
 
+        maven { url 'https://repo.spring.io/snapshot' }
+
+
     }
     dependencies {
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5"
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.11'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:${gradleErrorPronePluginVersion}"
     }
 }
+
+
 
 allprojects { pr ->
     pr['signing.keyId'] = System.getenv('GPG_ID')
@@ -30,9 +32,11 @@ apply from: "${rootDir}/publishSonatype.gradle"
 allprojects {
     repositories {
         mavenCentral()
-        jcenter()
-        maven { url "https://repo.spring.io/milestone" }
+        maven { url 'https://repo.spring.io/release' }
         maven { url "https://jitpack.io" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url "https://repo.spring.io/milestone" }
 
     }
 }
@@ -41,24 +45,42 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'jacoco'
+    apply plugin: 'net.ltgt.errorprone'
 
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 
-    test {
-        forkEvery = 1
+    tasks.withType(JavaCompile,{
+        options.compilerArgs.addAll(["--release", "8"]) // jdk 11 flag
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    })
+
+
+    tasks.withType(Test) {
+        //forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
+          //  showStandardStreams = true
         }
     }
 
 
     dependencies {
         ["annotationProcessor", "testAnnotationProcessor", "compileOnly", "testCompileOnly"].each { conf ->
-            add(conf, "org.projectlombok:lombok:1.18.12")
+            add(conf, "org.projectlombok:lombok:${lombokVersion}")
         }
+        errorprone("com.google.errorprone:error_prone_core:${errorProneVersion}")
    }
+    tasks.withType(JavaCompile).configureEach {
+        options.errorprone.disableWarningsInGeneratedCode = true
+
+        options.errorprone.enabled  = (it.name.startsWith("compile") && it.name.endsWith("TestJava") ) ? false:(null != System.getenv("CI"))
+
+
+    }
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
 
 }
 
@@ -67,10 +89,6 @@ task codeCoverageReport(type: JacocoReport) {
 
     sourceSets (project('grpc-spring-boot-starter').sourceSets.main
             ,project('grpc-client-spring-boot-starter').sourceSets.main)
-
-    //subprojects.each {
-    //sourceSets it.sourceSets.main
-    //}
 
     reports {
         xml.enabled true
@@ -83,5 +101,9 @@ task codeCoverageReport(type: JacocoReport) {
 codeCoverageReport.dependsOn {
     subprojects*.test
 }
-
+subprojects {
+    tasks.withType(Test,{t->
+        t.environment.put("TESTCONTAINERS_REUSE_ENABLE","true")
+    })
+}
 

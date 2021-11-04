@@ -10,14 +10,17 @@ import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.SecuredCalculatorGrpc;
+import io.grpc.stub.StreamObserver;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.demo.DemoAppConfiguration;
+import org.lognet.springboot.grpc.demo.NotSpringBeanInterceptor;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +28,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 
-@SpringBootTest(classes = DemoApp.class)
+@SpringBootTest(classes = DemoApp.class,webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
 @Import({UserDetailsAuthTest.TestCfg.class})
 public class UserDetailsAuthTest extends GrpcServerTestBase {
@@ -49,18 +51,24 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     @TestConfiguration
     static class TestCfg   extends GrpcSecurityConfigurerAdapter {
 
+        @GRpcService(interceptors = NotSpringBeanInterceptor.class)
+        @Secured({})
+        public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
+            @Override
+            public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
+                responseObserver.onNext(DemoAppConfiguration.CalculatorService.calculate(request));
+                responseObserver.onCompleted();
 
-            static final String pwd="strongPassword1";
-            @Bean
-            public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
+
             }
+        }
+            static final String pwd="strongPassword1";
 
             @Bean
             public UserDetails user() {
-                return User.
-                        withUsername("user1")
-                        .password(passwordEncoder().encode(pwd))
+                return User.withDefaultPasswordEncoder()
+                        .username("user1")
+                        .password(pwd)
                         .roles("reader")
                         .build();
             }
@@ -68,14 +76,12 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
             @Override
             public void configure(GrpcSecurity builder) throws Exception {
-
-
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
                         .withSecuredAnnotation()
-                        .userDetailsService(new InMemoryUserDetailsManager(user()));
+                        .userDetailsService(new InMemoryUserDetailsManager(builder.getApplicationContext().getBean(UserDetails.class)));
 
             }
 
@@ -101,17 +107,20 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     }
 
+
+
     @Test
     public void shouldFailWithPermissionDenied() {
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () -> {
-            CalculatorGrpc
+            final CalculatorOuterClass.CalculatorResponse response = CalculatorGrpc
                     .newBlockingStub(selectedChanel) //auth channel
                     .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
-                    .setNumber1(1)
-                    .setNumber2(1)
-                    .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
-                    .build());
+                            .setNumber1(1)
+                            .setNumber2(1)
+                            .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                            .build());
+            System.out.println(response);
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
     }

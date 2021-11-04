@@ -1,32 +1,29 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
 import io.grpc.ServerInterceptors;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.health.v1.HealthCheckResponse;
+import io.grpc.health.v1.HealthGrpc;
 import io.grpc.protobuf.services.ProtoReflectionService;
-import io.grpc.services.HealthStatusManager;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
+import org.lognet.springboot.grpc.health.ManagedHealthStatusService;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -41,15 +38,18 @@ import java.util.stream.Stream;
 @Slf4j
 public class GRpcServerRunner implements SmartLifecycle {
 
-    private AtomicBoolean isRunning = new AtomicBoolean(false);
-    @Autowired
-    private HealthStatusManager healthStatusManager;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
+
+    private Optional<ManagedHealthStatusService> healthStatusManager = Optional.empty();
 
     @Autowired
     private AbstractApplicationContext applicationContext;
 
     @Autowired
     private GRpcServerProperties gRpcServerProperties;
+
+    @Autowired
+    private GRpcServicesRegistry registry;
 
     private final Consumer<ServerBuilder<?>> configurator;
 
@@ -67,33 +67,50 @@ public class GRpcServerRunner implements SmartLifecycle {
 
     @Override
     public void start() {
-        if(isRunning()){
+        if (isRunning()) {
             return;
         }
         log.info("Starting gRPC Server ...");
         latch = new CountDownLatch(1);
         try {
-            Collection<ServerInterceptor> globalInterceptors = getBeanNamesByTypeWithAnnotation(GRpcGlobalInterceptor.class, ServerInterceptor.class)
-                    .map(name -> applicationContext.getBeanFactory().getBean(name, ServerInterceptor.class))
-                    .collect(Collectors.toList());
+            Collection<ServerInterceptor> globalInterceptors = registry.getGlobalInterceptors();
 
-            // Adding health service
-            serverBuilder.addService(healthStatusManager.getHealthService());
 
             // find and register all GRpcService-enabled beans
-            getBeanNamesByTypeWithAnnotation(GRpcService.class, BindableService.class)
-                    .forEach(name -> {
-                        BindableService srv = applicationContext.getBeanFactory().getBean(name, BindableService.class);
+            List<String> serviceNames = new ArrayList<>();
+
+            registry.getBeanNameToServiceBeanMap()
+                    .forEach((name,srv) -> {
                         ServerServiceDefinition serviceDefinition = srv.bindService();
                         GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name, GRpcService.class);
                         serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
                         serverBuilder.addService(serviceDefinition);
-                        String serviceName = serviceDefinition.getServiceDescriptor().getName();
-                        healthStatusManager.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING);
+
+                        if (srv instanceof HealthGrpc.HealthImplBase) {
+                            if(!(srv instanceof ManagedHealthStatusService)){
+                                throw new FatalBeanException(String.format("Please inherit %s from %s rather than directly from %s",
+                                        srv.getClass().getName(),
+                                        ManagedHealthStatusService.class.getName(),
+                                        HealthGrpc.HealthImplBase.class.getName()
+                                        ));
+                            }
+                            if(healthStatusManager.isPresent()){
+                                throw new FatalBeanException(String.format("Only 1 single %s service instance is allowed",ManagedHealthStatusService.class.getName()));
+                            }else {
+                                healthStatusManager = Optional.of((ManagedHealthStatusService) srv);
+                            }
+                        } else {
+                            serviceNames.add(serviceDefinition.getServiceDescriptor().getName());
+                        }
+
 
                         log.info("'{}' service has been registered.", srv.getClass().getName());
 
                     });
+
+            healthStatusManager.ifPresent(h ->
+                    serviceNames.forEach(serviceName -> h.setStatus(serviceName, HealthCheckResponse.ServingStatus.SERVING))
+            );
 
             if (gRpcServerProperties.isEnableReflection()) {
                 serverBuilder.addService(ProtoReflectionService.newInstance());
@@ -102,12 +119,13 @@ public class GRpcServerRunner implements SmartLifecycle {
 
             configurator.accept(serverBuilder);
             server = serverBuilder.build().start();
-            applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
-
-            log.info("gRPC Server started, listening on port {}.", server.getPort());
+            isRunning.set(true);
             startDaemonAwaitThread();
-        }catch (Exception e){
-            throw  new RuntimeException("Failed to start GRPC server",e);
+            log.info("gRPC Server started, listening on port {}.", server.getPort());
+
+            applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to start GRPC server", e);
         }
 
     }
@@ -125,8 +143,8 @@ public class GRpcServerRunner implements SmartLifecycle {
                 });
 
         List<ServerInterceptor> interceptors = Stream.concat(
-                gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
-                privateInterceptors)
+                        gRpcService.applyGlobalInterceptors() ? globalInterceptors.stream() : Stream.empty(),
+                        privateInterceptors)
                 .distinct()
                 .sorted(serverInterceptorOrderComparator())
                 .collect(Collectors.toList());
@@ -143,12 +161,12 @@ public class GRpcServerRunner implements SmartLifecycle {
                             .filter(RootBeanDefinition.class::isInstance)
                             .map(RootBeanDefinition.class::cast);
 
-                            rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
-                                    .ifPresent(sources::add);
+                    rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
+                            .ifPresent(sources::add);
 
-                            rootBeanDefinition.map(RootBeanDefinition::getTargetType)
-                                    .filter(t -> t != o.getClass())
-                                    .ifPresent(sources::add);
+                    rootBeanDefinition.map(RootBeanDefinition::getTargetType)
+                            .filter(t -> t != o.getClass())
+                            .ifPresent(sources::add);
 
                     return sources.toArray();
                 })
@@ -158,11 +176,11 @@ public class GRpcServerRunner implements SmartLifecycle {
     private void startDaemonAwaitThread() {
         Thread awaitThread = new Thread(() -> {
             try {
-                isRunning.set(true);
+
                 latch.await();
             } catch (InterruptedException e) {
                 log.error("gRPC server awaiter interrupted.", e);
-            }finally {
+            } finally {
                 isRunning.set(false);
             }
         });
@@ -175,7 +193,8 @@ public class GRpcServerRunner implements SmartLifecycle {
     public void stop() {
         Optional.ofNullable(server).ifPresent(s -> {
             log.info("Shutting down gRPC server ...");
-            s.getServices().forEach(def -> healthStatusManager.clearStatus(def.getServiceDescriptor().getName()));
+            healthStatusManager.ifPresent(ManagedHealthStatusService::onShutdown);
+
             s.shutdown();
             int shutdownGrace = gRpcServerProperties.getShutdownGrace();
             try {
@@ -195,23 +214,7 @@ public class GRpcServerRunner implements SmartLifecycle {
 
     }
 
-    private <T> Stream<String> getBeanNamesByTypeWithAnnotation(Class<? extends Annotation> annotationType, Class<T> beanType) throws Exception {
 
-        return Stream.of(applicationContext.getBeanNamesForType(beanType))
-                .filter(name -> {
-                    final BeanDefinition beanDefinition = applicationContext.getBeanFactory().getBeanDefinition(name);
-                    final Map<String, Object> beansWithAnnotation = applicationContext.getBeansWithAnnotation(annotationType);
-
-                    if (beansWithAnnotation.containsKey(name)) {
-                        return true;
-                    } else if (beanDefinition.getSource() instanceof AnnotatedTypeMetadata) {
-                        return AnnotatedTypeMetadata.class.cast(beanDefinition.getSource()).isAnnotated(annotationType.getName());
-
-                    }
-
-                    return false;
-                });
-    }
 
 
     @Override

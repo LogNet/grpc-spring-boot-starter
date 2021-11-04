@@ -6,7 +6,7 @@ import io.grpc.ServerInterceptor;
 import io.grpc.ServerMethodDefinition;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.ServiceDescriptor;
-import org.springframework.context.ApplicationContext;
+import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -28,8 +28,8 @@ public class GrpcServiceAuthorizationConfigurer
 
     private final GrpcServiceAuthorizationConfigurer.Registry registry;
 
-    public GrpcServiceAuthorizationConfigurer(ApplicationContext context) {
-        this.registry = new GrpcServiceAuthorizationConfigurer.Registry(context);
+    public GrpcServiceAuthorizationConfigurer(GRpcServicesRegistry registry) {
+        this.registry = new GrpcServiceAuthorizationConfigurer.Registry(registry);
     }
 
     public Registry getRegistry() {
@@ -39,7 +39,7 @@ public class GrpcServiceAuthorizationConfigurer
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
         registry.processSecuredAnnotation();
-        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.securedMethods));
+        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.servicesRegistry,registry.securedMethods));
     }
 
 
@@ -86,15 +86,15 @@ public class GrpcServiceAuthorizationConfigurer
     public class Registry {
 
         private MultiValueMap<MethodDescriptor<?, ?>, ConfigAttribute> securedMethods = new LinkedMultiValueMap<>();
-        private ApplicationContext context;
+        GRpcServicesRegistry servicesRegistry;
         private boolean withSecuredAnnotation = true;
 
-        Registry(ApplicationContext context) {
-            this.context = context;
+        Registry(GRpcServicesRegistry servicesRegistry) {
+            this.servicesRegistry = servicesRegistry;
         }
 
         public AuthorizedMethod anyMethod() {
-            ServiceDescriptor[] allServices = context.getBeansOfType(BindableService.class)
+            ServiceDescriptor[] allServices = servicesRegistry.getBeanNameToServiceBeanMap()
                     .values()
                     .stream()
                     .map(BindableService::bindService)
@@ -122,7 +122,7 @@ public class GrpcServiceAuthorizationConfigurer
 
         private void processSecuredAnnotation() {
             if (withSecuredAnnotation) {
-                final Collection<BindableService> services = context.getBeansOfType(BindableService.class).values();
+                final Collection<BindableService> services = servicesRegistry.getBeanNameToServiceBeanMap().values();
 
                 for (BindableService service : services) {
                     final ServerServiceDefinition serverServiceDefinition = service.bindService();

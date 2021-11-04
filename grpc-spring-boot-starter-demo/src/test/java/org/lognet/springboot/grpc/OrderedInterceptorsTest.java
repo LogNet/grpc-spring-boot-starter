@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.OrderedInterceptorsTest.TheConfiguration;
-import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -36,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("disable-security")
 public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
-  @LocalRunningGrpcPort
-  int runningPort;
+
 
   private static List<Integer> calledInterceptors = new ArrayList<>();
 
@@ -57,7 +55,7 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
 
   @Override
   protected void afterGreeting() {
-    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 7,10,10, 100);
+    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 7,8,10,10, 100);
   }
 
 
@@ -203,6 +201,23 @@ public class OrderedInterceptorsTest extends GrpcServerTestBase{
          return 5;
        }
      }
+
+
+
+    @Bean
+    @Order(8)
+    @GRpcGlobalInterceptor
+    public  ServerInterceptor my8thInterceptor(){
+      return new My8Interceptor();
+    }
+
+    static class My8Interceptor implements ServerInterceptor {
+      @Override
+      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+        calledInterceptors.add(8);
+        return next.startCall(call, headers);
+      }
+    }
 
   }
 }

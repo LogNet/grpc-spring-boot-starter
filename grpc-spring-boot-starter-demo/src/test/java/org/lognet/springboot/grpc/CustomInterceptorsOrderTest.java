@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
-import org.lognet.springboot.grpc.security.EnableGrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.lognet.springboot.grpc.security.SecurityInterceptor;
@@ -35,8 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -57,7 +54,9 @@ import static org.mockito.Mockito.when;
                 "grpc.security.auth.interceptor-order=3", //third
                 "grpc.metrics.interceptor-order=2", //second
                 "grpc.validation.interceptor-order=1" //first
-        })
+        }
+        ,webEnvironment = SpringBootTest.WebEnvironment.NONE
+        )
 @RunWith(SpringRunner.class)
 @Import({CustomInterceptorsOrderTest.TestCfg.class})
 public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
@@ -114,20 +113,13 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
 
     @TestConfiguration
     static class TestCfg  extends GrpcSecurityConfigurerAdapter {
-
-
             static final String pwd = "strongPassword1";
 
             @Bean
-            public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-            }
-
-            @Bean
             public UserDetails user() {
-                return User.
-                        withUsername("user1")
-                        .password(passwordEncoder().encode(pwd))
+                return User.withDefaultPasswordEncoder()
+                        .username("user1")
+                        .password(pwd)
                         .roles("reader")
                         .build();
             }
@@ -137,6 +129,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
             public void configure(GrpcSecurity builder) throws Exception {
 
 
+                final UserDetails user = builder.getApplicationContext().getBean(UserDetails.class);
                 builder.authorizeRequests()
                         .anyMethod().authenticated()
                         .and()
@@ -154,7 +147,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
                                 return true;
                             }
                         })
-                        .userDetailsService(new InMemoryUserDetailsManager(user()));
+                        .userDetailsService(new InMemoryUserDetailsManager(user ));
             }
 
 

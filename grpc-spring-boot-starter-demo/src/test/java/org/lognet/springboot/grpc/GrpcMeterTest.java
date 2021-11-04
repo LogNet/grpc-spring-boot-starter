@@ -5,13 +5,16 @@ import io.grpc.MethodDescriptor;
 import io.grpc.Status;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
+import io.grpc.stub.StreamObserver;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.simple.SimpleConfig;
+import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.prometheus.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.autoconfigure.metrics.RequestAwareGRpcMetricsTagsContributor;
 import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
@@ -28,8 +31,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
+import static io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
@@ -48,7 +54,7 @@ public class GrpcMeterTest extends GrpcServerTestBase {
         public RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.HelloRequest> helloContributor(){
             return new RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.HelloRequest>(GreeterOuterClass.HelloRequest.class) {
                 @Override
-                public Iterable<Tag> getTags(GreeterOuterClass.HelloRequest request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes) {
+                public Iterable<Tag> addTags(GreeterOuterClass.HelloRequest request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Tags tags) {
                     return Collections.singletonList(Tag.of("hello",request.getName()));
                 }
 
@@ -62,13 +68,33 @@ public class GrpcMeterTest extends GrpcServerTestBase {
         public RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.Person> shouldNotBeInvoked(){
             return new RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.Person>(GreeterOuterClass.Person.class) {
                 @Override
-                public Iterable<Tag> getTags(GreeterOuterClass.Person request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes) {
+                public Iterable<Tag> addTags(GreeterOuterClass.Person request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Tags tags) {
                     return Collections.emptyList();
                 }
 
                 @Override
                 public Iterable<Tag> getTags(Status status, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes) {
                     return Collections.emptyList();
+                }
+            };
+        }
+
+        @Bean
+        public RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.HelloRequest> multiHelloContributor() {
+            return new RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.HelloRequest>(GreeterOuterClass.HelloRequest.class, BIDI_STREAMING) {
+                @Override
+                public Tags addTags(GreeterOuterClass.HelloRequest request, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes, Tags existingTags) {
+                    String existingTag = existingTags.stream()
+                        .filter(tag -> tag.getKey().equals("many-hellos"))
+                        .findAny()
+                        .map(Tag::getValue)
+                        .orElse("");
+                    return Tags.of("many-hellos", existingTag.isEmpty() ? request.getName() : existingTag + ", " + request.getName());
+                }
+
+                @Override
+                public Iterable<Tag> getTags(Status status, MethodDescriptor<?, ?> methodDescriptor, Attributes attributes) {
+                    return Collections.singletonList(Tag.of("endTag", status.getCode().name()));
                 }
             };
         }
@@ -131,10 +157,41 @@ public class GrpcMeterTest extends GrpcServerTestBase {
 
         Mockito.verify(shouldNotBeInvoked,Mockito.times(1)).getTags(Mockito.any(Status.class),Mockito.any(),Mockito.any());
         Mockito.verify(shouldNotBeInvoked,Mockito.never()).getTags(Mockito.any(GreeterOuterClass.Person.class),Mockito.any(),Mockito.any());
+        Mockito.verify(shouldNotBeInvoked, Mockito.never())
+            .addTags(Mockito.any(GreeterOuterClass.Person.class), Mockito.any(), Mockito.any(), Mockito.any());
+    }
 
+    @Test
+    public void tagsForStream() {
+        final GreeterGrpc.GreeterStub greeterFutureStub = GreeterGrpc.newStub(selectedChanel);
+        io.grpc.stub.StreamObserver<GreeterOuterClass.HelloRequest> helloInput =
+            greeterFutureStub.sayManyHellos(new StreamObserver<GreeterOuterClass.HelloReply>() {
+                @Override
+                public void onNext(GreeterOuterClass.HelloReply value) {}
 
+                @Override
+                public void onError(Throwable t) {}
 
+                @Override
+                public void onCompleted() {}
+            });
+        Stream.of("a", "b", "c", "d")
+            .map(name -> GreeterOuterClass.HelloRequest.newBuilder().setName(name).build())
+            .forEach(helloInput::onNext);
+        helloInput.onCompleted();
 
+        final Timer timer = Awaitility
+            .waitAtMost(Duration.ofMillis(registryConfig.step().toMillis() * 2))
+            .ignoreExceptionsInstanceOf(MeterNotFoundException.class)
+            .until(
+                () -> registry.get("grpc.server.calls")
+                    .tags("method", GreeterGrpc.getSayManyHellosMethod().getFullMethodName())
+                    .timer(),
+                Objects::nonNull
+            );
 
+        assertThat(timer.totalTime(TimeUnit.MILLISECONDS), greaterThan(0d));
+        assertThat(timer.getId().getTag("many-hellos"), is("a, b, c, d"));
+        assertThat(timer.getId().getTag("endTag"), is(Status.OK.getCode().name()));
     }
 }

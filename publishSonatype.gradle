@@ -10,9 +10,12 @@ nexusStaging{
 }
 
 def isRelease  = !(version ==~ /.*SNAPSHOT/)
-[closeAndReleaseRepository,closeRepository,releaseRepository].each { t ->
-    t.onlyIf {
-        isRelease
+["closeAndReleaseRepository","closeRepository","releaseRepository","publishPlugins"].each { name ->
+    Task t = tasks.findByName(name)
+    if(null!=t) {
+        t.onlyIf {
+            isRelease
+        }
     }
 }
 

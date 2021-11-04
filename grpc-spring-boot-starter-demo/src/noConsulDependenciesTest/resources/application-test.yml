@@ -1,0 +1,6 @@
+grpc:
+  consul:
+    registration-mode: noop
+    discovery:
+      tags:
+         - dummy

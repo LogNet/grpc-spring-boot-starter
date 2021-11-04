@@ -1,0 +1,7 @@
+embedded:
+  consul:
+    enabled: true
+  containers:
+    enabled: true
+
+

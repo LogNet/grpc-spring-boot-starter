@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc.security;
 
 import lombok.Getter;
+import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -8,8 +9,6 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-
-import java.util.Map;
 
 public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigurer<GrpcSecurity> {
 
@@ -39,7 +38,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
     @Override
     public void init(GrpcSecurity builder) throws Exception {
-        builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext()));
+        builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext().getBean(GRpcServicesRegistry.class)));
         builder.setSharedObject(AuthenticationManagerBuilder.class, authenticationManagerBuilder);
         final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
 

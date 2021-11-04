@@ -9,7 +9,7 @@ endif::[]
 :toc:
 
 image:https://img.shields.io/maven-central/v/io.github.lognet/grpc-spring-boot-starter.svg?label=Maven%20Central[link=https://search.maven.org/search?q=g:%22io.github.lognet%22%20AND%20a:%22grpc-spring-boot-starter%22]
-image:https://travis-ci.org/LogNet/grpc-spring-boot-starter.svg?branch=master[Build Status,link=https://travis-ci.org/LogNet/grpc-spring-boot-starter]
+image:https://app.travis-ci.com/LogNet/grpc-spring-boot-starter.svg?branch=master["Build Status", link="https://app.travis-ci.com/LogNet/grpc-spring-boot-starter"]
 image:https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master/graph/badge.svg["Codecov",link="https://codecov.io/gh/LogNet/grpc-spring-boot-starter/branch/master"]
 Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",width="24", link="https://www.octotree.io"]
 
@@ -22,13 +22,13 @@ Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",w
 
 == Features
 
-Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application. +
-
-[IMPORTANT]
-Starting from release `4.0.0` the starter is compiled and tested against Spring Boot *2.X.X* only, +
-*1.5.X* Spring boot version support is dropped to allow tight Spring Boot Security framework integration.
+Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application (https://github.com/LogNet/grpc-spring-boot-starter/blob/master/images/demo.gif[short video])
 
 == Setup
+
+
+[IMPORTANT]
+Make sure to check out the link:./grpc-spring-boot-starter-gradle-plugin/README.adoc[io.github.lognet.grpc-spring-boot^]   gradle plugin that dramatically simplifies the project setup.
 
 [source,groovy]
 ----
@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.9'
 }
 
 
@@ -48,12 +48,14 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.4.7') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.5.9') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
- compile 'io.grpc:grpc-netty:1.37.0' // <1>
+ compile 'io.grpc:grpc-netty:1.41.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
+
+Both libraries' presence on classpath is also xref:_netty_server[supported] with `grpc.netty-server.on-collision-prefer-shaded-netty` property.
 
 If you are using Spring Boot Dependency Management plugin, it might pull not the same version as the version this started was compiled against, causing binary incompatibility issue. +
 In  this case you'll need to forcibly and explicitly set the  `grpc` version to use (see link:ReleaseNotes.md[version matrix here^] ):
@@ -68,10 +70,6 @@ configurations.all {
     }
 }
 ----
-
-[IMPORTANT]
-Starting from release `3.0.0` the artifacts are published to *maven central*.
-Pay attention that `group` has changed from `org.lognet` to `io.github.lognet`.
 
 [NOTE]
 The release notes with compatibility matrix can be found link:ReleaseNotes.md[here^]
@@ -124,6 +122,7 @@ Default value is `0` (means don't wait).
 * link:grpc-spring-boot-starter/src/main/java/org/lognet/springboot/grpc/autoconfigure/GRpcServerProperties.java[Netty-specific server properties] can be specified under `grpc.netty-server` prefix. +
 By configuring one of the `grpc.netty-server.xxxx` values you are implicitly setting transport to be Netty-based.
 
+[[_netty_server]]
 [source,yaml]
 ----
 grpc:
@@ -133,7 +132,7 @@ grpc:
     primary-listen-address: 10.10.15.23:0 <3>
     additional-listen-addresses:
       - 192.168.0.100:6767 <4>
-
+    on-collision-prefer-shaded-netty: false <5>
 
 ----
 <1> `Duration` type properties can be configured with string value format described https://github.com/spring-projects/spring-boot/blob/master/spring-boot-project/spring-boot/src/main/java/org/springframework/boot/convert/DurationStyle.java[here].
@@ -143,6 +142,7 @@ grpc:
 * `host:port` (if `port` value is less than 1, uses random value)
 * `host:`  (uses default grpc port, `6565` )
 <4> Exposed on internal network IP as well with predefined port `6767`.
+<5> In case you have both `shaded` and `pure` netty libraries in dependencies, pick the `NettyServerBuilder` type that should be created. This is the type that will be passed to `GRpcServerBuilderConfigurer` (see <<Custom gRPC Server Configuration>>), defaults to `true`(i.e. `io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder`; `io.grpc.netty.NettyServerBuilder` if `false`)
 
 The starter supports also the `in-process server`, which should be used for testing purposes :
 
@@ -173,7 +173,7 @@ service Greeter {
 }
 ----
 
-Note the generated `io.grpc.examples.GreeterGrpc.GreeterImplBase` class that extends `io.grpc.BindableService`.(The generated classes were intentionally committed for demo purposes).
+Note the generated `io.grpc.examples.GreeterGrpc.GreeterImplBase` class that extends `io.grpc.BindableService`.
 
 All you need to do is to annotate your service implementation with `@org.lognet.springboot.grpc.GRpcService`
 
@@ -266,24 +266,23 @@ public  class B implements ServerInterceptor{
 }
 ----
 
-The starter uses built-in interceptors to implement Spring `Security`, `Validation` and `Metrics` integration.
+The starter uses built-in interceptors to implement error handling, Spring `Security`, `Validation` and `Metrics` integration.
 Their order can also be controlled by below properties :
 
-* `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE`)
+* `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+1`)
 * `grpc.validation.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+10`)
 * `grpc.metrics.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+20`)
 
-This gives you the ability to setup the desired order of built-in and your custom interceptors.
+This gives you the ability to set up the desired order of built-in and your custom interceptors.
+
+Error handling interceptor has the `Ordered.HIGHEST_PRECEDENCE`.
 
 *Keep on reading !!! There is more*
 
 The way grpc interceptor works is that it intercepts the call and returns the server call listener, which in turn can intercept the request message as well, before forwarding it to the actual service call handler :
 
-****
-`interceptor_1(interceptCall)` -> `interceptor_2(interceptCall)` -> `interceptor_3(interceptCall)` -> +
-`interceptor_1(On_Message)`-> `interceptor_2(On_Message)`-> `interceptor_3(On_Message)`-> +
-`actual service call`
-****
+image:./images/interceptors_001.png[]
+
 
 By setting  `grpc.security.auth.fail-fast`  property to `false` all downstream interceptors as well as all upstream interceptors (On_Message) will still be executed in case of authentication/authorization failure +
 
@@ -291,20 +290,13 @@ Assuming `interceptor_2` is `securityInterceptor` :
 
 * For failed authentication/authorization with  `grpc.security.auth.fail-fast=true`(default): +
 +
+image:./images/interceptors_002.png[]
 
-****
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` - *Call is Closed* -> +++<del>+++ `interceptor_3(interceptCall)` -> +
-`interceptor_1(On_Message)`-> `securityInterceptor(On_Message)`->`interceptor_3(On_Message)`-> +
-`actual service call`+++</del>+++
-****
 
 * For failed authentication/authorization with `grpc.security.auth.fail-fast=false`: +
 +
-****
-`interceptor_1(interceptCall)` -> `securityInterceptor(interceptCall)` -> `interceptor_3(interceptCall)` ->
-`interceptor_1(On_Message)`-> `securityInterceptor(On_Message)` - *Call is Closed*  +++<del>+++-> `interceptor_3(On_Message)`-> +
-`actual service call`+++</del>+++
-****
+image:./images/interceptors_003.png[]
+
 
 === Distributed tracing support (Spring Cloud Sleuth integration)
 
@@ -327,7 +319,7 @@ you should see the `timer` named `grpc.server.calls`.
 ==== Custom tags support
 
 By defining `GRpcMetricsTagsContributor` bean in your application context, you can add custom tags to the `grpc.server.calls` timer. +
-You can also use `RequestAwareGRpcMetricsTagsContributor` bean to tag *unary* calls. +
+You can also use `RequestAwareGRpcMetricsTagsContributor` bean to tag *unary* and *streaming* calls. +
 Demo is https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/GrpcMeterTest.java[here]
 
 [TIP]
@@ -372,6 +364,14 @@ GRPC scrapping https://github.com/prometheus/prometheus/issues/8414[proposal]
 
 The starter can be  auto-configured to validate request/response gRPC service messages.
 Please continue to <<Implementing message validation>> for configuration details.
+
+=== Spring cloud stream support
+
+The starter internally defines the bean of type `java.util.function.Consumer` which is being considered  for function registry when `spring-cloud-stream` is on classpath, which is undesirable (`spring-cloud-stream` auto-registers the channel if you have exactly one Consumer/Supplier/Function bean in the application context, so you already have one if you use  this starter together with `spring-cloud-stream`).
+
+According to  https://github.com/spring-cloud/spring-cloud-function/issues/418[this],  it is  recommended to use `spring.cloud.function.definition` property in production ready applications and not to rely on the auto-discovery.
+
+Please  refer to https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/kafkaStreamTest/java/org/lognet/springboot/grpc/kafka/GrpcKafkaTest.java[GRPC Kafka Stream demo], the essential part is https://github.com/LogNet/grpc-spring-boot-starter/blob/0784a007c15ac479e5d9e19a22b943f9852244b9/grpc-spring-boot-starter-demo/src/kafkaStreamTest/resources/bootstrap-kafka-test.yml#L22[this] line.
 
 === Spring security support
 
@@ -442,6 +442,112 @@ If you enable both `NettyServer` and `in-process` servers, the `configure` metho
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
 
+== Error handling
+
+The starter registers the `GRpcExceptionHandlerInterceptor` which is responsible to propagate the service-thrown exception to the error handlers. +
+The error handling method could be registered by having `@GRpcServiceAdvice` annotated bean with methods annotated with `@GRpcExceptionHandler` annotations. +
+These are considered as `global` error handlers and the method with exception type parameter nearest by the type hierarchy to the thrown exception is invoked. +
+The signature of the error handler has to follow the below pattern:
+
+|===
+|Return type |Parameter 1 |Parameter 2
+
+|io.grpc.Status
+|any `Exception` type
+|GRpcExceptionScope
+
+
+
+|===
+
+
+
+[source,java]
+.Sample
+----
+@GRpcServiceAdvice
+class MyHandler1{
+    @GRpcExceptionHandler
+    public Status handle (MyCustomExcpetion exc, GRpcExceptionScope scope){
+
+    }
+    @GRpcExceptionHandler
+    public Status handle (IllegalArgumentException exc, GRpcExceptionScope scope){
+
+    }
+
+}
+@GRpcServiceAdvice
+class MyHandler2 {
+    @GRpcExceptionHandler
+   public Status anotherHandler (NullPointerException npe,GRpcExceptionScope scope){
+
+   }
+}
+----
+
+You can have as many `advice` beans and handler methods as you want as long as they don't interfere with each other and don't create handled exception type ambiguity.
+
+The `grpc` service bean is also discovered for error handlers, having the higher precedence than global error handling methods discovered in  `@GRpcServiceAdvice` beans. The service-level error handling methods are considered `private` and invoked only when the exception is thrown by *this* service:
+
+[source,java]
+.Sample
+----
+class SomeException extends Exception{
+
+}
+class SomeRuntimeException extends RuntimeException{
+
+}
+
+@GRpcService
+public  class HelloService extends GreeterGrpc.GreeterImplBase{
+    @Override
+    public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
+        ...
+    throw new GRpcRuntimeExceptionWrapper(new SomeException()) ;  <1>
+//or
+    throw new GRpcRuntimeExceptionWrapper(new SomeException(),"myHint") <2>
+//or
+     throw new SomeRuntimeException() <3>
+    }
+    @GRpcExceptionHandler
+   public Status privateHandler (SomeException npe,GRpcExceptionScope scope){
+        // INVOKED when thrown from  HelloService service
+        String myHint = scope.getHintAs(String.class);    <4>
+        scope.getResponseHeaders().put(Metadata.Key.of("custom", Metadata.ASCII_STRING_MARSHALLER), "Value"); <5>
+   }
+   @GRpcExceptionHandler
+   public Status privateHandler (SomeRuntimeException npe,GRpcExceptionScope scope){
+        // INVOKED when thrown from  HelloService service
+
+   }
+}
+@GRpcServiceAdvice
+class MyHandler  {
+   @GRpcExceptionHandler
+   public Status anotherHandler (SomeException npe,GRpcExceptionScope scope){
+        // NOT INVOKED when thrown from  HelloService service
+   }
+   @GRpcExceptionHandler
+   public Status anotherHandler (SomeRuntimeException npe,GRpcExceptionScope scope){
+        // NOT INVOKED when thrown from  HelloService service
+   }
+
+}
+----
+<1> Because the nature of `grpc` service API that doesn't allow throwing checked exception, the special runtime exception type is provided to wrap the checked exception. It's then getting unwrapped when looking for the handler method.
+<2> When throwing the `GRpcRuntimeExceptionWrapper` exception, you can also pass the `hint` object which is then accessible from the `scope` object in `handler` method.
+<3> Runtime exception can be thrown as-is and doesn't need to be wrapped.
+<4> Obtain the hint object.
+<5> Send custom headers to the client.
+
+Authentication failure is propagated via `AuthenticationException` and authorization failure  - via `AccessDeniedException`.
+
+Validation failure is propagated via `ConstraintViolationException`: for  failed request - with `Status.INVALID_ARGUMENT` as a  hint , and for  failed response  - with `Status.FAILED_PRECONDITION` as a hint.
+
+The demo is link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/recovery/GRpcRecoveryTest.java[here]
+
 == Implementing message validation
 
 Thanks to https://beanvalidation.org/2.0/spec/[Bean Validation] configuration support via https://beanvalidation.org/2.0/spec/#xml[XML deployment descriptor] , it's possible to
@@ -502,8 +608,10 @@ Note also custom cross-field link:grpc-spring-boot-starter-demo/src/main/java/or
 
 As described in  <<Interceptors ordering>> chapter, you can give `validation` interceptor the higher precedence than `security` interceptor and set `grpc.security.auth.fail-fast` property to `false`. +
 In this scenario, if call is both unauthenticated and invalid, the client will get `Status.INVALID_ARGUMENT` instead of `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` response status.
+Demo is https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/ValidationWithSecurityTest.java[here]
 
-By adding `GRpcErrorHandler` bean to your application, you get  a chance to send your custom response headers. The error handler will be called with `Status.INVALID_ARGUMENT` and incoming request message that is failed.
+
+
 
 
 == GRPC response observer  and Spring @Transactional caveats
@@ -511,6 +619,7 @@ While it's still possible to have your rpc methods annotated with `@Transactiona
 
 [source,java]
 ----
+@GRpcService
 class MyGrpcService extends ...{
     @Autowired
     private MyJpaRepository repo;
@@ -546,6 +655,7 @@ class MyService{
         return result;
     }//<2>
 }
+@GRpcService
 class MyGrpcService extends ...{
     @Autowired
     private MyService myService;
@@ -564,29 +674,33 @@ class MyGrpcService extends ...{
 By following this approach you also decouple the transport layer and business logic that now can be tested separately.
 
 
+
+
+
+
 == Spring Security Integration
 
 === Setup
 
 .Dependencies to implement authentiction scheme (to be added to server-side project)
-[cols="a,a"]
+[cols="1,4"]
 |===
 |Scheme |Dependencies
 
 |Basic
-|
+a|
 * `org.springframework.security:spring-security-config`
 
 
 |Bearer
-|
+a|
 * `org.springframework.security:spring-security-config`
 * `org.springframework.security:spring-security-oauth2-jose`
 * `org.springframework.security:spring-security-oauth2-resource-server`
 
 
 |_Custom_
-|
+a|
 * `org.springframework.security:spring-security-config`
 * `your.custom.lib`
 
@@ -691,6 +805,71 @@ public AuthenticationSchemeSelector myCustomSchemeSelector(){
 
 <<Client side configuration support>> section explains how to pass custom authorization scheme and claim from GRPC client.
 
+=== @PreAuthorize() and @PostAuthorize() support
+Starting from version `4.5.9` you can also use standard `@PreAuthorize` and `@PostAuthorize` annotations on grpc service methods and grpc service types.
+
+.Referencing input/output object in expression
+[cols="1,1,2,6"]
+|===
+|Call Type |Input object ref  |Output object ref | Sample
+
+|Unary +
+(request-response)
+|By parameter name
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#person.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public void unary(Person person, StreamObserver<Assignment> responseObserver) {
+    }
+----
+
+|Input stream, +
+single response
+a|`#p0` or `#a0`
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#p0.getAge()<12")
+@PostAuthorize("returnObject.description.length()>0")
+public StreamObserver<Person> inStream(StreamObserver<Assignment> responseObserver) {
+    }
+----
+
+|Single request, +
+output stream
+|By parameter name
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#person.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public void outStream(Person person, StreamObserver<Assignment> responseObserver) {
+}
+----
+
+|Bidi stream
+|`#p0` or `#a0`
+a|`returnObject`
+a|
+[source,java]
+----
+@Override
+@PreAuthorize("#p0.age<12")
+@PostAuthorize("returnObject.description.length()>0")
+public StreamObserver<Person> bidiStream(StreamObserver<Assignment> responseObserver) {
+}
+----
+|===
+
+
 === Obtaining Authentication details
 
 To obtain  `Authentication` object in the implementation of *secured method*, please use below snippet
@@ -700,14 +879,12 @@ To obtain  `Authentication` object in the implementation of *secured method*, pl
 final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
 ----
 
+Starting from `4.5.6`, the `Authentication` object can also be obtained via standard Spring API :
 
-=== Custom  authentication failure handling
-
-By adding `GRpcErrorHandler` bean to your application, you get  a chance to provide your custom response headers. The error handler will be called with `Status.PERMISSION_DENIED/Status.UNAUTHENTICATED` (and incoming request message , if you set `grpc.security.auth.fail-fast` property to `false`). +
-The demo is link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtRoleTest.java[here]
-
-
-
+[source,java]
+----
+final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+----
 
 
 === Client side configuration support
@@ -743,7 +920,6 @@ class MyClient{
 <3> Turn the binary format on/off: +
 * When `true`, the authentication header is sent with  `Authentication-bin` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.BinaryMarshaller.html[binary marshaller].
 * When `false`, the authentication header is sent with  `Authentication` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.AsciiMarshaller.html[ASCII marshaller].
-
 <4> Provide token generator function (Please refer to link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtAuthBaseTest.java[for example].)
 
 Per-call::
@@ -779,6 +955,11 @@ class MyClient{
    .tokenSupplier(()->generateMyCustomToken())
 ----
 
+== Health check
+
+The starter registers the default implementation of https://github.com/grpc/grpc-java/blob/bab1fe38dc/services/src/main/java/io/grpc/protobuf/services/HealthServiceImpl.java[HealthServiceImpl]. +
+You can provide you own by registering link:./grpc-spring-boot-starter/src/main/java/org/lognet/springboot/grpc/health/ManagedHealthStatusService.java[ManagedHealthStatusService] bean in your application context.
+
 == Consul Integration
 
 Starting from version `3.3.0`, the starter will auto-register the running grpc server in Consul registry if `org.springframework.cloud:spring-cloud-starter-consul-discovery` is in classpath and
@@ -786,11 +967,52 @@ Starting from version `3.3.0`, the starter will auto-register the running grpc s
 
 The registered service name will be prefixed with `grpc-` ,i.e. `grpc-${spring.application.name}` to not interfere with standard registered web-service name if you choose to run both embedded `Grpc` and `Web` servers. +
 
-Setting `spring.cloud.consul.discovery.register-health-check` to true will register GRPC health check service in Consul.
+`ConsulDiscoveryProperties` are bound from configuration properties prefixed by  `spring.cloud.consul.discovery` and then the values are overwritten by `grpc.consul.discovery` prefixed properties (if set). This allows you to have separate consul discovery configuration for `rest` and `grpc` services if you choose to expose both from your application.
 
-Tags could be set by defining `spring.cloud.consul.discovery.tags` property.
+[source,yml]
+----
+spring:
+  cloud:
+    consul:
+      discovery:
+        metadata:
+          myKey: myValue <1>
+        tags:
+          - myWebTag <2>
+grpc:
+  consul:
+    discovery:
+      tags:
+        - myGrpcTag <3>
+----
+<1> Both `rest` and `grpc` services are registered with metadata `myKey=myValue`
+<2> Rest services are registered with  `myWebTag`
+<3> Grpc services are registered with  `myGrpcTag`
 
-You can find the test that demonstrates the feature link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/ConsulRegistrationTest.java[here].
+Setting `spring.cloud.consul.discovery.register-health-check` (or `grpc.consul.discovery.register-health-check`) to `true` will register GRPC health check service with Consul.
+
+
+There are 4 supported registration  modes :
+
+. `SINGLE_SERVER_WITH_GLOBAL_CHECK` (default) +
+ In this mode the running grpc server is registered as single service with single `grpc` check with empty `serviceId`. +
+Please note that default implementation https://github.com/grpc/grpc-java/blob/bab1fe38dc50d4178955b79cfb1636afd2aa64df/services/src/main/java/io/grpc/protobuf/services/HealthServiceImpl.java#L64[does nothing] and simply returns `SERVING` status. You might want to provide  your custom <<Health check>> implementation for this mode.
+. `SINGLE_SERVER_WITH_CHECK_PER_SERVICE` +
+In this mode the running grpc server is registered as single service with check per each discovered `grpc` service.
+. `STANDALONE_SERVICES` +
+In this mode each discovered grpc service is  registered as single service with single check. Each registered service is tagged by its own service name.
+. `NOOP` - no grpc services registered. This mode is useful if you serve both `rest` and `grpc` services in your application, but for some reason, only `rest` services should be registered with Consul.
+
+[source,yml]
+.You can control the desired mode from application.properties
+----
+grpc:
+  consule:
+    registration-mode: SINGLE_SERVER_WITH_CHECK_PER_SERVICE
+
+----
+
+
 
 == Eureka Integration
 

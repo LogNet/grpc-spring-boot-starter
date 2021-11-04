@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.SocketUtils;
@@ -17,7 +18,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
-@ActiveProfiles("disable-security")
+@ActiveProfiles({"disable-security","default-port"})
+@DirtiesContext
 public class EnvVarGrpcPortTest extends GrpcServerTestBase {
 
 

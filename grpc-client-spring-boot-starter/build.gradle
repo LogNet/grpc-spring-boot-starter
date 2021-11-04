@@ -116,4 +116,7 @@ dependencies {
 }
 compileJava.dependsOn(processResources)
 
-
+jar {
+    enabled = true
+    archiveClassifier.convention("")
+}

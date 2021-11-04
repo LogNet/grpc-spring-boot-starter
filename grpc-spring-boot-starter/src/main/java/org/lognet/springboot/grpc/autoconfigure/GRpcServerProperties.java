@@ -3,7 +3,10 @@ package org.lognet.springboot.grpc.autoconfigure;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.Resource;
 import org.springframework.util.SocketUtils;
@@ -32,6 +35,8 @@ public class GRpcServerProperties {
     private SecurityProperties security;
 
     private NettyServerProperties nettyServer;
+
+    private ConsulProperties consul = new ConsulProperties();
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
@@ -92,7 +97,15 @@ public class GRpcServerProperties {
 
     @Getter
     @Setter
+    public static class ConsulProperties {
+        ServiceRegistrationMode registrationMode = ServiceRegistrationMode.SINGLE_SERVER_WITH_GLOBAL_CHECK;
+        @NestedConfigurationProperty
+        ConsulDiscoveryProperties discovery;
+    }
+    @Getter
+    @Setter
     public static class NettyServerProperties {
+        private boolean onCollisionPreferShadedNetty;
         private Integer flowControlWindow;
         private Integer initialFlowControlWindow;
 
@@ -113,8 +126,8 @@ public class GRpcServerProperties {
         /**
          *  grpc listen address. <P>If configured, takes precedence over {@code grpc.port} property value.</p>
          *  Supported format:
-         *  <li>{@code host:port} (if port is less than 1, uses random value)
-         *  <li>{@code host:}  (uses default grpc port, 6565 )
+         *  <ul><li>{@code host:port} (if port is less than 1, uses random value)
+         *  <li>{@code host:}  (uses default grpc port, 6565 )</ul>
          */
         private InetSocketAddress primaryListenAddress;
 

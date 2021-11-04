@@ -7,6 +7,10 @@ buildscript {
         classpath "com.netflix.nebula:nebula-project-plugin:7.0.7"
     }
 }
+plugins {
+    id "io.github.lognet.grpc-spring-boot"
+}
+
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
@@ -15,9 +19,15 @@ apply plugin: "nebula.facet"
 
 facets {
     pureNettyTest
+    kafkaStreamTest
     customSecurityTest
+    bothPureAndShadedNettyTest
+    noConsulDependenciesTest
 }
 
+grpcSpringBoot {
+    grpcSpringBootStarterVersion.set((String)null)
+}
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
@@ -34,19 +44,24 @@ configurations.findAll{ cfg ->
         cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-resource-server'
         cfg.exclude group: 'org.springframework.security', module: 'spring-security-oauth2-jose'
     }
+    if (cfg.name.startsWith("noConsulDependencies")) {
+        cfg.exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-consul-discovery'
+
+    }
+
 
 
 }
 
 
-configurations {
-    pureNettyTestCompile.extendsFrom( testCompile)
-    pureNettyTestRuntime.extendsFrom(testRuntime)
+extensions.facets.each{
+    if(it.name.endsWith("Test")) {
+        configurations.getByName("${it.name}Compile").extendsFrom(configurations.testCompile)
+        configurations.getByName("${it.name}Runtime").extendsFrom(configurations.testRuntime)
 
-    customSecurityTestCompile.extendsFrom( testCompile)
-    customSecurityTestRuntime.extendsFrom(testRuntime)
+        dependencies.add("${it.name}Compile", sourceSets.test.output)
+    }
 }
-
 
 dependencies {
 
@@ -68,24 +83,27 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
     testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-    testCompile 'com.pszymczyk.consul:embedded-consul:2.1.4'
     testCompile 'org.awaitility:awaitility:4.0.3'
-
-
     testCompile "org.springframework.cloud:spring-cloud-config-server"
     testCompile "org.springframework.cloud:spring-cloud-config-client"
-    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.6"
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
+    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.16"
+    testCompile "com.playtika.testcontainers:embedded-consul:2.0.16"
 
-    testImplementation 'org.hamcrest:hamcrest:2.1'
-
+    testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
-    customSecurityTestCompile  sourceSets.test.output
 
-    pureNettyTestCompile sourceSets.test.output
     pureNettyTestCompile "io.grpc:grpc-netty"
+
+
+    bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
+
+    kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
+    kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+
+
     //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 
@@ -98,57 +116,12 @@ configurations.all {
         }
     }
 }
-sourceSets {
-    main {
-        java {
-            srcDir 'src/main/protoGen'
-        }
-    }
-}
-
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:3.5.1'
-    }
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
-        }
-    }
-
-    generateProtoTasks {
-        ofSourceSet('main').each { task ->
-            task.builtins {
-                java {
-                    outputSubDir = 'protoGen'
-                }
-            }
-            task.plugins {
-                grpc {
-                    outputSubDir = 'protoGen'
-                }
-            }
-        }
-    }
-    generatedFilesBaseDir = "$projectDir/src/"
-}
-
-task cleanProtoGen {
-    doFirst {
-        delete("$projectDir/src/main/protoGen")
-    }
-}
-clean.dependsOn cleanProtoGen
-
-springBoot {
-    mainClass  = "org.lognet.springboot.grpc.demo.DemoApp"
-}
 
 bootJar{
     enabled false
 }
 jar{
-    enabled false
+    enabled true
 }
 
 

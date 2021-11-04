@@ -16,17 +16,30 @@ import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@ContextConfiguration(
+        initializers = GrpcServerTestBase.TessAppContextInitializer.class)
 public abstract class GrpcServerTestBase {
+
+    static class TessAppContextInitializer implements
+            ApplicationContextInitializer<GenericApplicationContext> {
+
+        @Override
+        public void initialize(GenericApplicationContext applicationContext) {
+            applicationContext.setAllowCircularReferences(false);
+        }
+    }
 
     @Autowired(required = false)
     @Qualifier("grpcServerRunner")

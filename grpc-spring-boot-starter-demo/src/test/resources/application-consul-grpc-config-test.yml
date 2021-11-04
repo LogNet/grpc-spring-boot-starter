@@ -1,0 +1,20 @@
+grpc:
+  consul:
+    discovery:
+      tags:
+        - 1
+        - grpc=true
+        - customTagName=A
+      instance-group: group1
+
+spring:
+  cloud:
+    consul:
+      discovery:
+        tags:
+          - a
+          - b
+        instance-zone: zone1
+        metadata:
+          key1: value1
+

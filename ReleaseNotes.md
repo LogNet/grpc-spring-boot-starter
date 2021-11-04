@@ -1,5 +1,14 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.9](#version-459)| 1.41.0        |2.5.6               |
+| [4.5.8](#version-458)| 1.41.0        |2.5.0               |
+| [4.5.7](#version-457)| 1.40.1        |2.5.0               |
+| [4.5.6](#version-456)| 1.40.0        |2.5.0               |
+| [4.5.5](#version-455)| 1.39.0        |2.5.0               |
+| [4.5.4](#version-454)| 1.38.0        |2.5.0               |
+| [4.5.3](#version-453)| 1.38.0        |2.5.0               |
+| [4.5.2](#version-452)| 1.38.0        |2.5.0               |
+| [4.5.1](#version-451)| 1.38.0        |2.5.0               |
 | [4.5.0](#version-450)| 1.37.0        |2.4.5               |
 | [4.4.7](#version-447)| 1.37.0        |2.4.5               |
 | [4.4.6](#version-446)| 1.37.0        |2.4.5               |
@@ -19,8 +28,158 @@
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
 
+# Version 4.5.9
+## :star: New Features
+
+- Support separate consul discovery properties for grpc and http  services [#250](https://github.com/LogNet/grpc-spring-boot-starter/issues/250)
+- Add metadata to consul service discovery [#249](https://github.com/LogNet/grpc-spring-boot-starter/issues/249)
+- Spring security SPEL expressions support (`@PreAuthorize` and `@PostAuthorize`) [#175](https://github.com/LogNet/grpc-spring-boot-starter/issues/175)
+
+## :lady_beetle: Bug Fixes
+
+- Circular bean dependency since 4.5.8 [#253](https://github.com/LogNet/grpc-spring-boot-starter/issues/253)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade spring boot to  2.5.6 [#255](https://github.com/LogNet/grpc-spring-boot-starter/issues/255)
+
+# Version 4.5.8
+## :star: New Features
+
+- Support NOOP consul registration  strategy [#251](https://github.com/LogNet/grpc-spring-boot-starter/issues/251)
+- Global error handling support [#223](https://github.com/LogNet/grpc-spring-boot-starter/issues/223)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to  1.41.0 [#252](https://github.com/LogNet/grpc-spring-boot-starter/issues/252)
+
+## :watch: Deprecations
+
+-  `GRpcErrorHandler` is deprecated in favor of `@GRpcServiceAdvice` and `@GRpcExceptionHandler` annotations.
+
+# Version 4.5.7
+## :star: New Features
+
+- Support RequestAwareGRpcMetricsTagsContributor for Multiary Calls [#244](https://github.com/LogNet/grpc-spring-boot-starter/issues/244)
+- Custom service health check support [#242](https://github.com/LogNet/grpc-spring-boot-starter/issues/242)
+- Support [various consul registrations and checks modes](https://github.com/LogNet/grpc-spring-boot-starter#9-consul-integration)
+
+## :beetle: Bug Fixes
+
+- Interceptors do not block onHalfClose if they block the message [#240](https://github.com/LogNet/grpc-spring-boot-starter/issues/240)
+- Potential race condition when reporting running status of grpc server [#238](https://github.com/LogNet/grpc-spring-boot-starter/issues/238)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to v1.40.1 [#243](https://github.com/LogNet/grpc-spring-boot-starter/issues/243)
 
 
+
+# Version 4.5.6
+## :star: New Features
+
+- Propagate Authentication to SecurityContextHolder [#234](https://github.com/LogNet/grpc-spring-boot-starter/issues/234)
+
+## :beetle: Bug Fixes
+
+- grpc boot gradle plugin configures  wrong generated source dir [#237](https://github.com/LogNet/grpc-spring-boot-starter/issues/237)
+- SecurityInterceptor rewrites the status and double-closes if other Interceptors close the call [#231](https://github.com/LogNet/grpc-spring-boot-starter/issues/231)
+- SecurityInterceptor does not consult the GRpcErrorHandler for auth scheme selection errors [#229](https://github.com/LogNet/grpc-spring-boot-starter/issues/229)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade to grpc 1.40.0 [#235](https://github.com/LogNet/grpc-spring-boot-starter/issues/235)
+
+# Version 4.5.5
+
+## :beetle: Bug Fixes
+
+- grpc-kotlin-stub version is not same grpc version [#224](https://github.com/LogNet/grpc-spring-boot-starter/issues/224)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to 1.39.0 [#227](https://github.com/LogNet/grpc-spring-boot-starter/issues/227)
+
+
+# Version 4.5.4
+
+## :star: New Features
+
+- Introduce  grpc-spring-boot-starter-gradle-plugin [#222](https://github.com/LogNet/grpc-spring-boot-starter/issues/222)
+
+## :notebook_with_decorative_cover: Documentation
+
+- Document  GRPC starter + Kafka Stream usage [#219](https://github.com/LogNet/grpc-spring-boot-starter/issues/219)
+
+# Version 4.5.3
+
+* Requires JRE `1.8` and higher.
+
+## :beetle: Bug Fixes
+
+- Failed to run the app with jre 1.8 [#218](https://github.com/LogNet/grpc-spring-boot-starter/issues/218)
+
+
+
+
+
+# Version 4.5.2
+
+## :beetle: Bug Fixes
+
+- Can't download version `4.5.1` from maven central [#217](https://github.com/LogNet/grpc-spring-boot-starter/issues/217) - fixed by setting jar classifier to empty string :
+
+ Gradle
+```
+dependencies {
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.2'
+}
+```
+
+ Maven
+```
+<dependency>
+    <groupId>io.github.lognet</groupId>
+    <artifactId>grpc-spring-boot-starter</artifactId>
+    <version>4.5.2</version>
+</dependency>
+```
+
+* Requires JRE `1.9`  and higher.
+
+# Version 4.5.1
+
+## :beetle: Bug Fixes
+
+- Bean collision when both netty and netty-shaded exist in classpath [#214](https://github.com/LogNet/grpc-spring-boot-starter/issues/214)
+- Application fails to start when no grpc services discovered [#210](https://github.com/LogNet/grpc-spring-boot-starter/issues/210)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade Spring boot to 2.5.0 [#212](https://github.com/LogNet/grpc-spring-boot-starter/issues/212)
+- Upgrade grpc to 1.38.0 [#211](https://github.com/LogNet/grpc-spring-boot-starter/issues/211)
+
+## :hammer_and_wrench:  IMPORTANT!
+This release was incorrectly published to maven repository with `plain` jar classifier. For `4.5.1` only please use :
+
+* Gradle
+```
+dependencies {
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.1:plain'
+}
+```
+
+* Maven
+```
+<dependency>
+    <groupId>io.github.lognet</groupId>
+    <artifactId>grpc-spring-boot-starter</artifactId>
+    <version>4.5.1</version>
+    <classifier>plain</classifier>
+</dependency>
+```
+
+* Requires JRE `1.9`  and higher.
 
 # Version 4.5.0
 

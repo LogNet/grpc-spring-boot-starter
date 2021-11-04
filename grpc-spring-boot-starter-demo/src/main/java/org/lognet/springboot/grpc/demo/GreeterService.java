@@ -9,7 +9,9 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.util.Assert;
 
 @Slf4j
 @GRpcService(interceptors = { LogInterceptor.class })
@@ -23,13 +25,36 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
         log.info("Returning " +message);
     }
 
+    @Override public StreamObserver<GreeterOuterClass.HelloRequest> sayManyHellos(
+        StreamObserver<GreeterOuterClass.HelloReply> responseObserver
+    ) {
+        return new StreamObserver<GreeterOuterClass.HelloRequest>() {
+            @Override public void onNext(GreeterOuterClass.HelloRequest request) {
+                String message = "Hello " + request.getName();
+                final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage(message);
+                responseObserver.onNext(replyBuilder.build());
+                log.info("Returning " + message);
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
     @Override
     @Secured("SCOPE_profile")
     public void sayAuthHello(Empty request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
 
 
         final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
+        Assert.isTrue(SecurityContextHolder.getContext().getAuthentication() == auth,()->"Authentication object should be the same as in GRPC context");
         if(null!=auth) {
+
             String user = auth.getName();
             if (auth instanceof JwtAuthenticationToken) {
                 user = JwtAuthenticationToken.class.cast(auth).getTokenAttributes().get("preferred_username").toString();
@@ -40,6 +65,7 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
         }
         responseObserver.onCompleted();
     }
+
 
     @Override
     @Secured({})
