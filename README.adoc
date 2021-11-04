@@ -48,7 +48,7 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.5.8') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.5.9') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
  compile 'io.grpc:grpc-netty:1.41.0' // <1>
@@ -275,7 +275,7 @@ Their order can also be controlled by below properties :
 
 This gives you the ability to set up the desired order of built-in and your custom interceptors.
 
-Error handling interceptor has the highest precedence.
+Error handling interceptor has the `Ordered.HIGHEST_PRECEDENCE`.
 
 *Keep on reading !!! There is more*
 
