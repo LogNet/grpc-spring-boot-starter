@@ -7,11 +7,6 @@ import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
-import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
-import io.grpc.reflection.v1alpha.ServerReflectionRequest;
-import io.grpc.reflection.v1alpha.ServerReflectionResponse;
-import io.grpc.reflection.v1alpha.ServiceResponse;
-import io.grpc.stub.StreamObserver;
 import io.micrometer.prometheus.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
@@ -32,15 +27,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -48,7 +39,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -58,7 +48,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, TestConfig.class}, webEnvironment = RANDOM_PORT
-        , properties = {"grpc.enableReflection=true",
+        , properties = {
         "grpc.shutdownGrace=-1",
         "spring.main.web-application-type=servlet"
 })
@@ -124,34 +114,7 @@ public class DemoAppTest extends GrpcServerTestBase {
                 GRpcServerBuilderConfigurer.class);
     }
 
-    @Test
-    public void testReflection() throws InterruptedException {
-        List<String> discoveredServiceNames = new ArrayList<>();
-        ServerReflectionRequest request = ServerReflectionRequest.newBuilder().setListServices("services").setHost("localhost").build();
-        CountDownLatch latch = new CountDownLatch(1);
-        ServerReflectionGrpc.newStub(channel).serverReflectionInfo(new StreamObserver<ServerReflectionResponse>() {
-            @Override
-            public void onNext(ServerReflectionResponse value) {
-                List<ServiceResponse> serviceList = value.getListServicesResponse().getServiceList();
-                for (ServiceResponse serviceResponse : serviceList) {
-                    discoveredServiceNames.add(serviceResponse.getName());
-                }
-            }
 
-            @Override
-            public void onError(Throwable t) {
-
-            }
-
-            @Override
-            public void onCompleted() {
-                latch.countDown();
-            }
-        }).onNext(request);
-
-        latch.await(3, TimeUnit.SECONDS);
-        assertFalse(discoveredServiceNames.isEmpty());
-    }
 
 
 
