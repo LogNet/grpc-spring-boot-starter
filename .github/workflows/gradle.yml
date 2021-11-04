@@ -25,5 +25,5 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       env:
-        GRPC_CONSUL_DISCOVERY_PREFER_IP_ADDRESS: true # otherwise, host name can't be resolved from consul docker image to github runner
+        GRPC_CONSUL_DISCOVERY_PREFER_IP_ADDRESS: true # otherwise, host name can't be resolved from consul docker image to github runner (it tests)
       run: ./gradlew build
