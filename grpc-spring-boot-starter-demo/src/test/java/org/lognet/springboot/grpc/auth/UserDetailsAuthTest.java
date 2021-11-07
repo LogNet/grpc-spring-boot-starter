@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -42,18 +43,18 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 
-@SpringBootTest(classes = DemoApp.class,webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = DemoApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringRunner.class)
 @Import({UserDetailsAuthTest.TestCfg.class})
 public class UserDetailsAuthTest extends GrpcServerTestBase {
 
 
     @TestConfiguration
-    static class TestCfg   extends GrpcSecurityConfigurerAdapter {
+    static class TestCfg extends GrpcSecurityConfigurerAdapter {
 
         @GRpcService(interceptors = NotSpringBeanInterceptor.class)
         @Secured({})
-        public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
+        public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase {
             @Override
             public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
                 responseObserver.onNext(DemoAppConfiguration.CalculatorService.calculate(request));
@@ -62,30 +63,33 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
             }
         }
-            static final String pwd="strongPassword1";
 
-            @Bean
-            public UserDetails user() {
-                return User.withDefaultPasswordEncoder()
-                        .username("user1")
-                        .password(pwd)
-                        .roles("reader")
-                        .build();
-            }
+        static final String pwd = "strongPassword1";
 
+        @Bean
+        public static UserDetailsService userDetailsService() {
+            return new InMemoryUserDetailsManager(user());
+        }
 
-            @Override
-            public void configure(GrpcSecurity builder) throws Exception {
-                builder.authorizeRequests()
-                        .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
-                        .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
-                        .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
-                        .withSecuredAnnotation()
-                        .userDetailsService(new InMemoryUserDetailsManager(builder.getApplicationContext().getBean(UserDetails.class)));
-
-            }
+        @Bean
+        public static UserDetails user() {
+            return User.withDefaultPasswordEncoder()
+                    .username("user1")
+                    .password(pwd)
+                    .roles("reader")
+                    .build();
+        }
 
 
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+            builder.authorizeRequests()
+                    .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
+                    .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")
+                    .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")
+                    .withSecuredAnnotation();
+
+        }
 
 
     }
@@ -98,15 +102,13 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
     public void simpleAuthHeaderFormat() throws ExecutionException, InterruptedException {
 
 
-
         final GreeterGrpc.GreeterFutureStub greeterFutureStub = GreeterGrpc.newFutureStub(getChannel(false));
         final String reply = greeterFutureStub.sayAuthOnlyHello(Empty.newBuilder().build()).get().getMessage();
-        assertNotNull("Reply should not be null",reply);
-        assertTrue(String.format("Reply should contain name '%s'",user.getUsername()),reply.contains(user.getUsername()));
+        assertNotNull("Reply should not be null", reply);
+        assertTrue(String.format("Reply should contain name '%s'", user.getUsername()), reply.contains(user.getUsername()));
 
 
     }
-
 
 
     @Test
@@ -133,11 +135,11 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
         final CalculatorOuterClass.CalculatorResponse response = SecuredCalculatorGrpc
                 .newBlockingStub(selectedChanel)//auth channel
                 .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
-                .setNumber1(1)
-                .setNumber2(1)
-                .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
-                .build());
-        assertThat(response.getResult(),Matchers.is(2d));
+                        .setNumber1(1)
+                        .setNumber2(1)
+                        .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                        .build());
+        assertThat(response.getResult(), Matchers.is(2d));
 
     }
 
@@ -148,10 +150,10 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
             SecuredCalculatorGrpc
                     .newBlockingStub(super.getChannel()) // channel without auth
                     .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
-                    .setNumber1(1)
-                    .setNumber2(1)
-                    .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
-                    .build());
+                            .setNumber1(1)
+                            .setNumber2(1)
+                            .setOperation(CalculatorOuterClass.CalculatorRequest.OperationType.ADD)
+                            .build());
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.UNAUTHENTICATED));
 
@@ -159,13 +161,13 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
     @Override
     protected Channel getChannel() {
-       return getChannel(true);
+        return getChannel(true);
     }
 
     protected Channel getChannel(boolean binaryFormat) {
 
         final AuthClientInterceptor interceptor = new AuthClientInterceptor(AuthHeader.builder()
-                .basic(user.getUsername(),TestCfg.pwd.getBytes())
+                .basic(user.getUsername(), TestCfg.pwd.getBytes())
                 .binaryFormat(binaryFormat)
         );
         return ClientInterceptors.intercept(super.getChannel(), interceptor);
