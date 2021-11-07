@@ -44,7 +44,7 @@ public class GrpcSecurityConfiguration {
     private GrpcSecurity grpcSecurity;
 
     @Bean
-    public BeanPostProcessor bypassMethodInterceptorForGrpcMethodInvocation(){
+    public static BeanPostProcessor bypassMethodInterceptorForGrpcMethodInvocation(){
         return new BeanPostProcessor() {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
