@@ -32,6 +32,7 @@ import org.testcontainers.containers.Container;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -58,19 +59,11 @@ public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
     static class Cfg {
         @GRpcService
         static class MyCustomHealthStatusService extends DefaultHealthStatusService {
-            @Getter
-            private final ArrayList<String> registeredServices = new ArrayList<>();
+
 
             @Getter
             private final ArrayList<String> checkedServices = new ArrayList<>();
 
-            @Override
-            public void setStatus(String service, HealthCheckResponse.ServingStatus status) {
-                synchronized (registeredServices) {
-                    registeredServices.add(service);
-                }
-                super.setStatus(service, status);
-            }
 
             @Override
             public void check(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
@@ -99,10 +92,11 @@ public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
 
         Cfg.MyCustomHealthStatusService healthManager = (Cfg.MyCustomHealthStatusService) healthStatusManager;
 
-        assertThat(healthManager.getRegisteredServices(), hasSize(greaterThan(0)));
+        final Set<String> registeredServices = healthManager.statuses().keySet();
+        assertThat(registeredServices , hasSize(greaterThan(0)));
         final List<String> discovered = discoverServicesNames();
 
-        assertThat(discovered, containsInAnyOrder(healthManager.getRegisteredServices().toArray()));
+        assertThat(discovered, containsInAnyOrder(registeredServices.toArray()));
 
         String addressParameter = String.format("-addr=%s:%d",
                 new InetUtils(new InetUtilsProperties()).findFirstNonLoopbackHostInfo().getIpAddress(),

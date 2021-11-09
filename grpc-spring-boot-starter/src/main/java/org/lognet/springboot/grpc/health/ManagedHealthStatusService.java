@@ -3,6 +3,8 @@ package org.lognet.springboot.grpc.health;
 import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
 
+import java.util.Map;
+
 public abstract class ManagedHealthStatusService extends HealthGrpc.HealthImplBase{
 
     /**
@@ -17,6 +19,7 @@ public abstract class ManagedHealthStatusService extends HealthGrpc.HealthImplBa
      */
     public abstract  void setStatus(String service, HealthCheckResponse.ServingStatus status);
 
+    public abstract Map<String,HealthCheckResponse.ServingStatus> statuses();
 
 
 }
