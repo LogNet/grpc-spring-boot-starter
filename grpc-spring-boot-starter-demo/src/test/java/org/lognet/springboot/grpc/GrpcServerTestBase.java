@@ -5,9 +5,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.examples.GreeterGrpc;
 import io.grpc.examples.GreeterOuterClass;
+import io.grpc.health.v1.HealthGrpc;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +25,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -58,6 +62,9 @@ public abstract class GrpcServerTestBase {
 
     @Autowired
     protected ApplicationContext context;
+
+    @Autowired
+    protected GRpcServicesRegistry registry;
 
     @Autowired
     protected GRpcServerProperties gRpcServerProperties;
@@ -113,6 +120,13 @@ public abstract class GrpcServerTestBase {
         Optional.ofNullable(inProcChannel).ifPresent(ManagedChannel::shutdownNow);
     }
 
+    protected List<String> appServicesNames(){
+        return registry.getServiceNameToServiceBeanMap()
+                .keySet()
+                .stream()
+                .filter(name-> !name.equals(HealthGrpc.SERVICE_NAME) && !name.equals(ServerReflectionGrpc.SERVICE_NAME))
+                .collect(Collectors.toList());
+    }
     @Test
     public void simpleGreeting() throws  Exception {
 

@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.Callable;
@@ -34,7 +35,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -86,19 +86,22 @@ public class ActuatorTest extends GrpcServerTestBase {
 
     @Test
     public void actuatorHealthTest() throws ExecutionException, InterruptedException {
-        ResponseEntity<String> response = restTemplate.getForEntity("/actuator/health", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/actuator/health/grpc", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final DocumentContext json = JsonPath.parse(response.getBody(), Configuration.builder()
                         .mappingProvider(new JacksonMappingProvider())
                         .jsonProvider(new JacksonJsonProvider())
                 .build());
-        final String[] statuses = json.read("components.grpc.components.*status", new TypeRef<String[]>() {
-        });
-        assertThat(statuses,Matchers.arrayWithSize(Matchers.greaterThan(0)));
-        for(String s:statuses) {
-            assertThat(s, is(Status.UP.getCode()));
-        }
+        final TypeRef<Set<String>> setOfString = new TypeRef<Set<String>>() {
+        };
+        final Set<String> services = json.read("components.keys()", setOfString);
+        assertThat(services,Matchers.containsInAnyOrder( super.appServicesNames().toArray(new String[]{})));
+
+        final Set<String> statuses = json.read("components.*status", setOfString);
+        assertThat(statuses,Matchers.contains(Status.UP.getCode()));
+
+
 
     }
 
