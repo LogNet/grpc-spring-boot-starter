@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.9'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.5.10'
 }
 
 
@@ -48,10 +48,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.5.9') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.5.10') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
- compile 'io.grpc:grpc-netty:1.41.0' // <1>
+ compile 'io.grpc:grpc-netty:1.42.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -959,6 +959,16 @@ class MyClient{
 
 The starter registers the default implementation of https://github.com/grpc/grpc-java/blob/bab1fe38dc/services/src/main/java/io/grpc/protobuf/services/HealthServiceImpl.java[HealthServiceImpl]. +
 You can provide you own by registering link:./grpc-spring-boot-starter/src/main/java/org/lognet/springboot/grpc/health/ManagedHealthStatusService.java[ManagedHealthStatusService] bean in your application context.
+
+
+== Spring actuator support
+
+If you have   `org.springframework.boot:spring-boot-starter-actuator` and `org.springframework.boot:spring-boot-starter-web` in the classpath, the starter will expose:
+
+* `grpc` health indicator under `/actuator/health` endpoint.
+* `/actuator/grpc` endpoint.
+
+This can be controlled by standard https://docs.spring.io/spring-boot/docs/2.5.x/reference/html/actuator.html#actuator.endpoints.enabling[endpoints] and https://docs.spring.io/spring-boot/docs/2.5.x/reference/html/actuator.html#actuator.endpoints.health[health] configuration.
 
 == Consul Integration
 

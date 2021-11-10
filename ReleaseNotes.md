@@ -1,5 +1,6 @@
 | Starter Version      | gRPC versions |Spring Boot version
 | -------------------- |:-------------:|:------------------:|
+| [4.5.10](#version-4510)| 1.42.0        |2.5.6               |
 | [4.5.9](#version-459)| 1.41.0        |2.5.6               |
 | [4.5.8](#version-458)| 1.41.0        |2.5.0               |
 | [4.5.7](#version-457)| 1.40.1        |2.5.0               |
@@ -27,6 +28,24 @@
 | [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
 | [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
 | [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+
+# Version 4.5.10
+## :star: New Features
+
+- Expose  grpc health indicator under /actuator/health  [#259](https://github.com/LogNet/grpc-spring-boot-starter/issues/259)
+- Expose  /actuator/grpc endpoint [#258](https://github.com/LogNet/grpc-spring-boot-starter/issues/258)
+- kubernetes healthcheck [#98](https://github.com/LogNet/grpc-spring-boot-starter/issues/98)
+
+## :lady_beetle: Bug Fixes
+
+- Application with configured grpc.consul.xxx properties fails to  start if no consul in classpath [#256](https://github.com/LogNet/grpc-spring-boot-starter/issues/256)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade protoc compiler to  3.17.3 [#262](https://github.com/LogNet/grpc-spring-boot-starter/issues/262)
+- Upgrade protobuf-gradle-plugin to 0.8.17 [#261](https://github.com/LogNet/grpc-spring-boot-starter/issues/261)
+- Upgrade grpc to 1.42.0 [#260](https://github.com/LogNet/grpc-spring-boot-starter/issues/260)
+
 
 # Version 4.5.9
 ## :star: New Features
