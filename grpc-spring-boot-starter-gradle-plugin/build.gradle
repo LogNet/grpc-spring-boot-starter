@@ -55,7 +55,7 @@ pluginBundle {
     tags = ['grpc', 'protobuf', 'spring-boot', 'grpc-spring-boot-starter']
 }
 dependencies {
-    runtime "com.google.protobuf:protobuf-gradle-plugin:0.8.16"
+    runtime "com.google.protobuf:protobuf-gradle-plugin:0.8.17"
 }
 
 
