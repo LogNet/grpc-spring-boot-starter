@@ -6,6 +6,7 @@ import io.grpc.health.v1.HealthCheckResponse;
 import io.grpc.health.v1.HealthGrpc;
 import lombok.Builder;
 import lombok.Getter;
+import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
 import org.lognet.springboot.grpc.autoconfigure.OnGrpcServerEnabled;
@@ -21,6 +22,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 @ConditionalOnClass(HealthContributor.class)
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(GRpcAutoConfiguration.class)
+@ConditionalOnBean(annotation = GRpcService.class)
 @OnGrpcServerEnabled
 public class GRpcActuateAutoConfiguration {
 
