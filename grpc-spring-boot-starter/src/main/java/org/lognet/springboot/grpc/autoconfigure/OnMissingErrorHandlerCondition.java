@@ -28,7 +28,8 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
 
         ReflectionUtils.MethodFilter f = method -> AnnotatedElementUtils.hasAnnotation(method, GRpcExceptionHandler.class);
         for (String adviceBeanName : context.getBeanFactory().getBeanNamesForAnnotation(GRpcServiceAdvice.class)) {
-            final String beanClassName = getBeanClassName(context.getBeanFactory().getBeanDefinition(adviceBeanName));
+            BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(adviceBeanName);
+            String beanClassName = getBeanClassName(beanDefinition);
             try {
                 for (Method method : MethodIntrospector.selectMethods(Class.forName(beanClassName), f)) {
                     final Optional<Class<? extends Throwable>> handledException = HandlerMethod.getHandledException(method, false);
@@ -49,7 +50,7 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
     }
 
     private String getBeanClassName(BeanDefinition beanDefinition) {
-        if (beanDefinition instanceof AnnotatedBeanDefinition) { // definition with @Bean Annotation cause this issue
+        if (beanDefinition instanceof AnnotatedBeanDefinition) {
             MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
             return factoryMethodMetadata.getReturnTypeName();
         } else {
