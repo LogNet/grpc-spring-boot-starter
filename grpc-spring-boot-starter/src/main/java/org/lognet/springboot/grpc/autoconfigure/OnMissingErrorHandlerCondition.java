@@ -27,17 +27,18 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
                 .get("value");
 
         ReflectionUtils.MethodFilter f = method -> AnnotatedElementUtils.hasAnnotation(method, GRpcExceptionHandler.class);
-        for (String adviceBeanName : context.getBeanFactory().getBeanNamesForAnnotation(GRpcServiceAdvice.class)) {
+        for(String adviceBeanName : context.getBeanFactory().getBeanNamesForAnnotation(GRpcServiceAdvice.class)){
             BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(adviceBeanName);
             String beanClassName = getBeanClassName(beanDefinition);
             try {
                 for (Method method : MethodIntrospector.selectMethods(Class.forName(beanClassName), f)) {
                     final Optional<Class<? extends Throwable>> handledException = HandlerMethod.getHandledException(method, false);
-                    if (handledException.isPresent() && handledException.get().isAssignableFrom(exc)) {
+                    if(handledException.isPresent() && handledException.get().isAssignableFrom(exc)) {
                         return ConditionOutcome.noMatch(String.format("Found %s handler at %s.%s",
-                                                                      handledException.get().getName(),
-                                                                      beanClassName,
-                                                                      method.getName()
+                                handledException.get().getName(),
+                                beanClassName,
+                                method.getName()
+                                ));
                         ));
                     }
                 }
@@ -50,9 +51,9 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
     }
 
     private String getBeanClassName(BeanDefinition beanDefinition) {
-        if (beanDefinition instanceof AnnotatedBeanDefinition) {
+        if(beanDefinition instanceof AnnotatedBeanDefinition){
             MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
-            if (factoryMethodMetadata != null) {
+            if(factoryMethodMetadata != null){
                 return factoryMethodMetadata.getReturnTypeName();
             }
         }
