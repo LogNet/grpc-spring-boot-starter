@@ -33,19 +33,18 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
             try {
                 for (Method method : MethodIntrospector.selectMethods(Class.forName(beanClassName), f)) {
                     final Optional<Class<? extends Throwable>> handledException = HandlerMethod.getHandledException(method, false);
-                    if(handledException.isPresent() && handledException.get().isAssignableFrom(exc)) {
+                    if(handledException.isPresent() && handledException.get().isAssignableFrom(exc)){
                         return ConditionOutcome.noMatch(String.format("Found %s handler at %s.%s",
                                 handledException.get().getName(),
                                 beanClassName,
                                 method.getName()
                                 ));
-                        ));
                     }
                 }
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e);
             }
-        }
+        };
 
         return ConditionOutcome.match();
     }
