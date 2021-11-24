@@ -52,9 +52,10 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
     private String getBeanClassName(BeanDefinition beanDefinition) {
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
             MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
-            return factoryMethodMetadata.getReturnTypeName();
-        } else {
-            return beanDefinition.getBeanClassName();
+            if (factoryMethodMetadata != null) {
+                return factoryMethodMetadata.getReturnTypeName();
+            }
         }
+        return beanDefinition.getBeanClassName();
     }
 }
