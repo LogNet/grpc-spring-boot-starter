@@ -237,7 +237,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
 
         Mockito.verify(handler, never()).handle(any(), any());
-        Mockito.verify(handler, times(1)).handleA(any(), any());
+        Mockito.verify(beanErrorHandler, times(1)).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
 
 
@@ -257,7 +257,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
         Mockito.verify(srv, never()).handleB(any(), any());
 
 
-        Mockito.verify(handler, never()).handleA(any(), any());
+        Mockito.verify(beanErrorHandler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
         Mockito.verify(handler, times(1)).handle(any(), any());
 
@@ -280,9 +280,9 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
         final String testTrailer = statusRuntimeException.getTrailers().get(Metadata.Key.of("test", Metadata.ASCII_STRING_MARSHALLER));
         assertThat(testTrailer, is("5"));
 
-
+        
+        Mockito.verify(beanErrorHandler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handle(any(), any());
-        Mockito.verify(handler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
 
     }
