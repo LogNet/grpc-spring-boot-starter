@@ -1,5 +1,20 @@
 package org.lognet.springboot.grpc.recovery;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -15,24 +30,10 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
@@ -43,6 +44,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
     static class CheckedException extends Exception {
 
     }
+
     static class CheckedException1 extends Exception {
 
     }
@@ -59,16 +61,25 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
     }
 
+    @GRpcServiceAdvice
+    static class BeanCustomErrorHandler {
+
+        @GRpcExceptionHandler
+        public Status handleA(ExceptionA e, GRpcExceptionScope scope) {
+            return Status.NOT_FOUND;
+        }
+    }
+
     @TestConfiguration
     static class Cfg {
 
+        @Bean
+        public BeanCustomErrorHandler otherErrorHandler() {
+            return new BeanCustomErrorHandler();
+        }
 
         @GRpcServiceAdvice
         static class CustomErrorHandler {
-            @GRpcExceptionHandler
-            public Status handleA(ExceptionA e, GRpcExceptionScope scope) {
-                return Status.NOT_FOUND;
-            }
 
             @GRpcExceptionHandler
             public Status handleB(ExceptionB e, GRpcExceptionScope scope) {
@@ -86,7 +97,6 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 return Status.DATA_LOSS;
             }
         }
-
 
         @GRpcService
         static class CustomService extends CustomServiceGrpc.CustomServiceImplBase {
@@ -150,10 +160,12 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
     @SpyBean
     private Cfg.CustomErrorHandler handler;
 
+    @SpyBean
+    private BeanCustomErrorHandler beanErrorHandler;
+
 
     @Test
     public void streamingServiceErrorHandlerTest() throws ExecutionException, InterruptedException, TimeoutException {
-
 
 
         final CompletableFuture<Throwable> errorFuture = new CompletableFuture<>();
@@ -180,15 +192,12 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
         requests.onCompleted();
 
 
-
-
-
         final Throwable actual = errorFuture.get(20, TimeUnit.SECONDS);
         assertThat(actual, notNullValue());
         assertThat(actual, isA(StatusRuntimeException.class));
-        assertThat(((StatusRuntimeException)actual).getStatus(), is(Status.RESOURCE_EXHAUSTED));
+        assertThat(((StatusRuntimeException) actual).getStatus(), is(Status.RESOURCE_EXHAUSTED));
 
-        Mockito.verify(srv,times(1)).handle(any(CheckedException1.class),any());
+        Mockito.verify(srv, times(1)).handle(any(CheckedException1.class), any());
 
     }
 
@@ -205,9 +214,8 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
         Mockito.verify(srv, never()).handleB(any(), any());
 
-
+        Mockito.verify(beanErrorHandler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handle(any(), any());
-        Mockito.verify(handler, never()).handleA(any(), any());
         Mockito.verify(handler, times(1)).handleCheckedException(any(CheckedException.class), any());
         Mockito.verify(handler, never()).handleB(any(), any());
 
@@ -229,7 +237,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
 
         Mockito.verify(handler, never()).handle(any(), any());
-        Mockito.verify(handler, times(1)).handleA(any(), any());
+        Mockito.verify(beanErrorHandler, times(1)).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
 
 
@@ -249,7 +257,7 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
         Mockito.verify(srv, never()).handleB(any(), any());
 
 
-        Mockito.verify(handler, never()).handleA(any(), any());
+        Mockito.verify(beanErrorHandler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
         Mockito.verify(handler, times(1)).handle(any(), any());
 
@@ -272,9 +280,9 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
         final String testTrailer = statusRuntimeException.getTrailers().get(Metadata.Key.of("test", Metadata.ASCII_STRING_MARSHALLER));
         assertThat(testTrailer, is("5"));
 
-
+        
+        Mockito.verify(beanErrorHandler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handle(any(), any());
-        Mockito.verify(handler, never()).handleA(any(), any());
         Mockito.verify(handler, never()).handleB(any(), any());
 
     }

@@ -3,12 +3,15 @@ package org.lognet.springboot.grpc.autoconfigure;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
 import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
 import org.lognet.springboot.grpc.recovery.HandlerMethod;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -24,10 +27,9 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
                 .get("value");
 
         ReflectionUtils.MethodFilter f = method -> AnnotatedElementUtils.hasAnnotation(method, GRpcExceptionHandler.class);
-        for(String adviceBeanName:context.getBeanFactory().getBeanNamesForAnnotation(GRpcServiceAdvice.class)){
-            final String beanClassName = context.getBeanFactory().getBeanDefinition(adviceBeanName)
-                    .getBeanClassName();
-
+        for(String adviceBeanName : context.getBeanFactory().getBeanNamesForAnnotation(GRpcServiceAdvice.class)){
+            BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(adviceBeanName);
+            String beanClassName = getBeanClassName(beanDefinition);
             try {
                 for (Method method : MethodIntrospector.selectMethods(Class.forName(beanClassName), f)) {
                     final Optional<Class<? extends Throwable>> handledException = HandlerMethod.getHandledException(method, false);
@@ -40,10 +42,20 @@ public class OnMissingErrorHandlerCondition extends SpringBootCondition {
                     }
                 }
             } catch (ClassNotFoundException e) {
-                throw  new IllegalStateException(e);
+                throw new IllegalStateException(e);
             }
         };
 
         return ConditionOutcome.match();
+    }
+
+    private String getBeanClassName(BeanDefinition beanDefinition) {
+        if(beanDefinition instanceof AnnotatedBeanDefinition){
+            MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) beanDefinition).getFactoryMethodMetadata();
+            if(factoryMethodMetadata != null){
+                return factoryMethodMetadata.getReturnTypeName();
+            }
+        }
+        return beanDefinition.getBeanClassName();
     }
 }
