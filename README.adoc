@@ -918,8 +918,8 @@ class MyClient{
 <1> Create client interceptor
 <2> Intercept channel
 <3> Turn the binary format on/off: +
-* When `true`, the authentication header is sent with  `Authentication-bin` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.BinaryMarshaller.html[binary marshaller].
-* When `false`, the authentication header is sent with  `Authentication` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.AsciiMarshaller.html[ASCII marshaller].
+* When `true`, the authentication header is sent with  `Authorization-bin` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.BinaryMarshaller.html[binary marshaller].
+* When `false`, the authentication header is sent with  `Authorization` key using https://grpc.github.io/grpc-java/javadoc/io/grpc/Metadata.AsciiMarshaller.html[ASCII marshaller].
 <4> Provide token generator function (Please refer to link:grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/auth/JwtAuthBaseTest.java[for example].)
 
 Per-call::
