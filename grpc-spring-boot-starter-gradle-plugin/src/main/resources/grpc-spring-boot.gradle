@@ -1,5 +1,5 @@
 apply plugin: 'com.google.protobuf'
-
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().getOrNull())
         .ifPresent {v->
             project.dependencies {
@@ -40,7 +40,11 @@ sourceSets.configureEach{s->
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}"
+        if(DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX()){
+            artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}:osx-x86_64"
+        }else {
+            artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}"
+        }
     }
     plugins {
         grpc {
