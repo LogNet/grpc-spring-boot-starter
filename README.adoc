@@ -905,7 +905,7 @@ class MyClient{
         );
 
         Channel authenticatedChannel = ClientInterceptors.intercept(
-                ManagedChannelBuilder.forAddress("host", 6565), clientInterceptor <2>
+                ManagedChannelBuilder.forAddress("host", 6565).build(), clientInterceptor <2>
         );
         // use authenticatedChannel to invoke GRPC service
     }
