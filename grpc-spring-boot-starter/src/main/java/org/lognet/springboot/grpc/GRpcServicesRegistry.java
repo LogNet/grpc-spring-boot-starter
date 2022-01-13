@@ -17,11 +17,7 @@ import org.springframework.util.function.SingletonSupplier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -127,7 +123,9 @@ public class GRpcServicesRegistry implements InitializingBean, ApplicationContex
         final Map<MethodDescriptor<?, ?>, GrpcServiceMethod> map = new HashMap<>();
 
         Function<String, ReflectionUtils.MethodFilter> filterFactory = name ->
-                method ->  method.getName().equalsIgnoreCase(name) ;
+                method ->
+             method.getName().equalsIgnoreCase(name.replaceAll("_",""));
+
 
         for (BindableService service : getBeanNameToServiceBeanMap().values()) {
             final ServerServiceDefinition serviceDefinition = service.bindService();

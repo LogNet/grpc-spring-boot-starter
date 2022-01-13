@@ -6,11 +6,9 @@ import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import io.grpc.examples.CalculatorGrpc;
-import io.grpc.examples.CalculatorOuterClass;
-import io.grpc.examples.GreeterGrpc;
-import io.grpc.examples.SecuredCalculatorGrpc;
+import io.grpc.examples.*;
 import io.grpc.stub.StreamObserver;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +17,7 @@ import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.demo.DemoAppConfiguration;
 import org.lognet.springboot.grpc.demo.NotSpringBeanInterceptor;
+import org.lognet.springboot.grpc.demo.SecuredGreeterService;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
@@ -77,6 +76,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
                     .username("user1")
                     .password(pwd)
                     .roles("reader")
+                    .authorities("SCOPE_profile")
                     .build();
         }
 
@@ -127,6 +127,16 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
     }
 
+    @Test
+    public void methodNameWithUnderscore() {
+        Empty response = SecuredGreeterGrpc.newBlockingStub(selectedChanel)
+                .anotherSecuredMethodsWithUnderScoRes(Empty.newBuilder().build());
+        assertThat(response, CoreMatchers.notNullValue(Empty.class));
+
+        response = SecuredGreeterGrpc.newBlockingStub(selectedChanel)
+                .securedMethodsWithUnderScoRes(Empty.newBuilder().build());
+        assertThat(response, CoreMatchers.notNullValue(Empty.class));
+    }
 
     @Test
     public void serviceLevelSecurityAuthenticationWithoutAuthorization() {

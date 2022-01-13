@@ -19,6 +19,9 @@ service SecuredGreeter {
     rpc SayAuthHello ( google.protobuf.Empty) returns (  HelloReply) {}
     rpc SayAuthHello2 ( google.protobuf.Empty) returns (  HelloReply) {}
 
+    rpc secured_methods_with_UnderScoRes(google.protobuf.Empty) returns (google.protobuf.Empty){}
+    rpc AnotherSecured_methods_with_UnderScoRes(google.protobuf.Empty) returns (google.protobuf.Empty){}
+
 
 }
 

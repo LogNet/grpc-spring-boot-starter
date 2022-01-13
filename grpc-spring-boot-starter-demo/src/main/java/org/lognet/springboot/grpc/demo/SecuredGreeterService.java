@@ -21,6 +21,18 @@ import java.util.Optional;
 public class SecuredGreeterService extends SecuredGreeterGrpc.SecuredGreeterImplBase{
 
     @Override
+    public void securedMethodsWithUnderScoRes(Empty request, StreamObserver<Empty> responseObserver) {
+            responseObserver.onNext(Empty.newBuilder().build());
+            responseObserver.onCompleted();
+    }
+
+    @Override
+    public void anotherSecuredMethodsWithUnderScoRes(Empty request, StreamObserver<Empty> responseObserver) {
+        responseObserver.onNext(Empty.newBuilder().build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void sayAuthHello(Empty request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
         final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
         Assert.isTrue(SecurityContextHolder.getContext().getAuthentication() == auth,()->"Authentication object should be the same as in GRPC context");
