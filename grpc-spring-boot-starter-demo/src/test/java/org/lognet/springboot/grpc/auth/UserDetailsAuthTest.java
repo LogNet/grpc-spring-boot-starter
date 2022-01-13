@@ -75,8 +75,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
             return User.withDefaultPasswordEncoder()
                     .username("user1")
                     .password(pwd)
-                    .roles("reader")
-                    .authorities("SCOPE_profile")
+                    .authorities("ROLE_reader","SCOPE_profile")
                     .build();
         }
 
