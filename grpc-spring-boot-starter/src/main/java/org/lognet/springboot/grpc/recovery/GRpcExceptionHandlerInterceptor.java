@@ -1,27 +1,27 @@
 package org.lognet.springboot.grpc.recovery;
 
-import io.grpc.Context;
-import io.grpc.ForwardingServerCall;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
-import io.grpc.Status;
+import io.grpc.*;
 import org.lognet.springboot.grpc.FailureHandlingSupport;
 import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
+import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.core.Ordered;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Ordered {
-    private static final Context.Key<AtomicBoolean> CALL_IS_CLOSED = Context.key("CALL_IS_CLOSED");
+
     private final GRpcExceptionHandlerMethodResolver methodResolver;
     private final FailureHandlingSupport failureHandlingSupport;
 
+    private Integer order;
 
-    public GRpcExceptionHandlerInterceptor(GRpcExceptionHandlerMethodResolver methodResolver, FailureHandlingSupport failureHandlingSupport) {
+    public GRpcExceptionHandlerInterceptor(GRpcExceptionHandlerMethodResolver methodResolver, FailureHandlingSupport failureHandlingSupport, GRpcServerProperties serverProperties) {
         this.methodResolver = methodResolver;
         this.failureHandlingSupport = failureHandlingSupport;
+        this.order = Optional.ofNullable(serverProperties.getRecovery())
+                .map(GRpcServerProperties.RecoveryProperties::getInterceptorOrder)
+                .orElse(Ordered.HIGHEST_PRECEDENCE);
     }
 
 
@@ -98,7 +98,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
+        return order;
     }
 
 

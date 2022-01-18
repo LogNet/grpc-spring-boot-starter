@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerInterceptor;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -39,7 +41,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,9 +55,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes = DemoApp.class,
         properties = {
                 "grpc.security.auth.fail-fast=false", // give validator a chance to run before failing auth
-                "grpc.security.auth.interceptor-order=3", //third
-                "grpc.metrics.interceptor-order=2", //second
-                "grpc.validation.interceptor-order=1" //first
+                "grpc.security.auth.interceptor-order=3",
+                "grpc.metrics.interceptor-order=2",
+                "grpc.validation.interceptor-order=1",
+                "grpc.recovery.interceptor-order=-1"
         }
         ,webEnvironment = SpringBootTest.WebEnvironment.NONE
         )
@@ -76,10 +81,12 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
     @Before
     public void setUp() throws Exception {
         calledInterceptors.clear();
-        final List<Class<? extends ServerInterceptor>> orderedInterceptorsClasses = Arrays.asList( //according the order define by properties
+        final List<Class<? extends ServerInterceptor>> orderedInterceptorsClasses = Arrays.asList( //according to the order defined by properties
+                GRpcExceptionHandlerInterceptor.class,
                 TestCfg.UserDefinedInterceptor.class,
                 ValidatingInterceptor.class,
                 SecurityInterceptor.class
+
         );
         final List<Class<?>> orderedInterceptors = interceptors
                 .stream()
@@ -88,6 +95,20 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
                 .collect(Collectors.toList());
 
         assertThat(orderedInterceptors, Matchers.is(orderedInterceptorsClasses));
+
+        Function<Class<? extends Ordered>,Integer> getOrder = ordered->
+         interceptors
+                .stream()
+                .filter(ordered::isInstance)
+                .map(ordered::cast)
+                .map(Ordered::getOrder)
+                .findFirst()
+                .orElse(null);
+
+        assertThat(getOrder.apply(GRpcExceptionHandlerInterceptor.class),Matchers.is(-1));
+        assertThat(getOrder.apply(ValidatingInterceptor.class),Matchers.is(1));
+        assertThat(getOrder.apply(SecurityInterceptor.class),Matchers.is(3));
+
 
     }
 

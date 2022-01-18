@@ -34,6 +34,8 @@ public class GRpcServerProperties {
 
     private SecurityProperties security;
 
+    private RecoveryProperties recovery;
+
     private NettyServerProperties nettyServer;
 
     private ConsulProperties consul = new ConsulProperties();
@@ -81,6 +83,11 @@ public class GRpcServerProperties {
 
     }
 
+    @Getter
+    @Setter
+    public static class RecoveryProperties{
+        private Integer interceptorOrder;
+    }
     @Getter
     @Setter
     public static class SecurityProperties {

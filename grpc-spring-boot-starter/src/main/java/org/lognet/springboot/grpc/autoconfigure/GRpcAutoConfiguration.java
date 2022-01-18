@@ -14,6 +14,7 @@ import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerMethodResolver;
 import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -85,8 +86,9 @@ public class GRpcAutoConfiguration {
     @Bean
     @GRpcGlobalInterceptor
     public GRpcExceptionHandlerInterceptor exceptionHandlerInterceptor(FailureHandlingSupport failureHandlingSupport,
-                                                                       GRpcExceptionHandlerMethodResolver methodResolver) {
-        return new GRpcExceptionHandlerInterceptor(methodResolver,failureHandlingSupport);
+                                                                       GRpcExceptionHandlerMethodResolver methodResolver,
+                                                                       GRpcServerProperties serverProperties) {
+        return new GRpcExceptionHandlerInterceptor(methodResolver,failureHandlingSupport,serverProperties);
     }
 
     @Bean

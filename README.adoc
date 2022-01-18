@@ -269,13 +269,12 @@ public  class B implements ServerInterceptor{
 The starter uses built-in interceptors to implement error handling, Spring `Security`, `Validation` and `Metrics` integration.
 Their order can also be controlled by below properties :
 
+* `grpc.recovery.interceptor-order` (error handling interceptor order, defaults to `Ordered.HIGHEST_PRECEDENCE`)
 * `grpc.security.auth.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+1`)
 * `grpc.validation.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+10`)
 * `grpc.metrics.interceptor-order` ( defaults to `Ordered.HIGHEST_PRECEDENCE+20`)
 
 This gives you the ability to set up the desired order of built-in and your custom interceptors.
-
-Error handling interceptor has the `Ordered.HIGHEST_PRECEDENCE`.
 
 *Keep on reading !!! There is more*
 
