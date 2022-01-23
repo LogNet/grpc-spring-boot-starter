@@ -88,8 +88,8 @@ dependencies {
     testCompile "org.springframework.cloud:spring-cloud-config-client"
     testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
-    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.16"
-    testCompile "com.playtika.testcontainers:embedded-consul:2.0.16"
+    testCompile "com.playtika.testcontainers:embedded-keycloak:2.0.18"
+    testCompile "com.playtika.testcontainers:embedded-consul:2.0.18"
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
@@ -100,11 +100,8 @@ dependencies {
 
     bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
 
-    kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.9"
+    kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.0.18"
     kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
-
-
-    //testCompile  "org.testcontainers:junit-jupiter:1.14.3"
 
 
 }

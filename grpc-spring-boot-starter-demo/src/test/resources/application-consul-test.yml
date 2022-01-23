@@ -11,3 +11,7 @@ spring:
     service-registry:
       auto-registration:
         enabled: true
+grpc:
+  consul:
+    discovery:
+      prefer-ip-address: true
