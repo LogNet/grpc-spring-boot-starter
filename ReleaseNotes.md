@@ -1,33 +1,51 @@
-| Starter Version      | gRPC versions |Spring Boot version
-| -------------------- |:-------------:|:------------------:|
-| [4.5.10](#version-4510)| 1.42.0        |2.5.6               |
-| [4.5.9](#version-459)| 1.41.0        |2.5.6               |
-| [4.5.8](#version-458)| 1.41.0        |2.5.0               |
-| [4.5.7](#version-457)| 1.40.1        |2.5.0               |
-| [4.5.6](#version-456)| 1.40.0        |2.5.0               |
-| [4.5.5](#version-455)| 1.39.0        |2.5.0               |
-| [4.5.4](#version-454)| 1.38.0        |2.5.0               |
-| [4.5.3](#version-453)| 1.38.0        |2.5.0               |
-| [4.5.2](#version-452)| 1.38.0        |2.5.0               |
-| [4.5.1](#version-451)| 1.38.0        |2.5.0               |
-| [4.5.0](#version-450)| 1.37.0        |2.4.5               |
-| [4.4.7](#version-447)| 1.37.0        |2.4.5               |
-| [4.4.6](#version-446)| 1.37.0        |2.4.5               |
-| [4.4.5](#version-445)| 1.36.0        |2.4.1               |
-| [4.4.4](#version-444)| 1.35.0        |2.4.1               |
-| [4.4.3](#version-443)| 1.35.0        |2.4.1               |
-| [4.4.2](#version-442)| 1.34.1        |2.4.1               |
-| [4.4.1](#version-443)| 1.34.1        |2.3.4.RELEASE       |
-| [4.4.0](#version-440)| 1.34.1        |2.3.4.RELEASE       |
-| [4.3.1](#version-431)| 1.34.1        |2.3.4.RELEASE       |
-| [4.3.0](#version-430)| 1.34.1        |2.3.4.RELEASE       |
-| [4.2.3](#version-423)| 1.33.1        |2.3.4.RELEASE       |
-| [4.2.2](#version-422)| 1.33.0        |2.3.4.RELEASE       |
-| [4.2.1](#version-421)| 1.33.0        |2.3.4.RELEASE       |
-| [4.2.0](#version-420)| 1.33.0        |2.3.3.RELEASE       |
-| [4.1.0](#version-410)| 1.32.2        |2.3.3.RELEASE       |
-| [4.0.0](#version-400)| 1.32.1        |2.3.3.RELEASE       |
-| [3.5.7](#version-357)| 1.31.1        |1.5.13.RELEASE      |
+| Starter Version         | gRPC versions | Spring Boot version 
+|-------------------------|:-------------:|:-------------------:|
+| [4.6.0](#version-460)   |    1.43.2     |        2.6.2        |
+| [4.5.10](#version-4510) |    1.42.0     |        2.5.6        |
+| [4.5.9](#version-459)   |    1.41.0     |        2.5.6        |
+| [4.5.8](#version-458)   |    1.41.0     |        2.5.0        |
+| [4.5.7](#version-457)   |    1.40.1     |        2.5.0        |
+| [4.5.6](#version-456)   |    1.40.0     |        2.5.0        |
+| [4.5.5](#version-455)   |    1.39.0     |        2.5.0        |
+| [4.5.4](#version-454)   |    1.38.0     |        2.5.0        |
+| [4.5.3](#version-453)   |    1.38.0     |        2.5.0        |
+| [4.5.2](#version-452)   |    1.38.0     |        2.5.0        |
+| [4.5.1](#version-451)   |    1.38.0     |        2.5.0        |
+| [4.5.0](#version-450)   |    1.37.0     |        2.4.5        |
+| [4.4.7](#version-447)   |    1.37.0     |        2.4.5        |
+| [4.4.6](#version-446)   |    1.37.0     |        2.4.5        |
+| [4.4.5](#version-445)   |    1.36.0     |        2.4.1        |
+| [4.4.4](#version-444)   |    1.35.0     |        2.4.1        |
+| [4.4.3](#version-443)   |    1.35.0     |        2.4.1        |
+| [4.4.2](#version-442)   |    1.34.1     |        2.4.1        |
+| [4.4.1](#version-443)   |    1.34.1     |    2.3.4.RELEASE    |
+| [4.4.0](#version-440)   |    1.34.1     |    2.3.4.RELEASE    |
+| [4.3.1](#version-431)   |    1.34.1     |    2.3.4.RELEASE    |
+| [4.3.0](#version-430)   |    1.34.1     |    2.3.4.RELEASE    |
+| [4.2.3](#version-423)   |    1.33.1     |    2.3.4.RELEASE    |
+| [4.2.2](#version-422)   |    1.33.0     |    2.3.4.RELEASE    |
+| [4.2.1](#version-421)   |    1.33.0     |    2.3.4.RELEASE    |
+| [4.2.0](#version-420)   |    1.33.0     |    2.3.3.RELEASE    |
+| [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
+| [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
+| [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 4.6.0
+## :star: New Features
+
+- Enable users to configure the error handling interceptor precedence [#276](https://github.com/LogNet/grpc-spring-boot-starter/issues/276)
+
+## :lady_beetle: Bug Fixes
+
+- Upgrade io.netty:netty-tcnative-boringssl-static to compatible version [#279](https://github.com/LogNet/grpc-spring-boot-starter/issues/279)
+- Cannot boot if there is no GRpcService [#264](https://github.com/LogNet/grpc-spring-boot-starter/issues/264)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to 1.43.x [#271](https://github.com/LogNet/grpc-spring-boot-starter/issues/271)
+- Add support for Spring Boot 2.6 [#270](https://github.com/LogNet/grpc-spring-boot-starter/issues/270)
+- Upgrade protoc compiler to  3.19.2 [#262](https://github.com/LogNet/grpc-spring-boot-starter/issues/262)
+
 
 # Version 4.5.10
 ## :star: New Features
@@ -42,7 +60,7 @@
 
 ## :hammer: Dependency Upgrades
 
-- Upgrade protoc compiler to  3.17.3 [#262](https://github.com/LogNet/grpc-spring-boot-starter/issues/262)
+
 - Upgrade protobuf-gradle-plugin to 0.8.17 [#261](https://github.com/LogNet/grpc-spring-boot-starter/issues/261)
 - Upgrade grpc to 1.42.0 [#260](https://github.com/LogNet/grpc-spring-boot-starter/issues/260)
 
