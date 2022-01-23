@@ -9,6 +9,7 @@ import io.grpc.health.v1.HealthGrpc;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.reflection.v1alpha.ServerReflectionGrpc;
 import org.junit.After;
 import org.junit.Before;
@@ -79,9 +80,9 @@ public abstract class GrpcServerTestBase {
                     .map(GRpcServerProperties.SecurityProperties::getCertChain)
                     .orElse(null);
             if(null!= certChain){
-                ((NettyChannelBuilder)channelBuilder)
-                        .useTransportSecurity()
-                        .sslContext(GrpcSslContexts.forClient().trustManager(certChain.getInputStream()).build());
+
+                setupTransportSecurity(channelBuilder,certChain);
+
             }else{
                 channelBuilder.usePlaintext();
             }
@@ -99,6 +100,12 @@ public abstract class GrpcServerTestBase {
         selectedChanel = getChannel();
     }
 
+    protected void setupTransportSecurity(ManagedChannelBuilder<?> channelBuilder, Resource certChain) throws IOException {
+        SslContext sslContext = GrpcSslContexts.forClient().trustManager(certChain.getInputStream()).build();
+        ((NettyChannelBuilder)channelBuilder)
+                .useTransportSecurity()
+                .sslContext(sslContext);
+    }
     protected  Channel getChannel(){
        return Optional.ofNullable(channel).orElse(inProcChannel);
     }

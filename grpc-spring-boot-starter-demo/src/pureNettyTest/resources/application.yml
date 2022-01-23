@@ -8,7 +8,10 @@ management:
       base-path: "/"
       exposure:
         include: "*"
-
+grpc:
+  security:
+    cert-chain: classpath:cert/server-cert.pem
+    private-key: classpath:cert/server-key.pem
 
 logging:
   level:

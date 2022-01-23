@@ -1,7 +1,11 @@
 package org.lognet.springboot.grpc;
 
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.ServerBuilder;
 import io.grpc.examples.GreeterGrpc;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
+import io.netty.handler.ssl.SslContext;
 import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -15,8 +19,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.validation.Valid;
+import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.List;
 
@@ -29,7 +37,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         properties = {
                 "grpc.netty-server.additional-listen-addresses[0]=localhost:0",
                 "grpc.netty-server.primary-listen-address=localhost:0"
-
 }
 )
 @Import(PureNettyTransportConfigTest.TestConfig.class)
@@ -55,6 +62,13 @@ public class PureNettyTransportConfigTest extends  GrpcServerTestBase{
     @Autowired
     private GRpcServerBuilderConfigurer configurer;
 
+    @Override
+    protected void setupTransportSecurity(ManagedChannelBuilder<?> channelBuilder, Resource certChain) throws IOException {
+        SslContext sslContext = GrpcSslContexts.forClient().trustManager(certChain.getInputStream()).build();
+        ((NettyChannelBuilder)channelBuilder)
+                .useTransportSecurity()
+                .sslContext(sslContext);
+    }
 
     @BeforeClass
     public static void before()  {
