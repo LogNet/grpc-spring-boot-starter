@@ -108,6 +108,32 @@ public class GrpcServiceAuthorizationConfigurer
             return withSecuredAnnotation(false);
         }
 
+        public AuthorizedMethod anyMethodExcluding(MethodDescriptor<?, ?>... methodDescriptor) {
+            List<MethodDescriptor> excludedMethods = Arrays.asList(methodDescriptor);
+            MethodDescriptor[] allMethods = servicesRegistry.getBeanNameToServiceBeanMap()
+                    .values()
+                    .stream()
+                    .map(BindableService::bindService)
+                    .map(ServerServiceDefinition::getServiceDescriptor)
+                    .map(ServiceDescriptor::getMethods)
+                    .flatMap(Collection::stream)
+                    .filter(method -> !excludedMethods.contains(method))
+                    .toArray(MethodDescriptor[]::new);
+            return new AuthorizedMethod(allMethods);
+        }
+
+        public AuthorizedMethod anyServiceExcluding(ServiceDescriptor... serviceDescriptor) {
+            List<ServiceDescriptor> excludedServices = Arrays.asList(serviceDescriptor);
+            ServiceDescriptor[] allServices = servicesRegistry.getBeanNameToServiceBeanMap()
+                    .values()
+                    .stream()
+                    .map(BindableService::bindService)
+                    .map(ServerServiceDefinition::getServiceDescriptor)
+                    .filter(service -> !excludedServices.contains(service))
+                    .toArray(ServiceDescriptor[]::new);
+            return new AuthorizedMethod(allServices);
+        }
+
         /**
          * Same as  {@code withSecuredAnnotation(true)}
          * @return GrpcSecurity configuration
