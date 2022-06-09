@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,43 +94,50 @@ public class GrpcServiceAuthorizationConfigurer
             this.servicesRegistry = servicesRegistry;
         }
 
-        public AuthorizedMethod anyMethod() {
-            ServiceDescriptor[] allServices = servicesRegistry.getBeanNameToServiceBeanMap()
-                    .values()
-                    .stream()
-                    .map(BindableService::bindService)
-                    .map(ServerServiceDefinition::getServiceDescriptor)
-                    .toArray(ServiceDescriptor[]::new);
-            return new AuthorizedMethod(allServices);
-
-        }
-
         public GrpcSecurity withoutSecuredAnnotation() {
             return withSecuredAnnotation(false);
         }
 
+        public AuthorizedMethod anyMethod() {
+            return  anyMethodExcluding(s->false);
+        }
+
         public AuthorizedMethod anyMethodExcluding(MethodDescriptor<?, ?>... methodDescriptor) {
-            List<MethodDescriptor> excludedMethods = Arrays.asList(methodDescriptor);
-            MethodDescriptor[] allMethods = servicesRegistry.getBeanNameToServiceBeanMap()
+            List<MethodDescriptor<?,?>> excludedMethods = Arrays.asList(methodDescriptor);
+            return anyMethodExcluding(excludedMethods::contains);
+
+        }
+
+
+        public AuthorizedMethod anyMethodExcluding(Predicate<MethodDescriptor<?, ?>> excludePredicate) {
+            MethodDescriptor<?,?>[] allMethods = servicesRegistry.getBeanNameToServiceBeanMap()
                     .values()
                     .stream()
                     .map(BindableService::bindService)
                     .map(ServerServiceDefinition::getServiceDescriptor)
                     .map(ServiceDescriptor::getMethods)
                     .flatMap(Collection::stream)
-                    .filter(method -> !excludedMethods.contains(method))
+                    .filter(excludePredicate.negate())
                     .toArray(MethodDescriptor[]::new);
             return new AuthorizedMethod(allMethods);
         }
 
+
+        public AuthorizedMethod anyService() {
+            return anyServiceExcluding(s-> false);
+        }
         public AuthorizedMethod anyServiceExcluding(ServiceDescriptor... serviceDescriptor) {
             List<ServiceDescriptor> excludedServices = Arrays.asList(serviceDescriptor);
+            return anyServiceExcluding(excludedServices::contains);
+        }
+        public AuthorizedMethod anyServiceExcluding(Predicate<ServiceDescriptor> excludePredicate) {
+
             ServiceDescriptor[] allServices = servicesRegistry.getBeanNameToServiceBeanMap()
                     .values()
                     .stream()
                     .map(BindableService::bindService)
                     .map(ServerServiceDefinition::getServiceDescriptor)
-                    .filter(service -> !excludedServices.contains(service))
+                    .filter(excludePredicate.negate())
                     .toArray(ServiceDescriptor[]::new);
             return new AuthorizedMethod(allServices);
         }
