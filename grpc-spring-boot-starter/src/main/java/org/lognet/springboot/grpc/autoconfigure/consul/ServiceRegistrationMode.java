@@ -32,7 +32,7 @@ public enum ServiceRegistrationMode implements ServiceRegistrationStrategy {
         @Override
         public Collection<NewService> createServices(Server grpcServer, ApplicationContext applicationContext) {
             GRpcServerProperties gRpcServerProperties = applicationContext.getBean(GRpcServerProperties.class);
-            ConsulDiscoveryProperties consulProperties = gRpcServerProperties.getConsul().getDiscovery();
+            ConsulDiscoveryProperties consulProperties = applicationContext.getBean(GrpcConsulProperties.class).getDiscovery();
 
 
 

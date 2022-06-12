@@ -1,6 +1,5 @@
 package org.lognet.springboot.grpc.autoconfigure.consul;
 
-import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
 import org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistry;
@@ -26,12 +25,13 @@ public class GrpcConsulRegistrar implements SmartLifecycle {
 
         ApplicationContext applicationContext = event.getApplicationContext();
 
-        final GRpcServerProperties.ConsulProperties gRpcConsulProperties = applicationContext
-                .getBean(GRpcServerProperties.class)
-                .getConsul();
+        final GrpcConsulProperties gRpcConsulProperties = applicationContext
+                .getBean(GrpcConsulProperties.class);
 
 
-        registrations = gRpcConsulProperties.getRegistrationMode()
+
+        registrations = gRpcConsulProperties
+                .getRegistrationMode()
                 .createServices(event.getServer(),applicationContext)
                 .stream()
                 .map(s->new ConsulRegistration(s, gRpcConsulProperties.getDiscovery()))

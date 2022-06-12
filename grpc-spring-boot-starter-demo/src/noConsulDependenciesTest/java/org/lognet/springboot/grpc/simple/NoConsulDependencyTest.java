@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.autoconfigure.consul.GrpcConsulProperties;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,7 +26,7 @@ public class NoConsulDependencyTest extends GrpcServerTestBase {
 
         final NoClassDefFoundError error = assertThrows(NoClassDefFoundError.class, () -> {
             try {
-                ReflectionUtils.findMethod(GRpcServerProperties.ConsulProperties.class, "getDiscovery");
+                ReflectionUtils.findMethod(GrpcConsulProperties.class, "getDiscovery");
             }catch (IllegalStateException illegalStateException){
                 throw illegalStateException.getCause();
             }

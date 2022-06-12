@@ -17,7 +17,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.autoconfigure.consul.GrpcConsulProperties;
 import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -57,8 +57,8 @@ public abstract class ConsulRegistrationBaseTest {
 
         List<ServiceInstance> instances = discoveryClient.getInstances(serviceId);
 
-        final ServiceRegistrationMode registrationMode = applicationContext.getBean(GRpcServerProperties.class)
-                .getConsul().getRegistrationMode();
+        final ServiceRegistrationMode registrationMode = applicationContext.getBean(GrpcConsulProperties.class)
+                .getRegistrationMode();
 
         if(!ServiceRegistrationMode.NOOP.equals(registrationMode)) {
 
@@ -90,8 +90,7 @@ public abstract class ConsulRegistrationBaseTest {
     public void contextLoads() {
 
         int minExpectedRegistrations;
-        switch (applicationContext.getBean(GRpcServerProperties.class)
-                .getConsul()
+        switch (applicationContext.getBean(GrpcConsulProperties.class)
                 .getRegistrationMode()) {
             case STANDALONE_SERVICES:
                 minExpectedRegistrations = getServicesDefinitions().size();

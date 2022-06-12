@@ -5,7 +5,7 @@ import com.ecwid.consul.v1.health.model.HealthService;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.autoconfigure.consul.GrpcConsulProperties;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.client.ServiceInstance;
@@ -34,7 +34,7 @@ public class ConsulDefaultRegistrationTest extends ConsulRegistrationBaseTest{
         assertThat(cloudConsulProps.getInstanceGroup(),Matchers.nullValue(String.class));
 
 
-        final ConsulDiscoveryProperties grpcConsulProperties = applicationContext.getBean(GRpcServerProperties.class).getConsul().getDiscovery();
+        final ConsulDiscoveryProperties grpcConsulProperties = applicationContext.getBean(GrpcConsulProperties.class).getDiscovery();
         assertThat(grpcConsulProperties.getTags(), Matchers.hasSize(3));
         assertThat(grpcConsulProperties.getTags(), Matchers.hasItem("1"));
 

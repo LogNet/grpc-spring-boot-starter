@@ -38,8 +38,6 @@ public class GRpcServerProperties {
 
     private NettyServerProperties nettyServer;
 
-    private ConsulProperties consul = new ConsulProperties();
-
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private volatile Integer runningPort = null;
@@ -102,13 +100,7 @@ public class GRpcServerProperties {
         }
     }
 
-    @Getter
-    @Setter
-    public static class ConsulProperties {
-        ServiceRegistrationMode registrationMode = ServiceRegistrationMode.SINGLE_SERVER_WITH_GLOBAL_CHECK;
-        @NestedConfigurationProperty
-        ConsulDiscoveryProperties discovery;
-    }
+
     @Getter
     @Setter
     public static class NettyServerProperties {
