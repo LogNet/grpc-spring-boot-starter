@@ -52,7 +52,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class Issue295Test extends GrpcServerTestBase {
 
 
-
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -62,47 +61,5 @@ public class Issue295Test extends GrpcServerTestBase {
         ResponseEntity<String> response = restTemplate.getForEntity("/actuator/configprops", String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
-
-    @Test
-    public void actuatorGrpcTest() throws ExecutionException, InterruptedException {
-        ResponseEntity<String> response = restTemplate.getForEntity("/actuator/grpc", String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        final DocumentContext json = JsonPath.parse(response.getBody(), Configuration.builder()
-                .mappingProvider(new JacksonMappingProvider())
-                .jsonProvider(new JacksonJsonProvider())
-                .build());
-        final String[] statuses = json.read("services.*name", new TypeRef<String[]>() {});
-        assertThat(statuses,Matchers.arrayWithSize(Matchers.greaterThan(0)));
-        for(String s:statuses) {
-            assertThat(s, Matchers.not(Matchers.blankOrNullString()));
-        }
-
-        final Integer port = json.read("port", Integer.class);
-        assertThat(port,Matchers.greaterThan(0));
-    }
-
-    @Test
-    public void actuatorHealthTest() throws ExecutionException, InterruptedException {
-        ResponseEntity<String> response = restTemplate.getForEntity("/actuator/health/grpc", String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        final DocumentContext json = JsonPath.parse(response.getBody(), Configuration.builder()
-                        .mappingProvider(new JacksonMappingProvider())
-                        .jsonProvider(new JacksonJsonProvider())
-                .build());
-        final TypeRef<Set<String>> setOfString = new TypeRef<Set<String>>() {
-        };
-        final Set<String> services = json.read("components.keys()", setOfString);
-        assertThat(services,Matchers.containsInAnyOrder( super.appServicesNames().toArray(new String[]{})));
-
-        final Set<String> statuses = json.read("components.*status", setOfString);
-        assertThat(statuses,Matchers.contains(Status.UP.getCode()));
-
-
-
-    }
-
-
-
 
 }
