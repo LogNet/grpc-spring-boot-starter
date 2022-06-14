@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version 
 |-------------------------|:-------------:|:-------------------:|
+| [4.7.1](#version-471)   |    1.47.0     |        2.6.8        |
 | [4.7.0](#version-470)   |    1.45.1     |        2.6.6        |
 | [4.6.0](#version-460)   |    1.43.2     |        2.6.2        |
 | [4.5.10](#version-4510) |    1.42.0     |        2.5.6        |
@@ -30,6 +31,20 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 4.7.1
+## :star: New Features
+
+- Security API enhancements [#296](https://github.com/LogNet/grpc-spring-boot-starter/issues/296)
+
+## :lady_beetle: Bug Fixes
+
+- Class ConsulDiscoveryProperties is not found when accessing /configprops [#295](https://github.com/LogNet/grpc-spring-boot-starter/issues/295)
+
+## :hammer: Dependency Upgrades
+
+- Support spring boot 2.6.8 [#298](https://github.com/LogNet/grpc-spring-boot-starter/issues/298)
+- Upgrade grpc to 1.47.0 [#297](https://github.com/LogNet/grpc-spring-boot-starter/issues/297)
 
 # Version 4.7.0
 ## :hammer: Dependency Upgrades

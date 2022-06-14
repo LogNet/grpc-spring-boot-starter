@@ -707,10 +707,29 @@ a|
 
 === Server side configuration
 
-GRPC security configuration follows the same principals and APIs as Spring WEB security configuration.
+GRPC security configuration follows the same principals and APIs as Spring WEB security configuration, it's  enabled by default if you have `org.springframework.security:spring-security-config`  dependency in your classpath.
+
+You can use `@Secured` annotation on services/methods to protect your endpoints, or by using API and overriding defaults (which precesses `@Secured` annotation ):
+
+[source,java]
+----
+ @Configuration
+   class MySecurityCfg extends GrpcSecurityConfigurerAdapter {
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+            MethodsDescriptor<?,?> adminMethods = MyServiceGrpc.getSomeMethod();
+            builder
+                    .authorizeRequests()
+                    .methods(adminMethods).hasAnyRole("admin")
+                    .anyMethodExcluding(adminMethods).hasAnyRole("user")
+                    .withSecuredAnnotation();<1>
+        }
+    }
+----
+<1> or combine `API` with `@Secured` annotations.
 
 ==== Default
-GRPC security is enabled by default if you have `org.springframework.security:spring-security-config`  dependency in your classpath.
+
 
 This default configuration secures GRPC methods/services annotated with `org.springframework.security.access.annotation.@Secured`  annotation. +
 Leaving  value of the annotation empty (`@Secured({})`) means : `authenticate` only, no authorization will be performed.
