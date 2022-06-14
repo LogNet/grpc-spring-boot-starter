@@ -12,9 +12,7 @@ management:
 logging:
   level:
     root: INFO
-spring:
-  main:
-    web-application-type: none
+
 
 ---
 spring:
