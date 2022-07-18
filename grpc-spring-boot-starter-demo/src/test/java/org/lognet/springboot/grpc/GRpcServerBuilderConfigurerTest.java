@@ -2,14 +2,17 @@ package org.lognet.springboot.grpc;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.ServerBuilder;
 import io.grpc.examples.CalculatorGrpc;
 import io.grpc.examples.CalculatorOuterClass;
 import org.hamcrest.CoreMatchers;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -32,7 +35,10 @@ public class GRpcServerBuilderConfigurerTest {
     private ManagedChannel channel;
 
     @Autowired
-    private GRpcServerBuilderConfigurer configurer;
+    private GRpcServerBuilderConfigurer customGrpcServerBuilderConfigurer;
+
+    @MockBean(name = "anotherConfigurer")
+    private GRpcServerBuilderConfigurer anotherConfigurer;
 
     @Rule
     public OutputCaptureRule outputCapture = new OutputCaptureRule();
@@ -53,7 +59,7 @@ public class GRpcServerBuilderConfigurerTest {
     public void customServerBuilderTest() throws ExecutionException, InterruptedException {
 
 
-        Assert.assertNotEquals("Custom configurer should be picked up", configurer.getClass(),GRpcServerBuilderConfigurer.class);
+        Assert.assertNotEquals("Custom configurer should be picked up", customGrpcServerBuilderConfigurer.getClass(),GRpcServerBuilderConfigurer.class);
 
         double result = CalculatorGrpc.newFutureStub(channel)
                 .calculate(CalculatorOuterClass.CalculatorRequest.newBuilder()
@@ -66,5 +72,6 @@ public class GRpcServerBuilderConfigurerTest {
 
         // expect invocation via custom executor
         outputCapture.expect(CoreMatchers.containsString(CUSTOM_EXECUTOR_MESSAGE));
+        Mockito.verify(anotherConfigurer,Mockito.times(1)).configure(Mockito.any(ServerBuilder.class));
     }
 }

@@ -38,6 +38,7 @@ import org.springframework.util.SocketUtils;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -117,7 +118,7 @@ public class GRpcAutoConfiguration {
 
 
     @Bean(name = "grpcInternalConfigurator")
-    public Consumer<ServerBuilder<?>> configurator(GRpcServerBuilderConfigurer configurer,GRpcServerProperties grpcServerProperties) {
+    public Consumer<ServerBuilder<?>> configurator(List<GRpcServerBuilderConfigurer> configurers, GRpcServerProperties grpcServerProperties) {
         return serverBuilder -> {
             if (grpcServerProperties.isEnabled()) {
                 Optional.ofNullable(grpcServerProperties.getSecurity())
@@ -137,7 +138,7 @@ public class GRpcAutoConfiguration {
                             }
                         });
             }
-            configurer.configure(serverBuilder);
+            configurers.forEach(c->c.configure(serverBuilder));
         };
     }
 
