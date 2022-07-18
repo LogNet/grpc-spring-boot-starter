@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version 
 |-------------------------|:-------------:|:-------------------:|
+| [4.8.0](#version-480)   |    1.47.0     |        2.7.1        |
 | [4.7.1](#version-471)   |    1.47.0     |        2.6.8        |
 | [4.7.0](#version-470)   |    1.45.1     |        2.6.6        |
 | [4.6.0](#version-460)   |    1.43.2     |        2.6.2        |
@@ -31,6 +32,16 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 4.8.0
+## :star: New Features
+
+- Support multiple GRpcServerBuilderConfigurer beans [#284](https://github.com/LogNet/grpc-spring-boot-starter/issues/284)
+
+## :hammer: Dependency Upgrades
+
+- Spring boot 2.7.x suppport [#299](https://github.com/LogNet/grpc-spring-boot-starter/issues/299)
+
 
 # Version 4.7.1
 ## :star: New Features

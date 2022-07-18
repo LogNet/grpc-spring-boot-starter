@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.7.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.8.0'
 }
 
 
@@ -48,10 +48,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.7.0') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.8.0') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
- compile 'io.grpc:grpc-netty:1.43.2' // <1>
+ compile 'io.grpc:grpc-netty:1.47.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -65,7 +65,7 @@ In  this case you'll need to forcibly and explicitly set the  `grpc` version to 
 configurations.all {
  resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-        details.useVersion "1.45.1"
+        details.useVersion "1.47.0"
         }
     }
 }
@@ -409,6 +409,7 @@ If the more detailed tuning is needed for security setup, please use custom conf
 === Custom gRPC Server Configuration
 
 To intercept the `io.grpc.ServerBuilder` instance used to build the `io.grpc.Server`, you can add bean that inherits from `org.lognet.springboot.grpc.GRpcServerBuilderConfigurer` to your context and override the `configure` method. +
+Multiple configurers are also supported. +
 By the time of invocation of `configure` method, all discovered services, including theirs interceptors, had been added to the passed builder. +
 In your implementation of `configure` method, you can add your custom configuration:
 
@@ -420,8 +421,6 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
         public void configure(ServerBuilder<?> serverBuilder){
             serverBuilder
                 .executor(YOUR EXECUTOR INSTANCE)
-                .compressorRegistry(YOUR COMPRESSION REGISTRY)
-                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY)
                 .useTransportSecurity(YOUR TRANSPORT SECURITY SETTINGS);
             ((NettyServerBuilder)serverBuilder)// cast to NettyServerBuilder (which is the default server) for further customization
                     .sslContext(GrpcSslContexts  // security fine tuning
@@ -430,6 +429,17 @@ public class MyGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
                                     .build())
                     .maxConnectionAge(...)
                     .maxConnectionAgeGrace(...);
+
+        }
+    };
+}
+@Component
+public class MyCustomCompressionGRpcServerBuilderConfigurer extends GRpcServerBuilderConfigurer{
+        @Override
+        public void configure(ServerBuilder<?> serverBuilder){
+            serverBuilder
+                .compressorRegistry(YOUR COMPRESSION REGISTRY)
+                .decompressorRegistry(YOUR DECOMPRESSION REGISTRY) ;
 
         }
     };
