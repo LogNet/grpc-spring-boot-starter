@@ -22,7 +22,7 @@ Best viewed with image:https://www.octotree.io/_nuxt/img/03e72a3.svg["Octoree",w
 
 == Features
 
-Auto-configures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application (https://github.com/LogNet/grpc-spring-boot-starter/blob/master/images/demo.gif[short video])
+Autoconfigures and runs the embedded gRPC server with @GRpcService-enabled beans as part of spring-boot application (https://github.com/LogNet/grpc-spring-boot-starter/blob/master/images/demo.gif[short video])
 
 == Setup
 
@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.8.0'
+    compile 'io.github.lognet:grpc-spring-boot-starter:4.8.1'
 }
 
 
@@ -48,10 +48,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.8.0') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:4.8.1') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
- compile 'io.grpc:grpc-netty:1.47.0' // <1>
+ compile 'io.grpc:grpc-netty:1.49.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -65,7 +65,7 @@ In  this case you'll need to forcibly and explicitly set the  `grpc` version to 
 configurations.all {
  resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-        details.useVersion "1.47.0"
+        details.useVersion "1.49.0"
         }
     }
 }
@@ -334,15 +334,17 @@ Make sure to read <<Interceptors ordering>> chapter.
 
 Make sure to include below dependencies :
 
-```
+[source]
+----
 implementation "org.springframework.boot:spring-boot-starter-actuator"
 implementation "io.micrometer:micrometer-registry-prometheus"
 implementation 'org.springframework.boot:spring-boot-starter-web'
-```
+----
 
 Configuration :
 
-```yml
+[source,yml]
+----
 management:
   metrics:
     export:
@@ -352,7 +354,7 @@ management:
     web:
       exposure:
         include: "*"
-```
+----
 
 Standard `/actuator/metrics` and `/actuator/prometheus` endpoints will render `grpc.server.calls` metrics (see demo https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/DemoAppTest.java[here]).
 
@@ -361,7 +363,7 @@ GRPC scrapping https://github.com/prometheus/prometheus/issues/8414[proposal]
 
 === Spring Boot Validation support
 
-The starter can be  auto-configured to validate request/response gRPC service messages.
+The starter can be  autoconfigured to validate request/response gRPC service messages.
 Please continue to <<Implementing message validation>> for configuration details.
 
 === Spring cloud stream support
@@ -514,17 +516,17 @@ public  class HelloService extends GreeterGrpc.GreeterImplBase{
     @Override
     public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<GreeterOuterClass.HelloReply> responseObserver) {
         ...
-    throw new GRpcRuntimeExceptionWrapper(new SomeException()) ;  <1>
+    throw new GRpcRuntimeExceptionWrapper(new SomeException()) ; // <1>
 //or
-    throw new GRpcRuntimeExceptionWrapper(new SomeException(),"myHint") <2>
+    throw new GRpcRuntimeExceptionWrapper(new SomeException(),"myHint");// <2>
 //or
-     throw new SomeRuntimeException() <3>
+     throw new SomeRuntimeException(); //<3>
     }
     @GRpcExceptionHandler
    public Status privateHandler (SomeException npe,GRpcExceptionScope scope){
         // INVOKED when thrown from  HelloService service
-        String myHint = scope.getHintAs(String.class);    <4>
-        scope.getResponseHeaders().put(Metadata.Key.of("custom", Metadata.ASCII_STRING_MARSHALLER), "Value"); <5>
+        String myHint = scope.getHintAs(String.class);   // <4>
+        scope.getResponseHeaders().put(Metadata.Key.of("custom", Metadata.ASCII_STRING_MARSHALLER), "Value");// <5>
    }
    @GRpcExceptionHandler
    public Status privateHandler (SomeRuntimeException npe,GRpcExceptionScope scope){
@@ -788,20 +790,20 @@ One is possible to plug in your own bespoke authentication provider by implement
     @Override
         public void configure(GrpcSecurity builder) throws Exception {
         builder.authorizeRequests()
-                    .anyMethod().authenticated()<1>
+                    .anyMethod().authenticated()//<1>
                     .and()
-                    .authenticationSchemeSelector(new AuthenticationSchemeSelector() { <2>
+                    .authenticationSchemeSelector(new AuthenticationSchemeSelector() { //<2>
                             @Override
                             public Optional<Authentication> getAuthScheme(CharSequence authorization) {
-                                return new MyAuthenticationObject(); <3>
+                                return new MyAuthenticationObject();// <3>
                             }
                         })
-                    .authenticationProvider(new AuthenticationProvider() { <4>
+                    .authenticationProvider(new AuthenticationProvider() {// <4>
                         @Override
                         public Authentication authenticate(Authentication authentication) throws AuthenticationException {
                             MyAuthenticationObject myAuth= (MyAuthenticationObject)authentication;
                             //validate myAuth
-                            return MyValidatedAuthenticationObject(withAuthorities);<5>
+                            return MyValidatedAuthenticationObject(withAuthorities);//<5>
                         }
 
                         @Override
@@ -1176,12 +1178,12 @@ public class GreeterServiceConsumer {
     private EurekaClient client;
 
     public void greet(String name) {
-        final InstanceInfo instanceInfo = client.getNextServerFromEureka("my-service-name", false);<1>
+        final InstanceInfo instanceInfo = client.getNextServerFromEureka("my-service-name", false);//<1>
         final ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())
                 .usePlaintext()
-                .build(); <2>
-        final GreeterServiceGrpc.GreeterServiceFutureStub stub = GreeterServiceGrpc.newFutureStub(channel); <3>
-        stub.greet(name); <4>
+                .build(); //<2>
+        final GreeterServiceGrpc.GreeterServiceFutureStub stub = GreeterServiceGrpc.newFutureStub(channel); //<3>
+        stub.greet(name); //<4>
 
     }
 }

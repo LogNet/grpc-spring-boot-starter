@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version 
 |-------------------------|:-------------:|:-------------------:|
+| [4.8.1](#version-480)   |    1.49.0     |        2.7.3        |
 | [4.8.0](#version-480)   |    1.47.0     |        2.7.1        |
 | [4.7.1](#version-471)   |    1.47.0     |        2.6.8        |
 | [4.7.0](#version-470)   |    1.45.1     |        2.6.6        |
@@ -32,6 +33,13 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 4.8.1
+## :hammer: Dependency Upgrades
+
+- Upgrade Spring boot to 2.7.3 [#307](https://github.com/LogNet/grpc-spring-boot-starter/issues/307)
+- Upgrade grpc to  1.49 [#305](https://github.com/LogNet/grpc-spring-boot-starter/issues/305)
+
 
 # Version 4.8.0
 ## :star: New Features
