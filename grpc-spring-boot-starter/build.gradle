@@ -38,6 +38,10 @@ dependencyManagement {
         mavenBom "org.springframework.boot:spring-boot-starter-parent:${springBootVersion}"
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
+    generatedPomCustomization {
+        enabled(false)
+    }
+
 }
 task generateReleaseNotes(type: JavaExec, group: "documentation") {
     def m = java.util.regex.Pattern.compile("(\\d+\\.\\d+\\.\\d+).*").matcher(version.toString())
