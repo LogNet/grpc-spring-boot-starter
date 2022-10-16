@@ -87,11 +87,13 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
 
 
         final GrpcSecurityMetadataSource metadataSource =getSharedObject(GrpcSecurityMetadataSource.class);
+        DefaultMethodSecurityExpressionHandler methodSecurityExpressionHandler = new DefaultMethodSecurityExpressionHandler();
+        methodSecurityExpressionHandler.setApplicationContext(getApplicationContext());
         final DelegatingMethodSecurityMetadataSource compositeMDS = new DelegatingMethodSecurityMetadataSource(Arrays.asList(
                 metadataSource,
                 new PrePostAnnotationSecurityMetadataSource(
                         new ExpressionBasedAnnotationAttributeFactory(
-                            new DefaultMethodSecurityExpressionHandler()
+                                methodSecurityExpressionHandler
                         )
                 )
         ));
@@ -104,7 +106,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
 
 
         ExpressionBasedPreInvocationAdvice expressionAdvice = new ExpressionBasedPreInvocationAdvice();
-        expressionAdvice.setExpressionHandler(new DefaultMethodSecurityExpressionHandler());
+        expressionAdvice.setExpressionHandler(methodSecurityExpressionHandler);
 
 
         final AffirmativeBased accessDecisionManager = new AffirmativeBased(Arrays.asList(

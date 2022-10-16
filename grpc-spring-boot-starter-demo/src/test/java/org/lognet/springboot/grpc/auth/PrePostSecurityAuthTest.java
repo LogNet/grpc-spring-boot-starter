@@ -23,11 +23,16 @@ import org.lognet.springboot.grpc.security.AuthHeader;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.mockito.Mockito;
+import org.mockito.verification.VerificationMode;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -44,6 +49,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.notNull;
 
 @SpringBootTest(classes = DemoApp.class)
 @RunWith(SpringRunner.class)
@@ -79,19 +85,30 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
         }
     }
 
+    public static class PermissionService{
+        public boolean allow() {
+            final Authentication auth = GrpcSecurity.AUTHENTICATION_CONTEXT_KEY.get();
+            assertThat(auth, Matchers.notNullValue(Authentication.class));
+            return true;
+        }
+    }
     @TestConfiguration
     static class TestCfg extends GrpcSecurityConfigurerAdapter {
         @GRpcService(interceptors = NotSpringBeanInterceptor.class)
-        @PreAuthorize("isAuthenticated()")
+        @PreAuthorize("isAuthenticated() && @permissionService.allow()")
         public static class SecuredCalculatorService extends SecuredCalculatorGrpc.SecuredCalculatorImplBase{
             @Override
             public void calculate(CalculatorOuterClass.CalculatorRequest request, StreamObserver<CalculatorOuterClass.CalculatorResponse> responseObserver) {
                 responseObserver.onNext(DemoAppConfiguration.CalculatorService.calculate(request));
                 responseObserver.onCompleted();
-
-
             }
+
         }
+        @Bean
+        public PermissionService permissionService(){
+            return  new PermissionService();
+        }
+
         @Override
         public void configure(GrpcSecurity builder) throws Exception {
             builder.authorizeRequests()
@@ -136,6 +153,9 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
     @MockBean
     private ITaskService service;
 
+    @SpyBean
+    private PermissionService permissionService;
+
     @Test
     public void preAuthAnnotationOnClassTest() {
 
@@ -161,6 +181,8 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
                             .build());
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.UNAUTHENTICATED));
+
+        Mockito.verify(permissionService, Mockito.atLeastOnce()).allow();
     }
 
     @Test
