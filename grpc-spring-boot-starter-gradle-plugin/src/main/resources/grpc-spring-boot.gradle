@@ -20,24 +20,6 @@ configurations.all {
 }
 
 
-sourceSets.configureEach{s->
-    java {
-        srcDir project.buildDir.toPath()
-                .resolve("protoGen")
-                .resolve(s.name)
-                .resolve("java")
-                .toFile()
-
-        srcDir project.buildDir.toPath()
-                .resolve("protoGen")
-                .resolve(s.name)
-                .resolve("grpc")
-                .toFile()
-    }
-}
-
-
-
 protobuf {
     protoc {
         if(DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX()){
