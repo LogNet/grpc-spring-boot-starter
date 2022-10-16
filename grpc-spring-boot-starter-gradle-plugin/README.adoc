@@ -23,7 +23,7 @@ Bootstraps the project with  `com.google.protobuf` gradle plugin (including `grp
 ----
 plugins {
     id 'java'
-    id "io.github.lognet.grpc-spring-boot" version '4.8.1'
+    id "io.github.lognet.grpc-spring-boot" version '4.9.0'
 }
 
 ----
@@ -53,7 +53,7 @@ grpcSpringBoot {
 ----
 <1> `io.github.lognet:grpc-spring-boot-starter` version to use, defaults to the same version as this plugin.
 <2> `grpc` version to use, defaults to the version the `io.github.lognet:grpc-spring-boot-starter` was compiled with (see version matrix https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.md[here])
-<3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.19.2`)
+<3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.21.7`)
 
 
 The version of `com.google.protobuf` can be controlled via `pluginManagement` block :
@@ -67,7 +67,7 @@ pluginManagement {
     }
 }
 ----
-<1> Defaults to  `0.8.18`
+<1> Defaults to `0.9.1`.
 
 
 == License
