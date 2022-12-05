@@ -23,7 +23,7 @@ Bootstraps the project with  `com.google.protobuf` gradle plugin (including `grp
 ----
 plugins {
     id 'java'
-    id "io.github.lognet.grpc-spring-boot" version '4.9.0'
+    id "io.github.lognet.grpc-spring-boot" version '4.9.1'
 }
 
 ----
