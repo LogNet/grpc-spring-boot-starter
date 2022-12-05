@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "com.netflix.nebula:nebula-project-plugin:7.0.7"
+        classpath "com.netflix.nebula:nebula-project-plugin:9.4.0"
     }
 }
 plugins {
@@ -56,10 +56,10 @@ configurations.findAll{ cfg ->
 
 extensions.facets.each{
     if(it.name.endsWith("Test")) {
-        configurations.getByName("${it.name}Compile").extendsFrom(configurations.testCompile)
-        configurations.getByName("${it.name}Runtime").extendsFrom(configurations.testRuntime)
+        configurations.getByName("${it.name}Implementation").extendsFrom(configurations.testImplementation)
+        configurations.getByName("${it.name}RuntimeOnly").extendsFrom(configurations.testRuntimeOnly)
 
-        dependencies.add("${it.name}Compile", sourceSets.test.output)
+        dependencies.add("${it.name}Implementation", sourceSets.test.output)
     }
 }
 
@@ -79,29 +79,29 @@ dependencies {
     implementation project(':grpc-spring-boot-starter')
     implementation project(':grpc-client-spring-boot-starter')
 
-    testCompile 'org.springframework.boot:spring-boot-starter-aop'
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
-    testCompile('org.springframework.cloud:spring-cloud-starter-consul-discovery')
-    testCompile 'org.awaitility:awaitility:4.0.3'
-    testCompile "org.springframework.cloud:spring-cloud-config-server"
-    testCompile "org.springframework.cloud:spring-cloud-config-client"
-    testCompile "org.springframework.cloud:spring-cloud-starter-bootstrap"
+    testImplementation 'org.springframework.boot:spring-boot-starter-aop'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.github.stefanbirkner:system-rules:1.18.0'
+    testImplementation('org.springframework.cloud:spring-cloud-starter-consul-discovery')
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+    testImplementation "org.springframework.cloud:spring-cloud-config-server"
+    testImplementation "org.springframework.cloud:spring-cloud-config-client"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-bootstrap"
 
-    testCompile "com.playtika.testcontainers:embedded-keycloak:2.2.2"
-    testCompile "com.playtika.testcontainers:embedded-consul:2.2.2"
+    testImplementation "com.playtika.testcontainers:embedded-keycloak:2.2.2"
+    testImplementation "com.playtika.testcontainers:embedded-consul:2.2.2"
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
 
 
-    pureNettyTestCompile "io.grpc:grpc-netty"
+    pureNettyTestImplementation "io.grpc:grpc-netty"
 
 
-    bothPureAndShadedNettyTestCompile "io.grpc:grpc-netty"
+    bothPureAndShadedNettyTestImplementation "io.grpc:grpc-netty"
 
-    kafkaStreamTestCompile "com.playtika.testcontainers:embedded-kafka:2.2.2"
-    kafkaStreamTestCompile "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+    kafkaStreamTestImplementation "com.playtika.testcontainers:embedded-kafka:2.2.2"
+    kafkaStreamTestImplementation "org.springframework.cloud:spring-cloud-starter-stream-kafka"
 
 
 }

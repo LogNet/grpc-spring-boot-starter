@@ -11,6 +11,7 @@ buildscript {
     }
 }
 plugins {
+    id 'java-library'
     id "de.undercouch.download" version "4.1.1"
     id "com.github.sherter.google-java-format" version "0.9"
     id "io.github.lognet.grpc-spring-boot"
@@ -19,7 +20,7 @@ plugins {
 grpcSpringBoot {
     grpcSpringBootStarterVersion.set((String)null)
 }
-apply plugin: 'java'
+
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'maven-publish'
@@ -28,7 +29,7 @@ apply plugin: "de.marcphilipp.nexus-publish"
 apply plugin: 'io.franzbecker.gradle-lombok'
 
 configurations{
-    testCompile {
+    testImplementation {
         exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
     }
@@ -83,7 +84,7 @@ task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
 }
 
 googleJavaFormat {
-    toolVersion = '1.9'
+    toolVersion = '1.15.0'
     source = delombokOutputDir
     include '**/*.java'
 }
@@ -129,11 +130,12 @@ nexusPublishing {
     }
 
 }
+configurations.testImplementation.setCanBeResolved(true)
+
 task testDependencyFatJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar) {
     dependsOn testClasses,classes
-
     mainClass =  'org.lognet.grpc.demo.DemoApp'
-    setClasspath(configurations.testCompile)
+    setClasspath(configurations.testImplementation)
     doFirst {
         classpath sourceSets.getByName("test").java.outputDir
         classpath sourceSets.getByName("main").output
@@ -268,10 +270,10 @@ signing {
 
 dependencies {
     compileOnly "io.grpc:grpc-netty:${grpcVersion}"
-    compile "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    compile "io.grpc:grpc-services:${grpcVersion}"
-    compile "org.springframework.boot:spring-boot-starter"
-    compile 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
+    api "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    api "io.grpc:grpc-services:${grpcVersion}"
+    api "org.springframework.boot:spring-boot-starter"
+    api 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -283,8 +285,8 @@ dependencies {
     compileOnly 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
 
-    testCompile "io.grpc:grpc-netty"
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "io.grpc:grpc-netty"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }
 
