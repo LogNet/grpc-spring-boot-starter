@@ -2,7 +2,7 @@ buildscript {
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.10.3")
+        classpath("org.springframework.experimental:spring-aot-gradle-plugin:0.12.1")
     }
 }
 
@@ -55,10 +55,7 @@ test {
 jar {
     enabled = false
 }
-springAot {
-    failOnMissingSelectorHint = false
 
-}
 
 bootBuildImage {
     builder = 'paketobuildpacks/builder:tiny'
