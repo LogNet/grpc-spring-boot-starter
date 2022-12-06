@@ -74,7 +74,7 @@ subprojects {
     tasks.withType(JavaCompile).configureEach {
         options.errorprone.disableWarningsInGeneratedCode = true
 
-        options.errorprone.enabled  = (it.name.startsWith("compile") && it.name.endsWith("TestJava") ) ? false:(null != System.getenv("CI"))
+        options.errorprone.enabled  = false // (it.name.startsWith("compile") && it.name.endsWith("TestJava") ) ? false:(null != System.getenv("CI"))
 
 
     }
