@@ -164,7 +164,7 @@ jar {
                     "run", "--rm",
                     "-v", "${tasks.testDependencyFatJar.archiveFile.get().getAsFile().parent}:/tmp",
                     "-v", "${aotDir}:/out",
-                    "findepi/graalvm:java11-native",
+                    "findepi/graalvm:java17-native",
                     "java",
                     "-agentlib:native-image-agent=config-output-dir=/out/",
                     "-jar", "/tmp/${tasks.testDependencyFatJar.archiveFileName.get()}",
