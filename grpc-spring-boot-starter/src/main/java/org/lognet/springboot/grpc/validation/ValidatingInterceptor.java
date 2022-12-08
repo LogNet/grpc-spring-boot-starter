@@ -15,9 +15,9 @@ import org.lognet.springboot.grpc.validation.group.RequestMessage;
 import org.lognet.springboot.grpc.validation.group.ResponseMessage;
 import org.springframework.core.Ordered;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import java.util.Optional;
 import java.util.Set;
 

@@ -17,7 +17,7 @@ public class NettyTransportConfigTest1 extends GrpcServerTestBase {
 
     @Override
     protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
-        Assert.assertEquals(getPort(),gRpcServerProperties.getNettyServer().getPrimaryListenAddress().getPort());
+        Assert.assertNotEquals(getPort(),gRpcServerProperties.getNettyServer().getPrimaryListenAddress().getPort());
         return stub;
 
     }

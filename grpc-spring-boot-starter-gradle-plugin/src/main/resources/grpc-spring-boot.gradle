@@ -4,6 +4,7 @@ java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().g
         .ifPresent {v->
             project.dependencies {
                 implementation("io.github.lognet:grpc-spring-boot-starter:${v}")
+                implementation("javax.annotation:javax.annotation-api:1.3.2")
             }
         }
 

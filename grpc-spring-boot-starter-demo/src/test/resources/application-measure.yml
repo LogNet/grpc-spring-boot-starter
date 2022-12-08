@@ -1,7 +1,7 @@
 management:
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         step: 10s
         enabled: true
 grpc:

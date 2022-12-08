@@ -17,13 +17,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import java.util.Optional;
 
 @Configuration
 @ConditionalOnClass({Validator.class})
-
 @EnableConfigurationProperties(GRpcValidationProperties.class)
 public class GRpcValidationConfiguration {
 

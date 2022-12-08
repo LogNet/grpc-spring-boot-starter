@@ -1,9 +1,11 @@
 management:
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: false
-      simple:
+  simple:
+    metrics:
+      export:
         enabled: false
   endpoints:
     web:
@@ -13,11 +15,6 @@ logging:
   level:
     root: INFO
 
-
----
-spring:
-  config:
-    activate:
-      on-profile: "!default-port"
 grpc:
   port: 0
+

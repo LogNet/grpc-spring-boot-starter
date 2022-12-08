@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -157,7 +156,7 @@ public class GRpcAutoConfiguration {
                     case 2:
                         port = Integer.parseInt(chunks[1]);
                         if (port < 1) {
-                            port = SocketUtils.findAvailableTcpPort();
+                            port = 0;
                         }
                         break;
                     default:

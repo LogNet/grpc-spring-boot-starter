@@ -15,7 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,7 +54,7 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
 
 
     public static void startConfigServer(Properties properties ) throws IOException, URISyntaxException {
-        int configPort = SocketUtils.findAvailableTcpPort();
+        int configPort = TestSocketUtils.findAvailableTcpPort();
         File cfgFile = temporaryFolder.newFile("grpc-demo.properties");
         try(OutputStream os = new FileOutputStream(cfgFile)) {
             properties.store(os,null);

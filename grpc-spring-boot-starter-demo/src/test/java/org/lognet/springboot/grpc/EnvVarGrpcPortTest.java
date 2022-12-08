@@ -12,7 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.SocketUtils;
+import org.springframework.test.util.TestSocketUtils;
+
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
 
@@ -28,7 +29,7 @@ public class EnvVarGrpcPortTest extends GrpcServerTestBase {
 
     @ClassRule
     public static EnvironmentVariables environmentVariables() {
-        randomPort = SocketUtils.findAvailableTcpPort();
+        randomPort = TestSocketUtils.findAvailableTcpPort();
 
         environmentVariables = new EnvironmentVariables();
         environmentVariables.set("GRPC_PORT", "" + randomPort);

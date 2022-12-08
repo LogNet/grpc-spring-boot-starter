@@ -1,7 +1,5 @@
 package org.lognet.springboot.grpc.security.jwt;
 
-import com.nimbusds.jose.shaded.json.JSONNavi;
-import com.nimbusds.jose.shaded.json.JSONObject;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +8,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.util.Assert;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,17 +27,15 @@ public class JwtAuthProviderFactory {
                     .orElse(jwt.getClaimAsString("azp"));
             Assert.hasText(claim,"Neither 'aud' nor 'azp' claims exist");
 
-            JSONObject resourceAccess = jwt.getClaim("resource_access");
+            var resource_access = jwt.getClaimAsMap("resource_access");
+            Object roles = (( Map<String, Object>) resource_access.get(claim)).get("roles");
+            List<String> rolesList = (List<String>) roles;
 
-            final JSONNavi<?> roles = JSONNavi.newInstanceArray()
-                    .add(resourceAccess)
-                    .at(0)
-                    .at(claim)
-                    .at("roles");
 
-            return IntStream.range(0, roles.getSize())
-                    .mapToObj(k ->  new SimpleGrantedAuthority("ROLE_" + roles.get(k).toString()))
+            return IntStream.range(0, rolesList.size())
+                    .mapToObj(k ->  new SimpleGrantedAuthority("ROLE_" + rolesList.get(k)))
                     .collect(Collectors.toList());
+
 
 
         });

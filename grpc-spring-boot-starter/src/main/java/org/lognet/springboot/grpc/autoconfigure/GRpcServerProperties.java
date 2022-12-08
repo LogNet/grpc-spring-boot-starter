@@ -3,16 +3,14 @@ package org.lognet.springboot.grpc.autoconfigure;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.lognet.springboot.grpc.autoconfigure.consul.ServiceRegistrationMode;
+import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
-import org.springframework.util.SocketUtils;
 import org.springframework.util.unit.DataSize;
 
-import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
@@ -25,7 +23,7 @@ import java.util.Optional;
 @ConfigurationProperties("grpc")
 @Getter
 @Setter
-public class GRpcServerProperties {
+public class GRpcServerProperties implements InitializingBean {
     public static final int DEFAULT_GRPC_PORT = 6565;
     /**
      * gRPC server port
@@ -67,31 +65,39 @@ public class GRpcServerProperties {
      */
     private int shutdownGrace = 0;
 
-    public Integer getRunningPort() {
-        if (null == runningPort) {
-            synchronized (this) {
-                if (null == runningPort) {
-                    runningPort = Optional.ofNullable(port)
-                            .map(p -> 0 == p ? SocketUtils.findAvailableTcpPort() : p)
-                            .orElse(DEFAULT_GRPC_PORT);
-                }
-            }
-        }
-        return runningPort;
+    @EventListener
+    public void onServerStarted(GRpcServerInitializedEvent event) {
+        runningPort = event.getServer().getPort();
+    }
 
+    public Integer getPortOrDefault() {
+        return Optional.ofNullable(port).orElse(DEFAULT_GRPC_PORT);
+    }
+
+    public Integer getRunningPort() {
+        return runningPort;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Optional.ofNullable(nettyServer)
+                .map(NettyServerProperties::getPrimaryListenAddress)
+                .ifPresent(a -> port = a.getPort());
     }
 
     @Getter
     @Setter
-    public static class RecoveryProperties{
+    public static class RecoveryProperties {
         private Integer interceptorOrder;
     }
+
     @Getter
     @Setter
     public static class SecurityProperties {
         private Resource certChain;
         private Resource privateKey;
         private Auth auth;
+
         @Getter
         @Setter
         public static class Auth {
@@ -123,21 +129,15 @@ public class GRpcServerProperties {
 
         private Boolean permitKeepAliveWithoutCalls;
         /**
-         *  grpc listen address. <P>If configured, takes precedence over {@code grpc.port} property value.</p>
-         *  Supported format:
-         *  <ul><li>{@code host:port} (if port is less than 1, uses random value)
-         *  <li>{@code host:}  (uses default grpc port, 6565 )</ul>
+         * grpc listen address. <P>If configured, takes precedence over {@code grpc.port} property value.</p>
+         * Supported format:
+         * <ul><li>{@code host:port} (if port is less than 1, uses random value)
+         * <li>{@code host:}  (uses default grpc port, 6565 )</ul>
          */
         private InetSocketAddress primaryListenAddress;
 
         private List<InetSocketAddress> additionalListenAddresses;
     }
 
-    @PostConstruct
-    public void init(){
-        Optional.ofNullable(nettyServer)
-                .map(NettyServerProperties::getPrimaryListenAddress)
-                .ifPresent(a->port = a.getPort());
 
-    }
 }

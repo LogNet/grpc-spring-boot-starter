@@ -123,6 +123,7 @@ public class GRpcServerRunner implements SmartLifecycle {
             startDaemonAwaitThread();
             log.info("gRPC Server started, listening on port {}.", server.getPort());
 
+
             applicationContext.publishEvent(new GRpcServerInitializedEvent(applicationContext, server));
         } catch (Exception e) {
             throw new RuntimeException("Failed to start GRPC server", e);

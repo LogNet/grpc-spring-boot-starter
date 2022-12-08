@@ -20,7 +20,7 @@ public class PureNettyConfiguration {
                 .<ServerBuilder<?>> map(n->{
                     final NettyServerBuilder builder = Optional.ofNullable(n.getPrimaryListenAddress())
                             .map(NettyServerBuilder::forAddress)
-                            .orElse(NettyServerBuilder.forPort(grpcServerProperties.getRunningPort()));
+                            .orElse(NettyServerBuilder.forPort(grpcServerProperties.getPortOrDefault()));
 
 
                     Optional.ofNullable(n.getAdditionalListenAddresses())
@@ -67,6 +67,6 @@ public class PureNettyConfiguration {
                     return builder;
 
                 })
-                .orElse(ServerBuilder.forPort(grpcServerProperties.getRunningPort()));
+                .orElse(ServerBuilder.forPort(grpcServerProperties.getPortOrDefault()));
     }
 }

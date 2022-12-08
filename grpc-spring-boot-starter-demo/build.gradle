@@ -26,7 +26,7 @@ facets {
 }
 
 grpcSpringBoot {
-    grpcSpringBootStarterVersion.set((String)null)
+    grpcSpringBootStarterVersion.set((String) null)
 }
 dependencyManagement {
     imports {
@@ -34,7 +34,7 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
-configurations.findAll{ cfg ->
+configurations.findAll { cfg ->
     if (cfg.name.startsWith("pureNetty")) {
         cfg.exclude group: 'io.grpc', module: 'grpc-netty-shaded'
 
@@ -50,12 +50,11 @@ configurations.findAll{ cfg ->
     }
 
 
-
 }
 
 
-extensions.facets.each{
-    if(it.name.endsWith("Test")) {
+extensions.facets.each {
+    if (it.name.endsWith("Test")) {
         configurations.getByName("${it.name}Implementation").extendsFrom(configurations.testImplementation)
         configurations.getByName("${it.name}RuntimeOnly").extendsFrom(configurations.testRuntimeOnly)
 
@@ -75,7 +74,7 @@ dependencies {
     implementation "org.springframework.security:spring-security-oauth2-resource-server"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation project(':grpc-spring-boot-starter')
     implementation project(':grpc-client-spring-boot-starter')
 

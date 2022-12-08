@@ -10,6 +10,7 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
 import org.lognet.springboot.grpc.autoconfigure.OnGrpcServerEnabled;
+import org.lognet.springboot.grpc.context.GRpcServerInitializedEvent;
 import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.lognet.springboot.grpc.health.ManagedHealthStatusService;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 import java.util.List;
 import java.util.Map;
@@ -87,8 +89,8 @@ public class GRpcActuateAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        public GrpcEndpoint grpcEndpoint(GRpcServicesRegistry registry, @LocalRunningGrpcPort int port) {
-            return new GrpcEndpoint(registry, port);
+        public GrpcEndpoint grpcEndpoint(GRpcServicesRegistry registry) {
+            return new GrpcEndpoint(registry);
         }
 
     }
@@ -145,11 +147,16 @@ public class GRpcActuateAutoConfiguration {
         private final GRpcServicesRegistry registry;
         private int port;
 
-        public GrpcEndpoint(GRpcServicesRegistry registry, int port) {
+        public GrpcEndpoint(GRpcServicesRegistry registry ) {
             this.registry = registry;
-            this.port = port;
+
         }
 
+
+        @EventListener
+        public void onGrpcServerStarted(GRpcServerInitializedEvent e){
+            port = e.getServer().getPort();
+        }
 
 
         @ReadOperation

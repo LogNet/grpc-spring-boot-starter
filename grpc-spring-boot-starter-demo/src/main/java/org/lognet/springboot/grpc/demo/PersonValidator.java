@@ -2,8 +2,8 @@ package org.lognet.springboot.grpc.demo;
 
 import io.grpc.examples.GreeterOuterClass;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PersonValidator implements  ConstraintValidator<PersonConstraint, GreeterOuterClass.Person> {
 

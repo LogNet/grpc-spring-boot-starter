@@ -137,7 +137,7 @@ task testDependencyFatJar(type: org.springframework.boot.gradle.tasks.bundling.B
     mainClass =  'org.lognet.grpc.demo.DemoApp'
     setClasspath(configurations.testImplementation)
     doFirst {
-        classpath sourceSets.getByName("test").java.outputDir
+        classpath sourceSets.getByName("test").java.classesDirectory
         classpath sourceSets.getByName("main").output
     }
     archiveClassifier.convention("bootable-test")
@@ -150,7 +150,7 @@ jar {
 
     // generate native config by executing test app in graalvm docker image
     // then grab generated json files and filter to include class from `org.lognet.springboot.grpc` package only
-    dependsOn testDependencyFatJar
+  //  dependsOn testDependencyFatJar
     File aotDir = new File(buildDir, "native-configs");
     File transformed = new File(aotDir, "transformed")
     transformed.mkdirs()
@@ -159,6 +159,7 @@ jar {
         include "*.*"
     }
     doFirst {
+        /*
         exec {
             commandLine("docker",
                     "run", "--rm",
@@ -200,7 +201,7 @@ jar {
 
             }
         }
-
+*/
     }
 
 }
@@ -282,9 +283,11 @@ dependencies {
     compileOnly "org.springframework.security:spring-security-oauth2-jose"
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly "org.springframework.boot:spring-boot-starter-actuator"
+    compileOnly "org.springframework.boot:spring-boot-starter-validation"
     compileOnly 'org.springframework.cloud:spring-cloud-starter-consul-discovery'
 
 
+    testImplementation "javax.annotation:javax.annotation-api:1.3.2"
     testImplementation "io.grpc:grpc-netty"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
