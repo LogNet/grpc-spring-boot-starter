@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
@@ -44,11 +45,19 @@ public class GrpcKafkaTest extends GrpcServerTestBase {
         class MyCustomService extends CustomServiceGrpc.CustomServiceImplBase {
             @Override
             public void custom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
-                kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), request.getName().getBytes())
-                        .addCallback(e -> {
-                            responseObserver.onNext(Custom.CustomReply.newBuilder().setMessage(request.getName()).build());
-                            responseObserver.onCompleted();
-                        }, responseObserver::onError);
+                 kafkaTemplate.send(kafkaTemplate.getDefaultTopic(), request.getName().getBytes())
+                        .handle((r, e) -> {
+                                    if (null == e) {
+                                        responseObserver.onNext(Custom.CustomReply.newBuilder().setMessage(request.getName()).build());
+                                        responseObserver.onCompleted();
+                                    } else {
+                                        responseObserver.onError(e);
+                                    }
+
+                                    return true;
+                                }
+
+                        ).join();
             }
         }
 
