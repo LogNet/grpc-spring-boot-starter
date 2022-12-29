@@ -3,14 +3,20 @@ package org.lognet.springboot.grpc.auth;
 
 import io.grpc.Channel;
 import io.grpc.ClientInterceptors;
+import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.security.AuthClientInterceptor;
 import org.lognet.springboot.grpc.security.AuthHeader;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.config.client.RetryProperties;
+import org.springframework.cloud.config.client.RetryTemplateFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
+import org.springframework.retry.support.RetryTemplateBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -18,8 +24,10 @@ import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingExcept
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
     private boolean globalSecuredChannel = false;
@@ -40,15 +48,17 @@ public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
         return getChannel(globalSecuredChannel);
 
     }
-    protected Channel getChannel(boolean authenticated){
-            return authenticated ? ClientInterceptors.intercept(super.getChannel(), getAuthClientInterceptor())
-                    : super.getChannel();
+
+    protected Channel getChannel(boolean authenticated) {
+        return authenticated ? ClientInterceptors.intercept(super.getChannel(), getAuthClientInterceptor())
+                : super.getChannel();
 
     }
+
     protected final static String USER_NAME = "keycloak-test";
 
 
-    protected   AuthClientInterceptor getAuthClientInterceptor() {
+    protected AuthClientInterceptor getAuthClientInterceptor() {
         return new AuthClientInterceptor(
                 AuthHeader.builder().bearer().tokenSupplier(this::generateToken));
     }
@@ -73,13 +83,25 @@ public abstract class JwtAuthBaseTest extends GrpcServerTestBase {
 
         final RestTemplate restTemplate = new RestTemplate();
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(authServerUrl));
-        final ResponseEntity<String> response = restTemplate
-                .postForEntity("/realms/test-realm/protocol/openid-connect/token", new HttpEntity<>(req, headers), String.class);
+
+
+
+
         try {
+            final ResponseEntity<String> response = RetryTemplate.builder()
+                    .exponentialBackoff(300,1.5,3000)
+                    .build()
+                    .execute(ctx -> {
+                        Optional.ofNullable(ctx.getLastThrowable())
+                                .ifPresent(e -> log.info("Retrying on ...", e));
+                        return restTemplate
+                                .postForEntity("/realms/test-realm/protocol/openid-connect/token", new HttpEntity<>(req, headers), String.class);
+                    });
             return ByteBuffer.wrap(new ObjectMapper().readTree(response.getBody())
                     .at("/access_token")
                     .asText().getBytes());
-        } catch ( Exception e) {
+        } catch (Exception e) {
+            log.error("Failed to generate token",e );
             throw new RuntimeException(e);
         }
     }

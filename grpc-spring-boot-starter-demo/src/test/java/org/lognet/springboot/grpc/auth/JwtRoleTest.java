@@ -106,9 +106,7 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() throws Exception {
-                                System.out.println("About to start call  " + i);
                                 barrier.await();
-                                System.out.println("Start call  " + i);
                                 try {
                                     if (i % 2 == 0) {
                                         shouldSucceed.incrementAndGet();
@@ -125,13 +123,12 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                                 } catch (Exception e) {
                                     return false;
                                 } finally {
-                                    System.out.println("Call  " + i + " finished");
                                     endCountDownLatch.countDown();
                                 }
                             }
                         })
                 .map(executorService::submit)
-                .collect(Collectors.toList());
+                .toList();
 
 
         endCountDownLatch.await();
