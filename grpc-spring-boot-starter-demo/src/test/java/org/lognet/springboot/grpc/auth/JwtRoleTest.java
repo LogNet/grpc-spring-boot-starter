@@ -143,6 +143,7 @@ public class JwtRoleTest extends JwtAuthBaseTest {
                 ++failed;
             }
         }
+        assertThat(succeeded+failed,Matchers.is(concurrency));
         assertThat(succeeded, Matchers.is(shouldSucceed.get()));
         assertThat(failed, Matchers.is(shouldFail.get()));
 
