@@ -38,7 +38,7 @@ repositories {
 
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:4.9.1'
+    compile 'io.github.lognet:grpc-spring-boot-starter:5.0.0'
 }
 
 
@@ -48,7 +48,7 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:4.9.1') {
+ compile ('io.github.lognet:grpc-spring-boot-starter:5.0.0') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
  }
  compile 'io.grpc:grpc-netty:1.51.0' // <1>
@@ -453,11 +453,14 @@ If you enable both `NettyServer` and `in-process` servers, the `configure` metho
 If you need to differentiate between the passed `serverBuilder` s, you can check the type. +
 This is the current limitation.
 
+== Events
+`GRpcServerInitializedEvent` is published upon server startup, you can consume it using regular spring API.
+
 == Error handling
 
 The starter registers the `GRpcExceptionHandlerInterceptor` which is responsible to propagate the service-thrown exception to the error handlers. +
 The error handling method could be registered by having `@GRpcServiceAdvice` annotated bean with methods annotated with `@GRpcExceptionHandler` annotations. +
-These are considered as `global` error handlers and the method with exception type parameter nearest by the type hierarchy to the thrown exception is invoked. +
+These are considered as `global` error handlers and the method with exception type parameter the nearest by the type hierarchy to the thrown exception is invoked. +
 The signature of the error handler has to follow the below pattern:
 
 |===

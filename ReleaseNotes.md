@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version |
 |:------------------------|:-------------:|:-------------------:|
+| [5.0.0](#version-500)   |    1.51.0     |        3.0.0        |
 | [4.9.1](#version-491)   |    1.51.0     |        2.7.6        |
 | [4.9.0](#version-490)   |    1.50.0     |        2.7.4        |
 | [4.8.1](#version-481)   |    1.49.0     |        2.7.3        |
@@ -35,6 +36,14 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 5.0.0
+## :hammer: Dependency Upgrades
+
+- Upgrade spring cloud to 2022.0.0 [#331](https://github.com/LogNet/grpc-spring-boot-starter/issues/331)
+- Upgrade JDK to 17 [#329](https://github.com/LogNet/grpc-spring-boot-starter/issues/329)
+- Upgrade gradle to 7.4 [#328](https://github.com/LogNet/grpc-spring-boot-starter/issues/328)
+- Upgrade spring Boot to 3.0 [#326](https://github.com/LogNet/grpc-spring-boot-starter/issues/326)
 
 # Version 4.9.1
 ## :star: New Features
