@@ -42,6 +42,7 @@ by applying `com.google.protobuf` gradle plugin.
 
 == Configure
 
+All settings are optional (have reasonable defaults):
 
 [source,groovy]
 ----
@@ -49,11 +50,15 @@ grpcSpringBoot {
     grpcSpringBootStarterVersion.set("X.X.X")// <1>
     grpcVersion.set("X.X.X")//<2>
     protocVersion.set("X.X.X")//<3>
+    reactiveFeature.set(ReactiveFeature.REACTOR)//<4>
+    reactiveProtocVersion.set("X.X.X")//<5>
 }
 ----
 <1> `io.github.lognet:grpc-spring-boot-starter` version to use, defaults to the same version as this plugin.
 <2> `grpc` version to use, defaults to the version the `io.github.lognet:grpc-spring-boot-starter` was compiled with (see version matrix https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.md[here])
 <3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.21.7`)
+<4> Enables https://github.com/salesforce/reactive-grpc[salesforce's reactive-grpc] protoc plugin, defaults to `ReactiveFeature.OFF` (supports `ReactiveFeature.REACTOR` and `ReactiveFeature.RX`)
+<5> `reactive-grpc` version to use, defaults to `1.2.3`
 
 
 The version of `com.google.protobuf` can be controlled via `pluginManagement` block :

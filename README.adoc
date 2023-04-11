@@ -472,7 +472,7 @@ grpcSpringBoot {
 }
 ----
 
-Here are the tests and   reactive grpc sample service.
+Here are the https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/test/java/org/lognet/springboot/grpc/reactive/ReactiveDemoTest.java[tests] and   https://github.com/LogNet/grpc-spring-boot-starter/blob/master/grpc-spring-boot-starter-demo/src/main/java/org/lognet/springboot/grpc/demo/ReactiveGreeterGrpcService.java[reactive grpc sample service].
 
 == Error handling
 
