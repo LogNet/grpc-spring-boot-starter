@@ -151,12 +151,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
             AfterInvocationProviderManager invocationProviderManager = new AfterInvocationProviderManager();
             ExpressionBasedPostInvocationAdvice postAdvice = new ExpressionBasedPostInvocationAdvice(
                     new DefaultMethodSecurityExpressionHandler());
-            PostInvocationAdviceProvider postInvocationAdviceProvider = new PostInvocationAdviceProvider(postAdvice){
-                @Override
-                public boolean supports(Class<?> clazz) {
-                    return MethodInvocation.class.isAssignableFrom(clazz); //todo : remove once fixed https://github.com/spring-projects/spring-security/issues/10236
-                }
-            };
+            PostInvocationAdviceProvider postInvocationAdviceProvider = new PostInvocationAdviceProvider(postAdvice);
 
 
 
