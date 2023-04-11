@@ -12,7 +12,6 @@ endif::[]
 :icons: font
 
 
-
 == Features
 
 Bootstraps the project with  `com.google.protobuf` gradle plugin (including `grpc` protoc plugin) and `io.github.lognet:grpc-spring-boot-starter`
