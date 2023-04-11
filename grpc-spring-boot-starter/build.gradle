@@ -57,7 +57,7 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
     )
     doFirst {
         download {
-            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.7/github-changelog-generator.jar'
+            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.8/github-changelog-generator.jar'
             dest generator
             onlyIfModified true
         }
@@ -133,6 +133,7 @@ nexusPublishing {
 configurations.testImplementation.setCanBeResolved(true)
 
 task testDependencyFatJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar) {
+    targetJavaVersion = JavaVersion.VERSION_17
     dependsOn testClasses,classes
     mainClass =  'org.lognet.grpc.demo.DemoApp'
     setClasspath(configurations.testImplementation)
@@ -150,7 +151,7 @@ jar {
 
     // generate native config by executing test app in graalvm docker image
     // then grab generated json files and filter to include class from `org.lognet.springboot.grpc` package only
-  //  dependsOn testDependencyFatJar
+    dependsOn testDependencyFatJar
     File aotDir = new File(buildDir, "native-configs");
     File transformed = new File(aotDir, "transformed")
     transformed.mkdirs()
@@ -159,7 +160,7 @@ jar {
         include "*.*"
     }
     doFirst {
-        /*
+
         exec {
             commandLine("docker",
                     "run", "--rm",
@@ -201,7 +202,7 @@ jar {
 
             }
         }
-*/
+
     }
 
 }
