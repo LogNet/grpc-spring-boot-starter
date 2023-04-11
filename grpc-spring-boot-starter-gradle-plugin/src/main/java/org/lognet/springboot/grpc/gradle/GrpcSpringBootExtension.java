@@ -8,6 +8,8 @@ public class GrpcSpringBootExtension {
     private final Property<String> grpcVersion;
     private final Property<String> grpcSpringBootStarterVersion;
     private final Property<String> protocVersion;
+    private final Property<String> reactiveProtocVersion;
+    private final Property<ReactiveFeature> reactiveFeature;
 
     public GrpcSpringBootExtension(Project project) {
         this.project = project;
@@ -20,6 +22,12 @@ public class GrpcSpringBootExtension {
 
         protocVersion = this.project.getObjects().property(String.class);
         protocVersion.set("3.21.7");
+
+        reactiveProtocVersion = this.project.getObjects().property(String.class);
+        reactiveProtocVersion.set("1.2.3");
+
+        reactiveFeature = this.project.getObjects().property(ReactiveFeature.class);
+        reactiveFeature.set(ReactiveFeature.OFF);
 
 
     }
@@ -34,5 +42,13 @@ public class GrpcSpringBootExtension {
 
     public Property<String> getProtocVersion() {
         return protocVersion;
+    }
+
+    public Property<String> getReactiveProtocVersion() {
+        return reactiveProtocVersion;
+    }
+
+    public Property<ReactiveFeature> getReactiveFeature() {
+        return reactiveFeature;
     }
 }

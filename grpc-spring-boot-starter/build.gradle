@@ -57,7 +57,7 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
     )
     doFirst {
         download {
-            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.7/github-changelog-generator.jar'
+            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.8/github-changelog-generator.jar'
             dest generator
             onlyIfModified true
         }
@@ -160,6 +160,7 @@ jar {
         include "*.*"
     }
     doFirst {
+
         exec {
             commandLine("docker",
                     "run", "--rm",
@@ -201,6 +202,7 @@ jar {
 
             }
         }
+
     }
 
 }

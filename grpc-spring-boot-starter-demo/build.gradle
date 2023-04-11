@@ -1,3 +1,5 @@
+import org.lognet.springboot.grpc.gradle.ReactiveFeature
+
 buildscript {
     repositories {
         mavenCentral()
@@ -27,6 +29,7 @@ facets {
 
 grpcSpringBoot {
     grpcSpringBootStarterVersion.set((String) null)
+    reactiveFeature.set(ReactiveFeature.REACTOR)
 }
 dependencyManagement {
     imports {
