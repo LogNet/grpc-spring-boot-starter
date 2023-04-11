@@ -4,6 +4,7 @@ import io.grpc.*;
 import org.lognet.springboot.grpc.FailureHandlingSupport;
 import org.lognet.springboot.grpc.MessageBlockingServerCallListener;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
+import org.lognet.springboot.grpc.security.SecurityInterceptor;
 import org.springframework.core.Ordered;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Ordered {
 
+    public static final Context.Key<AtomicBoolean> EXCEPTION_HANDLED = Context.key("org.lognet.springboot.grpc.recovery.EXCEPTION_HANDLED");
     private final GRpcExceptionHandlerMethodResolver methodResolver;
     private final FailureHandlingSupport failureHandlingSupport;
 
@@ -40,8 +42,13 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 
             @Override
             public void close(Status status, Metadata trailers) {
-                if( callIsClosed.compareAndSet(false,true)){
+                if(null != status.getCause() && !EXCEPTION_HANDLED.get().get()){
+                        failureHandlingSupport.closeCall(new GRpcRuntimeExceptionWrapper(status.getCause()), this, trailers);
+                }
+
+                if (callIsClosed.compareAndSet(false, true)) {
                     super.close(status, trailers);
+
                 }
 
             }
@@ -55,42 +62,52 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
                 }
             }
         };
-        final ServerCall.Listener<ReqT> listener;
-        try {
 
-            listener = next.startCall( errorHandlingCall, headers);
-        } catch (RuntimeException e) {
-            failureHandlingSupport.closeCall(e, errorHandlingCall, headers);
-            return new ServerCall.Listener<ReqT>() {
 
-            };
-        }
-        return new MessageBlockingServerCallListener<ReqT>(listener) {
-            private ReqT request;
-
+        Context context = Context
+                .current()
+                .withValue(EXCEPTION_HANDLED, new AtomicBoolean(false));
+        return Contexts.interceptCall(context, errorHandlingCall, headers, new ServerCallHandler<ReqT, RespT>() {
             @Override
-            public void onMessage(ReqT message) {
+            public ServerCall.Listener<ReqT> startCall(ServerCall<ReqT, RespT> call, Metadata headers) {
+                final ServerCall.Listener<ReqT> listener;
                 try {
-                    request = message;
-                    super.onMessage(message);
+
+                    listener = next.startCall(call, headers);
                 } catch (RuntimeException e) {
-                    blockMessage();
-                    failureHandlingSupport.closeCall(e, errorHandlingCall, headers, b -> b.request(request));
-                }
-            }
+                    failureHandlingSupport.closeCall(e, call, headers);
+                    return new ServerCall.Listener<ReqT>() {
 
-            @Override
-            public void onHalfClose() {
-                try {
-                    if(!callIsClosed.get()) {
-                        super.onHalfClose();
+                    };
+                }
+                return new MessageBlockingServerCallListener<ReqT>(listener) {
+                    private ReqT request;
+
+                    @Override
+                    public void onMessage(ReqT message) {
+                        try {
+                            request = message;
+                            super.onMessage(message);
+                        } catch (RuntimeException e) {
+                            blockMessage();
+                            failureHandlingSupport.closeCall(e, call, headers, b -> b.request(request));
+                        }
                     }
-                } catch (RuntimeException e) {
-                    failureHandlingSupport.closeCall(e, errorHandlingCall, headers, b -> b.request(request));
-                }
-            }
 
-        };
+                    @Override
+                    public void onHalfClose() {
+                        try {
+                            if (!callIsClosed.get()) {
+                                super.onHalfClose();
+                            }
+                        } catch (RuntimeException e) {
+                            failureHandlingSupport.closeCall(e, call, headers, b -> b.request(request));
+                        }
+                    }
+
+                };
+            }
+        });
 
 
     }

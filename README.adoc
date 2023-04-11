@@ -456,6 +456,24 @@ This is the current limitation.
 == Events
 `GRpcServerInitializedEvent` is published upon server startup, you can consume it using regular spring API.
 
+== Reactive API support
+
+Starting from version `5.1.0`, https://github.com/LogNet/grpc-spring-boot-starter/tree/master/grpc-spring-boot-starter-gradle-plugin[spring-boot-starter-gradle-plugin]
+integrates SalesForce's https://github.com/salesforce/reactive-grpc[reactive-grpc] protoc plugin :
+
+[source,groovy]
+----
+import org.lognet.springboot.grpc.gradle.ReactiveFeature
+plugins {
+    id "io.github.lognet.grpc-spring-boot"
+}
+grpcSpringBoot {
+    reactiveFeature.set(ReactiveFeature.REACTOR) // or ReactiveFeature.RX
+}
+----
+
+Here are the tests and   reactive grpc sample service.
+
 == Error handling
 
 The starter registers the `GRpcExceptionHandlerInterceptor` which is responsible to propagate the service-thrown exception to the error handlers. +

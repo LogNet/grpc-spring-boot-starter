@@ -12,6 +12,9 @@ import org.lognet.springboot.grpc.recovery.HandlerMethod;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import static org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerInterceptor.EXCEPTION_HANDLED;
+
 @Slf4j
 public class FailureHandlingSupport {
 
@@ -26,7 +29,7 @@ public class FailureHandlingSupport {
     }
 
     public void closeCall( RuntimeException e, ServerCall<?, ?> call, Metadata headers, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer) throws RuntimeException {
-
+        EXCEPTION_HANDLED.get().set(true);
         if(e == null) {
             log.warn("Closing null exception with {}", Status.INTERNAL);
             call.close(Status.INTERNAL, new Metadata());
@@ -66,8 +69,7 @@ public class FailureHandlingSupport {
             log.warn("Handled exception {} call as {}", unwrapped.getClass().getSimpleName(), statusToSend);
             call.close(statusToSend, Optional.ofNullable(metadataToSend).orElseGet(Metadata::new));
         } catch (Exception handlerException) {
-            org.slf4j.LoggerFactory.getLogger(this.getClass())
-                    .error("Caught exception while handling exception {} using method {}, closing with {}.",
+            log.error("Caught exception while handling exception {} using method {}, closing with {}.",
                             unwrapped.getClass().getSimpleName(),
                             handler.getMethod(),
                             Status.INTERNAL,

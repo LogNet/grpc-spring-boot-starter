@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.reactor";
+option java_outer_classname = "ReactiveHelloWorldProto";
+
+/*
+ * Define the service's operations
+ */
+service ReactiveGreeter {
+  rpc Greet (ReactiveHelloRequest) returns (ReactiveHelloResponse) {}
+  rpc MultiGreet (ReactiveHelloRequest) returns (stream ReactiveHelloResponse) {}
+  rpc StreamGreet (stream ReactiveHelloRequest) returns (stream ReactiveHelloResponse) {}
+}
+
+/*
+ * Define the service's data structures
+ */
+message ReactiveHelloRequest {
+  string name = 1;
+}
+
+message ReactiveHelloResponse {
+  string message = 1;
+}

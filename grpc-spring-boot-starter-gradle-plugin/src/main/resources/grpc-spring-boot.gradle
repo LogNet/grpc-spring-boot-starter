@@ -1,31 +1,46 @@
 apply plugin: 'com.google.protobuf'
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
+
 java.util.Optional.ofNullable(grpcSpringBoot.getGrpcSpringBootStarterVersion().getOrNull())
-        .ifPresent {v->
+        .ifPresent { v ->
             project.dependencies {
                 implementation("io.github.lognet:grpc-spring-boot-starter:${v}")
                 implementation("javax.annotation:javax.annotation-api:1.3.2")
             }
         }
 
-def grpcDeps = ["grpc-netty-shaded","grpc-netty","grpc-services"]
+def grpcDeps = ["grpc-netty-shaded", "grpc-netty", "grpc-services"]
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
         if ("io.grpc".equalsIgnoreCase(details.requested.group) &&
-            grpcDeps.contains(details.requested.name.toLowerCase())) {
-                details.useVersion grpcSpringBoot.grpcVersion.get()
+                grpcDeps.contains(details.requested.name.toLowerCase())) {
+            details.useVersion grpcSpringBoot.grpcVersion.get()
         }
     }
-
+}
+switch (grpcSpringBoot.reactiveFeature.get().name()) {
+    case "REACTOR":
+        dependencies {
+            implementation("com.salesforce.servicelibs:reactor-grpc-stub:${grpcSpringBoot.reactiveProtocVersion.get()}")
+            implementation("io.projectreactor:reactor-core:3.5.4")
+        }
+        break;
+    case "RX":
+        dependencies {
+            implementation("com.salesforce.servicelibs:rx3grpc-stub:${grpcSpringBoot.reactiveProtocVersion.get()}")
+            implementation 'io.reactivex.rxjava3:rxjava:3.1.6'
+        }
+        break;
 }
 
 
 protobuf {
     protoc {
-        if(DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX()){
+        if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX()) {
             artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}:osx-x86_64"
-        }else {
+        } else {
             artifact = "com.google.protobuf:protoc:${grpcSpringBoot.protocVersion.get()}"
         }
     }
@@ -33,19 +48,40 @@ protobuf {
         grpc {
             artifact = "io.grpc:protoc-gen-grpc-java:${grpcSpringBoot.grpcVersion.get()}"
         }
+        switch (grpcSpringBoot.reactiveFeature.get().name()) {
+            case "REACTOR":
+                reactor {
+                    artifact = "com.salesforce.servicelibs:reactor-grpc:${grpcSpringBoot.reactiveProtocVersion.get()}"
+                }
+                break;
+            case "RX":
+                rxgrpc {
+                    artifact = "com.salesforce.servicelibs:rx3grpc:${grpcSpringBoot.reactiveProtocVersion.get()}"
+                }
+                break;
+        }
     }
 
     generateProtoTasks {
         all().each { task ->
             task.builtins {
                 java {
-                   option "annotate_code"
+                    option "annotate_code"
                 }
             }
             task.plugins {
                 grpc {
 
                 }
+                switch (grpcSpringBoot.reactiveFeature.get().name()) {
+                    case "REACTOR":
+                        reactor {}
+                        break;
+                    case "RX":
+                        rxgrpc {}
+                        break;
+                }
+
             }
         }
     }
