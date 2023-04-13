@@ -64,7 +64,7 @@ public class ReactiveDemoTest extends GrpcServerTestBase {
 
             ReactorReactiveGreeterGrpc.newReactorStub(channel)
                     .greet(simpleRequest(shrek))
-                    .block(Duration.ofMinutes(10));
+                    .block(Duration.ofSeconds(10));
         });
         assertThat(e.getMessage(), containsStringIgnoringCase("not welcome"));
         assertThat(e.getStatus().getCode(), is(Status.INVALID_ARGUMENT.getCode()));
