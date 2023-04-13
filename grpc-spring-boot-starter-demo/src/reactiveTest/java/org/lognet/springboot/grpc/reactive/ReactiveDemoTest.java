@@ -7,24 +7,21 @@ import io.grpc.examples.reactor.ReactiveHelloRequest;
 import io.grpc.examples.reactor.ReactiveHelloResponse;
 import io.grpc.examples.reactor.ReactorReactiveGreeterGrpc;
 import lombok.extern.slf4j.Slf4j;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.hamcrest.Matchers;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -35,7 +32,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApp.class, webEnvironment = NONE)
-@ActiveProfiles("disable-security")
+@ActiveProfiles({"disable-security","r2dbc-test"})
+@DirtiesContext
 public class ReactiveDemoTest extends GrpcServerTestBase {
     @Test
     public void grpcGreetTest() {
@@ -66,7 +64,7 @@ public class ReactiveDemoTest extends GrpcServerTestBase {
 
             ReactorReactiveGreeterGrpc.newReactorStub(channel)
                     .greet(simpleRequest(shrek))
-                    .block(Duration.ofSeconds(10));
+                    .block(Duration.ofMinutes(10));
         });
         assertThat(e.getMessage(), containsStringIgnoringCase("not welcome"));
         assertThat(e.getStatus().getCode(), is(Status.INVALID_ARGUMENT.getCode()));

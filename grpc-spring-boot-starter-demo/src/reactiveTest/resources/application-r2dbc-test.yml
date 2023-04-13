@@ -1,0 +1,6 @@
+spring:
+  r2dbc:
+    url: "r2dbc:postgresql://${embedded.postgresql.host}:${embedded.postgresql.port}/${embedded.postgresql.schema}"
+    username: ${embedded.postgresql.user}
+    password: ${embedded.postgresql.password}
+    name: ${embedded.postgresql.schema}

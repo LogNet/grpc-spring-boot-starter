@@ -31,6 +31,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
         final AtomicBoolean callIsClosed = new AtomicBoolean(false);
+        final AtomicBoolean exceptionHandled = new AtomicBoolean(false);
 
 
         if (!methodResolver.hasErrorHandlers()) {
@@ -42,7 +43,12 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
 
             @Override
             public void close(Status status, Metadata trailers) {
-                if(null != status.getCause() && !EXCEPTION_HANDLED.get().get()){
+                // prevent close from being  invoked twice
+                //  (like from Reactive service from different thread , close method invoked directly )
+                Boolean handled = Optional.ofNullable(EXCEPTION_HANDLED.get())
+                        .map(AtomicBoolean::get)
+                        .orElse(!exceptionHandled.compareAndSet(false, true));
+                if(null != status.getCause() && !handled){
                         failureHandlingSupport.closeCall(new GRpcRuntimeExceptionWrapper(status.getCause()), this, trailers);
                 }
 

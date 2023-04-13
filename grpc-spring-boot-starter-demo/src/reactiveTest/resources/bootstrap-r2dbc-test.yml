@@ -1,0 +1,7 @@
+embedded:
+  postgresql:
+    enabled: true
+    database: test_db
+    init-script-path: db/init_db.sql
+  containers:
+    enabled: true

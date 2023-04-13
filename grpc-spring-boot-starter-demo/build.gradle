@@ -22,6 +22,7 @@ apply plugin: "nebula.facet"
 facets {
     pureNettyTest
     kafkaStreamTest
+    reactiveTest
     customSecurityTest
     bothPureAndShadedNettyTest
     noConsulDependenciesTest
@@ -77,6 +78,9 @@ dependencies {
     implementation "org.springframework.security:spring-security-oauth2-jose"
     implementation "org.springframework.security:spring-security-oauth2-resource-server"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    compileOnly 'org.springframework:spring-tx'
+
+
 
     implementation("javax.annotation:javax.annotation-api:1.3.2")
     implementation project(':grpc-spring-boot-starter')
@@ -93,6 +97,7 @@ dependencies {
 
     testImplementation "com.playtika.testcontainers:embedded-keycloak:2.2.14"
     testImplementation "com.playtika.testcontainers:embedded-consul:2.2.14"
+    testImplementation "com.playtika.testcontainers:embedded-postgresql:2.2.14"
 
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.mockito:mockito-core:2.23.0'
@@ -105,6 +110,10 @@ dependencies {
 
     kafkaStreamTestImplementation "com.playtika.testcontainers:embedded-kafka:2.2.14"
     kafkaStreamTestImplementation "org.springframework.cloud:spring-cloud-starter-stream-kafka"
+
+    reactiveTestImplementation  'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    reactiveTestImplementation 'org.postgresql:r2dbc-postgresql'
+    reactiveTestImplementation 'org.postgresql:postgresql'
 
 
 }
