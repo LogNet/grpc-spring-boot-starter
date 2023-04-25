@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version |
 |:------------------------|:-------------:|:-------------------:|
+| [5.1.1](#version-510)   |    1.54.1     |        3.0.6        |
 | [5.1.0](#version-510)   |    1.54.0     |        3.0.5        |
 | [5.0.0](#version-500)   |    1.51.0     |        3.0.0        |
 | [4.9.1](#version-491)   |    1.51.0     |        2.7.6        |
@@ -37,6 +38,18 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 5.1.1
+## :star: New Features
+
+- Support error handling of reactive `@Transactional` [#348](https://github.com/LogNet/grpc-spring-boot-starter/issues/348)
+
+## :hammer: Dependency Upgrades
+
+- Upgarde grpc to 1.54.1 [#352](https://github.com/LogNet/grpc-spring-boot-starter/issues/352)
+- Bump spring boot to 3.0.6 due to CVE-2023-20863  [#350](https://github.com/LogNet/grpc-spring-boot-starter/issues/350)
+- Upgrade grpc-reactive to  1.2.4 [#347](https://github.com/LogNet/grpc-spring-boot-starter/issues/347)
+
 
 # Version 5.1.0
 ## :lady_beetle: Bug Fixes
