@@ -12,11 +12,13 @@ import org.hamcrest.collection.IsIn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.auth.JwtAuthBaseTest;
+import org.lognet.springboot.grpc.auth.JwtRoleTest;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,27 +36,15 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = DemoApp.class, webEnvironment = NONE)
+@SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles({"keycloack-test", "r2dbc-test"})
 @DirtiesContext
 public class ReactiveDemoTest extends JwtAuthBaseTest {
 
-    @TestConfiguration
-    static class TestCfg {
-        private static class DemoGrpcSecurityAdapter extends GrpcSecurityConfigurerAdapter {
-            @Override
-            public void configure(GrpcSecurity builder) throws Exception {
-                builder.authorizeRequests()
-                        .withSecuredAnnotation();
-
-            }
-        }
-    }
-
     @Test
     public void grpcGreetTest() {
         String shrek = "Shrek";
-        String message = ReactiveGreeterGrpc.newBlockingStub(channel)
+        String message = ReactiveGreeterGrpc.newBlockingStub(getChannel())
                 .greet(ReactiveHelloRequest.newBuilder().setName(shrek).build())
                 .getMessage();
         assertThat(message, containsString(shrek));
@@ -64,7 +54,7 @@ public class ReactiveDemoTest extends JwtAuthBaseTest {
     @Test
     public void reactorGreetTest() {
         String shrek = "Shrek";
-        ReactiveHelloResponse helloResponse = ReactorReactiveGreeterGrpc.newReactorStub(channel)
+        ReactiveHelloResponse helloResponse = ReactorReactiveGreeterGrpc.newReactorStub(getChannel())
                 .greet(simpleRequest(shrek))
                 .block(Duration.ofSeconds(10));
         assertThat(helloResponse, notNullValue());
@@ -78,7 +68,7 @@ public class ReactiveDemoTest extends JwtAuthBaseTest {
         String shrek = "Wolf";
         StatusRuntimeException e = assertThrows(StatusRuntimeException.class, () -> {
 
-            ReactorReactiveGreeterGrpc.newReactorStub(channel)
+            ReactorReactiveGreeterGrpc.newReactorStub(getChannel())
                     .greet(simpleRequest(shrek))
                     .block(Duration.ofSeconds(10));
         });
@@ -91,7 +81,7 @@ public class ReactiveDemoTest extends JwtAuthBaseTest {
     @Test
     public void reactorMultiGreerTest() {
         String shrek = "Shrek";
-        List<ReactiveHelloResponse> greets = ReactorReactiveGreeterGrpc.newReactorStub(channel)
+        List<ReactiveHelloResponse> greets = ReactorReactiveGreeterGrpc.newReactorStub(getChannel())
                 .multiGreet(simpleRequest(shrek))
                 .collectList()
                 .block(Duration.ofSeconds(10));
@@ -111,7 +101,7 @@ public class ReactiveDemoTest extends JwtAuthBaseTest {
                 "Robin",
                 "Christopher"
         };
-        List<ReactiveHelloResponse> greets = ReactorReactiveGreeterGrpc.newReactorStub(channel)
+        List<ReactiveHelloResponse> greets = ReactorReactiveGreeterGrpc.newReactorStub(getChannel())
                 .streamGreet(
                         Flux.fromStream(Arrays.stream(names).map(this::simpleRequest))
                 )

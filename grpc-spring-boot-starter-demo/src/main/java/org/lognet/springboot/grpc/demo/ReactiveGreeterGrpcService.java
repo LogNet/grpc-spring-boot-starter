@@ -10,10 +10,12 @@ import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 
@@ -31,6 +33,8 @@ public class ReactiveGreeterGrpcService extends ReactorReactiveGreeterGrpc.React
     @Override
     @Secured({})
     public Mono<ReactiveHelloResponse> greet(Mono<ReactiveHelloRequest> request) {
+        Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .orElseThrow();
         return reactiveGreeterService.greet(request);
 
     }
