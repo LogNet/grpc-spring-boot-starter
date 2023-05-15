@@ -9,6 +9,7 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.stream.IntStream;
 @GRpcService
 @Slf4j
 @ConditionalOnClass(Transactional.class)
+@Profile("!reactive-buggy-security")
 public class ReactiveGreeterGrpcService extends ReactorReactiveGreeterGrpc.ReactiveGreeterImplBase {
 
     private ReactiveGreeterService reactiveGreeterService;
@@ -37,6 +39,11 @@ public class ReactiveGreeterGrpcService extends ReactorReactiveGreeterGrpc.React
                 .orElseThrow();
         return reactiveGreeterService.greet(request);
 
+    }
+
+    @Override
+    public Mono<ReactiveHelloResponse> greet(ReactiveHelloRequest request) {
+        return super.greet(request); //for tests
     }
 
     @Override
