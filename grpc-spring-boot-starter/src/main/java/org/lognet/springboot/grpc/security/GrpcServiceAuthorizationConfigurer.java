@@ -1,12 +1,8 @@
 package org.lognet.springboot.grpc.security;
 
-import io.grpc.BindableService;
-import io.grpc.MethodDescriptor;
-import io.grpc.ServerInterceptor;
-import io.grpc.ServerMethodDefinition;
-import io.grpc.ServerServiceDefinition;
-import io.grpc.ServiceDescriptor;
+import io.grpc.*;
 import org.lognet.springboot.grpc.GRpcServicesRegistry;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -15,11 +11,7 @@ import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +32,7 @@ public class GrpcServiceAuthorizationConfigurer
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
         registry.processSecuredAnnotation();
-        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.servicesRegistry,registry.securedMethods));
+        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.servicesRegistry, registry.securedMethods));
     }
 
 
@@ -99,18 +91,18 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public AuthorizedMethod anyMethod() {
-            return  anyMethodExcluding(s->false);
+            return anyMethodExcluding(s -> false);
         }
 
         public AuthorizedMethod anyMethodExcluding(MethodDescriptor<?, ?>... methodDescriptor) {
-            List<MethodDescriptor<?,?>> excludedMethods = Arrays.asList(methodDescriptor);
+            List<MethodDescriptor<?, ?>> excludedMethods = Arrays.asList(methodDescriptor);
             return anyMethodExcluding(excludedMethods::contains);
 
         }
 
 
         public AuthorizedMethod anyMethodExcluding(Predicate<MethodDescriptor<?, ?>> excludePredicate) {
-            MethodDescriptor<?,?>[] allMethods = servicesRegistry.getBeanNameToServiceBeanMap()
+            MethodDescriptor<?, ?>[] allMethods = servicesRegistry.getBeanNameToServiceBeanMap()
                     .values()
                     .stream()
                     .map(BindableService::bindService)
@@ -124,12 +116,14 @@ public class GrpcServiceAuthorizationConfigurer
 
 
         public AuthorizedMethod anyService() {
-            return anyServiceExcluding(s-> false);
+            return anyServiceExcluding(s -> false);
         }
+
         public AuthorizedMethod anyServiceExcluding(ServiceDescriptor... serviceDescriptor) {
             List<ServiceDescriptor> excludedServices = Arrays.asList(serviceDescriptor);
             return anyServiceExcluding(excludedServices::contains);
         }
+
         public AuthorizedMethod anyServiceExcluding(Predicate<ServiceDescriptor> excludePredicate) {
 
             ServiceDescriptor[] allServices = servicesRegistry.getBeanNameToServiceBeanMap()
@@ -144,11 +138,13 @@ public class GrpcServiceAuthorizationConfigurer
 
         /**
          * Same as  {@code withSecuredAnnotation(true)}
+         *
          * @return GrpcSecurity configuration
          */
         public GrpcSecurity withSecuredAnnotation() {
             return withSecuredAnnotation(true);
         }
+
         public GrpcSecurity withSecuredAnnotation(boolean withSecuredAnnotation) {
             this.withSecuredAnnotation = withSecuredAnnotation;
             return and();
@@ -163,28 +159,42 @@ public class GrpcServiceAuthorizationConfigurer
                     // service level security
                     {
                         Optional.ofNullable(AnnotationUtils.findAnnotation(service.getClass(), Secured.class))
-                        .ifPresent(secured -> {
-                            if (secured.value().length == 0) {
-                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).authenticated();
-                            } else {
-                                new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(secured.value());
-                            }
-                        });
+                                .ifPresent(secured -> {
+                                    if (secured.value().length == 0) {
+                                        new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).authenticated();
+                                    } else {
+                                        new AuthorizedMethod(serverServiceDefinition.getServiceDescriptor()).hasAnyAuthority(secured.value());
+                                    }
+                                });
 
                     }
                     // method level security
                     for (ServerMethodDefinition<?, ?> methodDefinition : serverServiceDefinition.getMethods()) {
-                        Stream.of(service.getClass().getMethods()) // get method from methodDefinition
-                                .filter(m ->   m.getName().equalsIgnoreCase(methodDefinition.getMethodDescriptor().getBareMethodName()))
-                                .findFirst()
-                                .flatMap(m -> Optional.ofNullable(AnnotationUtils.findAnnotation(m, Secured.class)))
-                                .ifPresent(secured -> {
-                                    if (secured.value().length == 0) {
-                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).authenticated();
-                                    } else {
-                                        new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value());
-                                    }
-                                });
+
+                        List<Secured> secureds = Stream.of(service.getClass().getMethods()) // get method from methodDefinition
+                                .filter(m -> m.getName().equalsIgnoreCase(methodDefinition.getMethodDescriptor().getBareMethodName()))
+                                .map(m -> AnnotationUtils.findAnnotation(m, Secured.class))
+                                .filter(Objects::nonNull)
+                                .toList();
+                        if (secureds.isEmpty()) {
+                            continue;
+                        }
+                        if (1 == secureds.size()) {
+                            Secured secured = secureds.get(0);
+                            if (secured.value().length == 0) {
+                                new AuthorizedMethod(methodDefinition.getMethodDescriptor()).authenticated();
+                            } else {
+                                new AuthorizedMethod(methodDefinition.getMethodDescriptor()).hasAnyAuthority(secured.value());
+                            }
+                        } else {
+                            String errorMessage = String.format("Ambiguous 'Secured'  method '%s' in service '%s'." +
+                                            "When securing reactive method,  the @Secured  annotation should be added to the method getting 'Mono<Request>' and not with pure 'Request' argument.",
+                                    methodDefinition.getMethodDescriptor().getBareMethodName(),
+                                    service.getClass().getName()
+                            );
+                            throw new BeanCreationException(errorMessage);
+                        }
+
 
                     }
                 }

@@ -1,7 +1,5 @@
 package org.lognet.springboot.grpc.demo;
 
-import io.grpc.CallOptions;
-import io.grpc.Context;
 import io.grpc.Status;
 import io.grpc.examples.reactor.ReactiveHelloRequest;
 import io.grpc.examples.reactor.ReactiveHelloResponse;
@@ -10,9 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,6 +29,7 @@ public class ReactiveGreeterGrpcService extends ReactorReactiveGreeterGrpc.React
     }
 
     @Override
+    @Secured({})
     public Mono<ReactiveHelloResponse> greet(Mono<ReactiveHelloRequest> request) {
         return reactiveGreeterService.greet(request);
 
