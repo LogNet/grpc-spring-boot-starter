@@ -33,25 +33,22 @@ Make sure to check out the link:./grpc-spring-boot-starter-gradle-plugin/README.
 [source,groovy]
 ----
 repositories {
-    mavenCentral()
-   //maven { url "https://oss.sonatype.org/content/repositories/snapshots" } //for snapshot builds
-
+  mavenCentral()
+  // maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // for snapshot builds
 }
 dependencies {
-    compile 'io.github.lognet:grpc-spring-boot-starter:5.1.1'
+  compile 'io.github.lognet:grpc-spring-boot-starter:5.1.1'
 }
-
-
 ----
 
 By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency, if you are forced to use pure `grpc-netty` dependency:
 
 [source,groovy]
 ----
- compile ('io.github.lognet:grpc-spring-boot-starter:5.1.1') {
+compile ('io.github.lognet:grpc-spring-boot-starter:5.1.1') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
- }
- compile 'io.grpc:grpc-netty:1.54.1' // <1>
+}
+compile 'io.grpc:grpc-netty:1.54.1' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -63,11 +60,11 @@ In  this case you'll need to forcibly and explicitly set the  `grpc` version to 
 [source,groovy]
 ----
 configurations.all {
- resolutionStrategy.eachDependency { details ->
+  resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-        details.useVersion "1.54.1"
-        }
+      details.useVersion "1.54.1"
     }
+  }
 }
 ----
 
@@ -465,10 +462,10 @@ integrates SalesForce's https://github.com/salesforce/reactive-grpc[reactive-grp
 ----
 import org.lognet.springboot.grpc.gradle.ReactiveFeature
 plugins {
-    id "io.github.lognet.grpc-spring-boot"
+  id "io.github.lognet.grpc-spring-boot"
 }
 grpcSpringBoot {
-    reactiveFeature.set(ReactiveFeature.REACTOR) // or ReactiveFeature.RX
+  reactiveFeature.set(ReactiveFeature.REACTOR) // or ReactiveFeature.RX
 }
 ----
 
@@ -539,11 +536,11 @@ public  class HelloService extends GreeterGrpc.GreeterImplBase{
         ...
     throw new GRpcRuntimeExceptionWrapper(new SomeException()) ; // <1>
 //or
-    throw new GRpcRuntimeExceptionWrapper(new SomeException(),"myHint");// <2>
+    throw new GRpcRuntimeExceptionWrapper(new SomeException(), "myHint");// <2>
 //or
-     throw new SomeRuntimeException(); //<3>
+    throw new SomeRuntimeException(); //<3>
     }
-    @GRpcExceptionHandler
+   @GRpcExceptionHandler
    public Status privateHandler (SomeException npe,GRpcExceptionScope scope){
         // INVOKED when thrown from  HelloService service
         String myHint = scope.getHintAs(String.class);   // <4>
@@ -601,24 +598,21 @@ If your gRPC method uses the same request and response message type, you can use
 ----
 ...
 <getter name="someField">
-
-            <!--should be empty for request message-->
-            <constraint annotation="javax.validation.constraints.Size">
-                <groups>
-                    <value>org.lognet.springboot.grpc.validation.group.RequestMessage</value> <1>
-                </groups>
-                <element name="min">0</element>
-                <element name="max">0</element>
-
-            </constraint>
-
-            <!--should NOT  be empty for response message-->
-            <constraint annotation="javax.validation.constraints.NotEmpty">
-                <groups>
-                    <value>org.lognet.springboot.grpc.validation.group.ResponseMessage</value> <2>
-                </groups>
-            </constraint>
-        </getter>
+	<!--should be empty for request message-->
+	<constraint annotation="javax.validation.constraints.Size">
+		<groups>
+			<value>org.lognet.springboot.grpc.validation.group.RequestMessage</value> <1>
+		</groups>
+		<element name="min">0</element>
+		<element name="max">0</element>
+	</constraint>
+	<!--should NOT  be empty for response message-->
+	<constraint annotation="javax.validation.constraints.NotEmpty">
+		<groups>
+			<value>org.lognet.springboot.grpc.validation.group.ResponseMessage</value> <2>
+		</groups>
+	</constraint>
+</getter>
 ...
 ----
 <1> Apply this constraint only for `request` message
@@ -629,12 +623,11 @@ Note also custom cross-field link:grpc-spring-boot-starter-demo/src/main/java/or
 
 [source,xml]
 ----
- <bean class="io.grpc.examples.GreeterOuterClass$Person">
-        <class>
-            <constraint annotation="org.lognet.springboot.grpc.demo.PersonConstraint"/>
-        </class>
-...
-
+<bean class="io.grpc.examples.GreeterOuterClass$Person">
+	<class>
+		<constraint annotation="org.lognet.springboot.grpc.demo.PersonConstraint"/>
+	</class>
+    <!-- ... -->
 </bean>
 ----
 
