@@ -49,7 +49,7 @@
 ## :hammer: Dependency Upgrades
 
 - Upgrade grpc to  1.55.1 [#356](https://github.com/LogNet/grpc-spring-boot-starter/issues/356)
-- 
+
 # Version 5.1.1
 ## :star: New Features
 
