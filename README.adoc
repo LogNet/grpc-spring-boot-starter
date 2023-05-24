@@ -37,7 +37,7 @@ repositories {
   // maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // for snapshot builds
 }
 dependencies {
-  compile 'io.github.lognet:grpc-spring-boot-starter:5.1.1'
+  compile 'io.github.lognet:grpc-spring-boot-starter:5.1.2'
 }
 ----
 
@@ -45,10 +45,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
-compile ('io.github.lognet:grpc-spring-boot-starter:5.1.1') {
+compile ('io.github.lognet:grpc-spring-boot-starter:5.1.2') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
 }
-compile 'io.grpc:grpc-netty:1.54.1' // <1>
+compile 'io.grpc:grpc-netty:1.55.1' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -62,7 +62,7 @@ In  this case you'll need to forcibly and explicitly set the  `grpc` version to 
 configurations.all {
   resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-      details.useVersion "1.54.1"
+      details.useVersion "1.55.1"
     }
   }
 }
