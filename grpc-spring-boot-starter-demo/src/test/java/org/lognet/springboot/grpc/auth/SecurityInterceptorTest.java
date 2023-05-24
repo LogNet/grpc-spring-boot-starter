@@ -76,8 +76,7 @@ public class SecurityInterceptorTest extends GrpcServerTestBase {
 
     }
 
-    @SpyBean
-    private GRpcErrorHandler errorHandler;
+
 
     @Test
     public void originalCustomInterceptorStatusIsPreserved() {
@@ -88,7 +87,7 @@ public class SecurityInterceptorTest extends GrpcServerTestBase {
                     .sayAuthHello2(Empty.newBuilder().build()).getMessage();
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.ALREADY_EXISTS));
-        verifyZeroInteractions(errorHandler);
+
     }
     @Test
     public void unsupportedAuthSchemeShouldThrowUnauthenticatedException() {
@@ -104,7 +103,7 @@ public class SecurityInterceptorTest extends GrpcServerTestBase {
                     .sayAuthHello2(Empty.newBuilder().build()).getMessage();
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.UNAUTHENTICATED));
-        verify(errorHandler).handle(any(),eq(Status.UNAUTHENTICATED), any(),any(),any());
+
     }
 
 

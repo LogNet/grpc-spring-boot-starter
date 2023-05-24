@@ -20,14 +20,15 @@ class AuthenticationSchemeService implements AuthenticationSchemeRegistry, Authe
                 .map(selector -> selector.getAuthScheme(authorization))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .toList();
         switch (auth.size()){
             case 0:
-                throw  new IllegalStateException(String.format("Authentication scheme '%s' is not supported.",
+                log.error(String.format("Authentication scheme '%s' is not supported.",
                         Optional.ofNullable(authorization)
                                 .map(s->s.toString().split(" ",2)[0])
                                 .orElse(null)
                 ));
+                return Optional.empty();
             case 1 :
                 return Optional.of(auth.get(0));
             default:

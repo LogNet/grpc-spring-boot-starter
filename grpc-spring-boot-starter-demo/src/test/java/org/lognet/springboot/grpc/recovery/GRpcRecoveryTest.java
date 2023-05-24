@@ -1,8 +1,6 @@
 package org.lognet.springboot.grpc.recovery;
 
-import io.grpc.Metadata;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import io.grpc.*;
 import io.grpc.examples.custom.Custom;
 import io.grpc.examples.custom.CustomServiceGrpc;
 import io.grpc.stub.StreamObserver;
@@ -11,14 +9,21 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GRpcService;
 import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.demo.DemoApp;
+import org.lognet.springboot.grpc.security.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -36,13 +41,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
-@ActiveProfiles({"disable-security"})
 @Import(GRpcRecoveryTest.Cfg.class)
 public class GRpcRecoveryTest extends GrpcServerTestBase {
 
     static class CheckedException extends Exception {
 
     }
+
     static class CheckedException1 extends Exception {
 
     }
@@ -59,9 +64,25 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
     }
 
-    @TestConfiguration
-    static class Cfg {
+    private static User user1 = new User("test1", "test1", Collections.EMPTY_LIST);
 
+    private AuthHeader.AuthHeaderBuilder user1AuthHeaderBuilder =
+            AuthHeader.builder().basic(user1.getUsername(), user1.getPassword().getBytes());
+
+    @TestConfiguration
+    static class Cfg extends GrpcSecurityConfigurerAdapter {
+        @Override
+        public void configure(GrpcSecurity builder) throws Exception {
+            DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+            UserDetailsService users = new InMemoryUserDetailsManager(user1);
+            provider.setUserDetailsService(users);
+            provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+
+            builder
+                    .authenticationProvider(provider)
+                    .authorizeRequests()
+                    .anyMethod().authenticated();
+        }
 
         @GRpcServiceAdvice
         static class CustomErrorHandler {
@@ -102,6 +123,9 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 return new StreamObserver<Custom.CustomRequest>() {
                     @Override
                     public void onNext(Custom.CustomRequest value) {
+                        if ("onNext".equalsIgnoreCase(value.getName())) {
+                            throw new GRpcRuntimeExceptionWrapper(new CheckedException1());
+                        }
                         responseObserver.onNext(Custom.CustomReply.newBuilder().build());
                     }
 
@@ -151,9 +175,24 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
     private Cfg.CustomErrorHandler handler;
 
 
-    @Test
-    public void streamingServiceErrorHandlerTest() throws ExecutionException, InterruptedException, TimeoutException {
+    protected Channel getChannel() {
+        return ClientInterceptors.intercept(super.getChannel(), new AuthClientInterceptor(user1AuthHeaderBuilder));
+    }
 
+
+    @Test
+    public void parameterizedStreamingServiceErrorHandlerTest() throws ExecutionException, InterruptedException, TimeoutException {
+        String[] phases = new String[]{
+                "onNext", // exception will be thrown onNext
+                "onCompleted" // exception will be thrown onCompleted
+        };
+        for (String errorPhase : phases) {
+            streamingServiceErrorHandlerTest(errorPhase);
+            Mockito.clearInvocations(srv);
+        }
+    }
+
+    public void streamingServiceErrorHandlerTest(String errorName) throws ExecutionException, InterruptedException, TimeoutException {
 
 
         final CompletableFuture<Throwable> errorFuture = new CompletableFuture<>();
@@ -175,20 +214,18 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
             }
         };
 
-        final StreamObserver<Custom.CustomRequest> requests = CustomServiceGrpc.newStub(getChannel()).customStream(reply);
-        requests.onNext(Custom.CustomRequest.newBuilder().build());
+        final StreamObserver<Custom.CustomRequest> requests = CustomServiceGrpc.newStub(getChannel())
+                .customStream(reply);
+        requests.onNext(Custom.CustomRequest.newBuilder().setName(errorName).build());
         requests.onCompleted();
-
-
-
 
 
         final Throwable actual = errorFuture.get(20, TimeUnit.SECONDS);
         assertThat(actual, notNullValue());
         assertThat(actual, isA(StatusRuntimeException.class));
-        assertThat(((StatusRuntimeException)actual).getStatus(), is(Status.RESOURCE_EXHAUSTED));
+        assertThat(((StatusRuntimeException) actual).getStatus(), is(Status.RESOURCE_EXHAUSTED));
 
-        Mockito.verify(srv,times(1)).handle(any(CheckedException1.class),any());
+        Mockito.verify(srv, times(1)).handle(any(CheckedException1.class), any());
 
     }
 
@@ -199,7 +236,8 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 .custom(any(Custom.CustomRequest.class), any(StreamObserver.class));
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
-                CustomServiceGrpc.newBlockingStub(getChannel()).custom(Custom.CustomRequest.newBuilder().build())
+                CustomServiceGrpc.newBlockingStub(getChannel())
+                        .custom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.OUT_OF_RANGE));
 
@@ -221,7 +259,8 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 .custom(any(Custom.CustomRequest.class), any(StreamObserver.class));
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
-                CustomServiceGrpc.newBlockingStub(getChannel()).custom(Custom.CustomRequest.newBuilder().build())
+                CustomServiceGrpc.newBlockingStub(getChannel())
+                        .custom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.NOT_FOUND));
 
@@ -242,7 +281,8 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 .custom(any(Custom.CustomRequest.class), any(StreamObserver.class));
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
-                CustomServiceGrpc.newBlockingStub(getChannel()).custom(Custom.CustomRequest.newBuilder().build())
+                CustomServiceGrpc.newBlockingStub(getChannel())
+                        .custom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.DATA_LOSS));
 
@@ -263,7 +303,8 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
                 .custom(any(Custom.CustomRequest.class), any(StreamObserver.class));
 
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
-                CustomServiceGrpc.newBlockingStub(getChannel()).custom(Custom.CustomRequest.newBuilder().build())
+                CustomServiceGrpc.newBlockingStub(getChannel())
+                        .custom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.FAILED_PRECONDITION));
 
