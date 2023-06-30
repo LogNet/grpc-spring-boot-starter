@@ -1,6 +1,7 @@
 package org.lognet.springboot.grpc.security;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
+@Slf4j
 public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigurer<GrpcSecurity> {
 
     private AuthenticationConfiguration authenticationConfiguration;
@@ -20,11 +22,8 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     protected GrpcSecurityConfigurerAdapter() {
     }
 
-
-
     @Autowired
     public void setApplicationContext(ApplicationContext context) throws Exception {
-
 
         ObjectPostProcessor<Object> objectPostProcessor = context.getBean(ObjectPostProcessor.class);
         this.authenticationConfiguration = context.getBean(AuthenticationConfiguration.class);
@@ -38,10 +37,10 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
     @Override
     public void init(GrpcSecurity builder) throws Exception {
-        builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext().getBean(GRpcServicesRegistry.class)));
+        builder.apply(new GrpcServiceAuthorizationConfigurer(
+                builder.getApplicationContext().getBean(GRpcServicesRegistry.class)));
         builder.setSharedObject(AuthenticationManagerBuilder.class, authenticationManagerBuilder);
         final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
-
 
         context.getBeansOfType(AuthenticationSchemeSelector.class)
                 .values()
@@ -51,18 +50,18 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
     }
 
-
-
     @Override
     public void configure(GrpcSecurity builder) throws Exception {
         try {
             final Class<?> jwtDecoderClass = Class.forName("org.springframework.security.oauth2.jwt.JwtDecoder");
             final String[] beanNames = context.getBeanNamesForType(jwtDecoderClass);
             if (1 == beanNames.length) {
-                builder.authenticationProvider(JwtAuthProviderFactory.forAuthorities(context.getBean(beanNames[0], JwtDecoder.class)));
+                builder.authenticationProvider(
+                        JwtAuthProviderFactory.forAuthorities(context.getBean(beanNames[0], JwtDecoder.class)));
             }
         } catch (ClassNotFoundException e) {
-            //swallow
+            log.warn("You are trying to use grpc-auth-functionality because spring-security-config is in your classpath."
+                    + "Either provide a JwtDecoder instance or disable grpc-auth by setting grpc.security.auth.enabled to false.");
         }
         builder.authorizeRequests()
                 .withSecuredAnnotation();
