@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version |
 |:------------------------|:-------------:|:-------------------:|
+| [5.1.3](#version-513)   |    1.56.1     |        3.1.1        |
 | [5.1.2](#version-512)   |    1.55.1     |        3.0.6        |
 | [5.1.1](#version-511)   |    1.54.1     |        3.0.6        |
 | [5.1.0](#version-510)   |    1.54.0     |        3.0.5        |
@@ -40,6 +41,12 @@
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
 
+# Version 5.1.3
+## :hammer: Dependency Upgrades
+
+- Upgrade SP to 3.1.1 [#365](https://github.com/LogNet/grpc-spring-boot-starter/issues/365)
+- Upgrade grpc to 1.56.1 [#364](https://github.com/LogNet/grpc-spring-boot-starter/issues/364)
+- 
 # Version 5.1.2
 ## :lady_beetle: Bug Fixes
 
