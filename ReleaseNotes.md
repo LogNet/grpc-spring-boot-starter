@@ -1,5 +1,6 @@
 | Starter Version         | gRPC versions | Spring Boot version |
 |:------------------------|:-------------:|:-------------------:|
+| [5.1.4](#version-514)   |    1.57.0    |        3.1.1        |
 | [5.1.3](#version-513)   |    1.56.1     |        3.1.1        |
 | [5.1.2](#version-512)   |    1.55.1     |        3.0.6        |
 | [5.1.1](#version-511)   |    1.54.1     |        3.0.6        |
@@ -40,6 +41,16 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 5.1.4
+## :lady_beetle: Bug Fixes
+
+- Support all relaxed versions of "inProcessServeName" property name [#369](https://github.com/LogNet/grpc-spring-boot-starter/issues/369)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade to grpc 1.57.0 [#370](https://github.com/LogNet/grpc-spring-boot-starter/issues/370)
+
 
 # Version 5.1.3
 ## :hammer: Dependency Upgrades
