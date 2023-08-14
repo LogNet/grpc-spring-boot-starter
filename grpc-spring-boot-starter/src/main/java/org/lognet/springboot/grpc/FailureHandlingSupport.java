@@ -1,9 +1,6 @@
 package org.lognet.springboot.grpc;
 
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import io.grpc.*;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionHandlerMethodResolver;
 import org.lognet.springboot.grpc.recovery.GRpcExceptionScope;
@@ -24,11 +21,11 @@ public class FailureHandlingSupport {
         this.methodResolver = methodResolver;
     }
 
-    public void closeCall(RuntimeException e, ServerCall<?, ?> call, Metadata headers) throws RuntimeException {
+    public void closeCall(Exception e, ServerCall<?, ?> call, Metadata headers) throws RuntimeException {
         closeCall(e, call, headers, null);
     }
 
-    public void closeCall(RuntimeException e, ServerCall<?, ?> call, Metadata headers, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer) throws RuntimeException {
+    public void closeCall(Exception e, ServerCall<?, ?> call, Metadata headers, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer) throws RuntimeException {
         Optional.ofNullable(EXCEPTION_HANDLED.get()).ifPresent(h -> h.set(true));
         if (e == null) {
             log.warn("Closing null exception with {}", Status.INTERNAL);
@@ -38,10 +35,15 @@ public class FailureHandlingSupport {
             final Optional<HandlerMethod> handlerMethod = methodResolver.resolveMethodByThrowable(call.getMethodDescriptor().getServiceName(), unwrapped);
             if (handlerMethod.isPresent()) {
                 handle(handlerMethod.get(), call, customizer, e, headers, unwrapped);
-            } else if (unwrapped instanceof StatusRuntimeException) {
-                StatusRuntimeException sre = (StatusRuntimeException) unwrapped;
-                log.warn("Closing call with {}", sre.getStatus());
-                call.close(sre.getStatus(), Optional.ofNullable(sre.getTrailers()).orElseGet(Metadata::new));
+            } else if (unwrapped instanceof StatusRuntimeException || unwrapped instanceof StatusException) {
+                Status status = unwrapped instanceof StatusRuntimeException ?
+                        ((StatusRuntimeException) unwrapped).getStatus() :
+                        ((StatusException) unwrapped).getStatus();
+                Metadata metadata = unwrapped instanceof StatusRuntimeException ?
+                        ((StatusRuntimeException) unwrapped).getTrailers() :
+                        ((StatusException) unwrapped).getTrailers();
+                log.warn("Closing call with {}", status);
+                call.close(status, Optional.ofNullable(metadata).orElseGet(Metadata::new));
             } else {
                 log.warn("Closing call with {}", Status.INTERNAL);
                 call.close(Status.INTERNAL, new Metadata());
@@ -49,7 +51,7 @@ public class FailureHandlingSupport {
         }
     }
 
-    private void handle(HandlerMethod handler, ServerCall<?, ?> call, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer, RuntimeException e, Metadata headers, Throwable unwrapped) {
+    private void handle(HandlerMethod handler, ServerCall<?, ?> call, Consumer<GRpcExceptionScope.GRpcExceptionScopeBuilder> customizer, Exception e, Metadata headers, Throwable unwrapped) {
         final GRpcExceptionScope.GRpcExceptionScopeBuilder exceptionScopeBuilder = GRpcExceptionScope.builder()
                 .callHeaders(headers)
                 .methodCallAttributes(call.getAttributes())

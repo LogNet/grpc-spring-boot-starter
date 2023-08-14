@@ -48,8 +48,14 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
         static class CustomService extends CustomServiceGrpc.CustomServiceImplBase {
 
             @Override
+            public void anotherCustom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
+                ExceptionUtilsKt.throwException(Status.FAILED_PRECONDITION);
+            }
+
+            @Override
             public void custom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
                 throw new StatusRuntimeException(Status.FAILED_PRECONDITION);
+
             }
 
             @Override
@@ -89,13 +95,21 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
         final Throwable actual = errorFuture.get(20, TimeUnit.SECONDS);
         assertThat(actual, notNullValue());
         assertThat(actual, isA(StatusRuntimeException.class));
-        assertThat(((StatusRuntimeException)actual).getStatus(), is(Status.FAILED_PRECONDITION));
+        assertThat(((StatusRuntimeException) actual).getStatus(), is(Status.FAILED_PRECONDITION));
     }
 
     @Test
     public void statusRuntimeExceptionTest() {
         final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
                 CustomServiceGrpc.newBlockingStub(getChannel()).custom(Custom.CustomRequest.newBuilder().build())
+        );
+        assertThat(statusRuntimeException.getStatus(), is(Status.FAILED_PRECONDITION));
+    }
+
+    @Test
+    public void statusExceptionTest() {
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
+                CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.FAILED_PRECONDITION));
     }

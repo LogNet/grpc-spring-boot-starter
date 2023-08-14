@@ -63,7 +63,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
             public void sendMessage(RespT message) {
                 try {
                     super.sendMessage(message);
-                } catch (RuntimeException e) {
+                } catch (Exception e) {
                     failureHandlingSupport.closeCall(e, this, headers, b -> b.response(message));
                 }
             }
@@ -80,7 +80,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
                 try {
 
                     listener = next.startCall(call, headers);
-                } catch (RuntimeException e) {
+                } catch (Exception e) {
                     failureHandlingSupport.closeCall(e, call, headers);
                     return new ServerCall.Listener<ReqT>() {
 
@@ -94,7 +94,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
                         try {
                             request = message;
                             super.onMessage(message);
-                        } catch (RuntimeException e) {
+                        } catch (Exception e) {
                             blockMessage();
                             failureHandlingSupport.closeCall(e, call, headers, b -> b.request(request));
                         }
@@ -106,7 +106,7 @@ public class GRpcExceptionHandlerInterceptor implements ServerInterceptor, Order
                             if (!callIsClosed.get()) {
                                 super.onHalfClose();
                             }
-                        } catch (RuntimeException e) {
+                        } catch (Exception e) {
                             failureHandlingSupport.closeCall(e, call, headers, b -> b.request(request));
                         }
                     }

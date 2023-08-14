@@ -1,12 +1,14 @@
 import org.lognet.springboot.grpc.gradle.ReactiveFeature
 
 buildscript {
+    ext.kotlin_version = '1.9.0'
     repositories {
         mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "com.netflix.nebula:nebula-project-plugin:9.4.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 plugins {
@@ -14,6 +16,7 @@ plugins {
 }
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -115,6 +118,7 @@ dependencies {
     reactiveTestImplementation 'org.postgresql:r2dbc-postgresql'
     reactiveTestImplementation 'org.postgresql:postgresql'
     reactiveTestImplementation "com.playtika.testcontainers:embedded-postgresql:2.2.14"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
 
 }
@@ -132,6 +136,16 @@ bootJar{
 }
 jar{
     enabled true
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17
+    }
 }
 
 
