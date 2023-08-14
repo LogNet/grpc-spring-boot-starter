@@ -49,6 +49,9 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
 
             @Override
             public void anotherCustom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
+                if("NPE".equals(request.getName())){
+                    ExceptionUtilsKt.throwException(new NullPointerException());
+                }
                 ExceptionUtilsKt.throwException(Status.FAILED_PRECONDITION);
             }
 
@@ -61,6 +64,10 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
             @Override
             public StreamObserver<Custom.CustomRequest> customStream(StreamObserver<Custom.CustomReply> responseObserver) {
                 throw new StatusRuntimeException(Status.FAILED_PRECONDITION);
+            }
+            @GRpcExceptionHandler
+            public Status  handle(NullPointerException e, GRpcExceptionScope scope ){
+                return Status.DATA_LOSS;
             }
 
         }
@@ -112,6 +119,14 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
                 CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(Custom.CustomRequest.newBuilder().build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.FAILED_PRECONDITION));
+    }
+
+    @Test
+    public void npeExceptionTest() {
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
+                CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(Custom.CustomRequest.newBuilder().setName("NPE").build())
+        );
+        assertThat(statusRuntimeException.getStatus(), is(Status.DATA_LOSS));
     }
 
 }
