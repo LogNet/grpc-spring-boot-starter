@@ -49,10 +49,17 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
 
             @Override
             public void anotherCustom(Custom.CustomRequest request, StreamObserver<Custom.CustomReply> responseObserver) {
-                if("NPE".equals(request.getName())){
+                if ("NPE".equals(request.getName())) {
                     ExceptionUtilsKt.throwException(new NullPointerException());
                 }
-                ExceptionUtilsKt.throwException(Status.FAILED_PRECONDITION);
+                if ("RT_ERROR".equals(request.getName())) {
+                    responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+                }
+                if ("ERROR".equals(request.getName())) {
+                    responseObserver.onError(Status.OUT_OF_RANGE.asException());
+                } else {
+                    ExceptionUtilsKt.throwException(Status.FAILED_PRECONDITION);
+                }
             }
 
             @Override
@@ -65,8 +72,9 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
             public StreamObserver<Custom.CustomRequest> customStream(StreamObserver<Custom.CustomReply> responseObserver) {
                 throw new StatusRuntimeException(Status.FAILED_PRECONDITION);
             }
+
             @GRpcExceptionHandler
-            public Status  handle(NullPointerException e, GRpcExceptionScope scope ){
+            public Status handle(NullPointerException e, GRpcExceptionScope scope) {
                 return Status.DATA_LOSS;
             }
 
@@ -127,6 +135,24 @@ public class GRpcStatusRuntimeExceptionTest extends GrpcServerTestBase {
                 CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(Custom.CustomRequest.newBuilder().setName("NPE").build())
         );
         assertThat(statusRuntimeException.getStatus(), is(Status.DATA_LOSS));
+    }
+
+    @Test
+    public void errorExceptionTest() {
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
+                CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(
+                        Custom.CustomRequest.newBuilder().setName("ERROR").build()
+                )
+        );
+        assertThat(statusRuntimeException.getStatus(), is(Status.OUT_OF_RANGE));
+    }
+    public void rtErrorExceptionTest() {
+        final StatusRuntimeException statusRuntimeException = assertThrows(StatusRuntimeException.class, () ->
+                CustomServiceGrpc.newBlockingStub(getChannel()).anotherCustom(
+                        Custom.CustomRequest.newBuilder().setName("RT_ERROR").build()
+                )
+        );
+        assertThat(statusRuntimeException.getStatus(), is(Status.NOT_FOUND));
     }
 
 }
