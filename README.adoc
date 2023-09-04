@@ -27,7 +27,7 @@ Autoconfigures and runs the embedded gRPC server with @GRpcService-enabled beans
 == Setup
 
 
-=== Long story shot
+=== Long story short
 
 `Gradle` users are advised to apply the plugin :
 
