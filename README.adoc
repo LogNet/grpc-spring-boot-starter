@@ -37,7 +37,7 @@ repositories {
   // maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // for snapshot builds
 }
 dependencies {
-  compile 'io.github.lognet:grpc-spring-boot-starter:5.1.4'
+  implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.4'
 }
 ----
 
@@ -45,10 +45,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
-compile ('io.github.lognet:grpc-spring-boot-starter:5.1.4') {
+implementation ('io.github.lognet:grpc-spring-boot-starter:5.1.4') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
 }
-compile 'io.grpc:grpc-netty:1.57.0' // <1>
+implementation 'io.grpc:grpc-netty:1.57.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -1071,7 +1071,7 @@ grpc:
 == Eureka Integration
 
 When building production-ready services, the advise is to have separate project for your service(s) gRPC API that holds only proto-generated classes both for server and client side usage. +
-You will then add this project as `compile` dependency to your `gRPC client` and `gRPC server` projects.
+You will then add this project as `implementation` dependency to your `gRPC client` and `gRPC server` projects.
 
 To integrate `Eureka` simply follow the great https://spring.io/guides/gs/service-registration-and-discovery/[guide] from Spring.
 
@@ -1085,8 +1085,8 @@ Below are the essential parts of configurations for both server and client proje
 .build.gradle
 ----
  dependencies {
-     compile('org.springframework.cloud:spring-cloud-starter-eureka')
-     compile project(":yourProject-api")
+     implementation('org.springframework.cloud:spring-cloud-starter-eureka')
+     implementation project(":yourProject-api")
  }
 ----
 
@@ -1149,8 +1149,8 @@ eureka:
 .build.gradle
 ----
  dependencies {
-     compile('org.springframework.cloud:spring-cloud-starter-eureka')
-     compile project(":yourProject-api")
+     implementation('org.springframework.cloud:spring-cloud-starter-eureka')
+     implementation project(":yourProject-api")
  }
 ----
 
