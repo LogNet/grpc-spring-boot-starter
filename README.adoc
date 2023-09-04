@@ -27,8 +27,20 @@ Autoconfigures and runs the embedded gRPC server with @GRpcService-enabled beans
 == Setup
 
 
-[IMPORTANT]
-Make sure to check out the link:./grpc-spring-boot-starter-gradle-plugin/README.adoc[io.github.lognet.grpc-spring-boot^]   gradle plugin that dramatically simplifies the project setup.
+=== Long story shot
+
+`Gradle` users are advised to apply the plugin :
+
+[source,groovy]
+----
+plugins {
+id "io.github.lognet.grpc-spring-boot" version '5.1.4'
+}
+----
+
+link:./grpc-spring-boot-starter-gradle-plugin/README.adoc[io.github.lognet.grpc-spring-boot^]   gradle plugin dramatically simplifies the project setup.
+
+=== Short story long
 
 [source,groovy]
 ----
@@ -71,9 +83,13 @@ configurations.all {
 [NOTE]
 The release notes with compatibility matrix can be found link:ReleaseNotes.md[here^]
 
+Follow this https://github.com/google/protobuf-gradle-plugin[guide^]  to generate stub and server interface(s) from your `.proto` file(s). +
+
+If you are stack with maven - use this https://www.google.com/search?q=protobuf+maven+plugin[link^].
+
 == Usage
 
-* Start by https://github.com/google/protobuf-gradle-plugin[generating] stub and server interface(s) from your `.proto` file(s).
+
 * Annotate your server interface implementation(s) with `@org.lognet.springboot.grpc.GRpcService`
 * Optionally configure the server port in your `application.yml/properties`.
 Default port is `6565`.
