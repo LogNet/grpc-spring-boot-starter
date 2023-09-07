@@ -333,7 +333,7 @@ ManagedChannelBuilder.forAddress(host, port)
 
 Add tracing interceptor `TracingServerInterceptor` for your `GRpcService`:
 ```
-@GRpcService(interceptors = { TracingServerInterceptor.class })
+@GRpcService(interceptors = {LogInterceptor.class, TracingServerInterceptor.class })
 ...
 ```
 
