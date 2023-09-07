@@ -315,6 +315,27 @@ image:./images/interceptors_003.png[]
 This started is *natively* supported by `spring-cloud-sleuth` project. +
 Please continue to https://docs.spring.io/spring-cloud-sleuth/docs/current/reference/html/integrations.html#sleuth-rpc-grpc-integration[sleuth grpc integration].
 
+=== Distributed tracing support (OpenTelemetry)
+
+OpenTelemetry distributed tracing can enabled by including:
+```
+implementation 'io.opentelemetry:opentelemetry-exporter-otlp:[version]'
+implementation 'io.micrometer:micrometer-tracing-bridge-otel:[version]'
+```
+
+Enable tracing for client by adding `TracingClientInterceptor` to `ManagedChannelBuilder`:
+```
+ManagedChannelBuilder.forAddress(host, port)
+ ...
+.intercept(TracingClientInterceptor())
+.build()
+```
+
+Add tracing interceptor `TracingServerInterceptor` for your `GRpcService`:
+```
+@GRpcService(interceptors = { TracingServerInterceptor.class })
+...
+```
 
 === GRPC server metrics (Micrometer.io integration)
 
