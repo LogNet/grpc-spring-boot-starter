@@ -12,7 +12,9 @@ import io.opentelemetry.api.trace.TraceState;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import org.springframework.core.annotation.Order;
 
+@Order(20)
 public class TracingServerInterceptor implements ServerInterceptor {
 
     private final Tracer tracer;
