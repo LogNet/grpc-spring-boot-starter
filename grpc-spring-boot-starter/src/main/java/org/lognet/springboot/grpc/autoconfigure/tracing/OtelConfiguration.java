@@ -8,11 +8,13 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import org.lognet.springboot.grpc.tracing.TracingServerInterceptor;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnClass({OpenTelemetrySdk.class})
 @EnableConfigurationProperties(OtlpProperties.class)
 public class OtelConfiguration {
 
