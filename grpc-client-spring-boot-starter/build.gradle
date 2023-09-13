@@ -114,6 +114,8 @@ signing {
 
 dependencies {
     api "io.grpc:grpc-api:${grpcVersion}"
+    compileOnly 'io.opentelemetry:opentelemetry-exporter-otlp:1.29.0'
+    compileOnly 'io.micrometer:micrometer-tracing-bridge-otel:1.1.4'
 }
 compileJava.dependsOn(processResources)
 
