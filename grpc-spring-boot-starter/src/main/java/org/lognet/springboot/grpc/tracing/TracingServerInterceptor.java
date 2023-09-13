@@ -4,18 +4,20 @@ import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanBuilder;
-import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.api.trace.TraceFlags;
-import io.opentelemetry.api.trace.TraceState;
-import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.*;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
-import org.springframework.core.annotation.Order;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.core.Ordered;
 
-@Order(20)
-public class TracingServerInterceptor implements ServerInterceptor {
+import java.util.Optional;
+
+public class TracingServerInterceptor implements ServerInterceptor, Ordered {
+
+    @Setter
+    @Accessors(fluent = true)
+    private Integer order;
 
     private final Tracer tracer;
 
@@ -50,5 +52,10 @@ public class TracingServerInterceptor implements ServerInterceptor {
                 TraceState.getDefault()
         );
         return Context.current().with(Span.wrap(spanContext));
+    }
+
+    @Override
+    public int getOrder() {
+        return Optional.ofNullable(order).orElse(HIGHEST_PRECEDENCE);
     }
 }
