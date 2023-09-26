@@ -274,6 +274,7 @@ dependencies {
     compileOnly "io.grpc:grpc-netty:${grpcVersion}"
     api "io.grpc:grpc-netty-shaded:${grpcVersion}"
     api "io.grpc:grpc-services:${grpcVersion}"
+    api "io.grpc:grpc-inprocess:${grpcVersion}"
     api "org.springframework.boot:spring-boot-starter"
     api 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
 

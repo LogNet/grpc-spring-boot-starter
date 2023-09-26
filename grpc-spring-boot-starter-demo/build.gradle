@@ -109,7 +109,7 @@ dependencies {
     pureNettyTestImplementation "io.grpc:grpc-netty"
 
 
-    bothPureAndShadedNettyTestImplementation "io.grpc:grpc-netty"
+    bothPureAndShadedNettyTestImplementation "io.grpc:grpc-netty:${grpcVersion}"
 
     kafkaStreamTestImplementation "com.playtika.testcontainers:embedded-kafka:2.2.14"
     kafkaStreamTestImplementation "org.springframework.cloud:spring-cloud-starter-stream-kafka"
