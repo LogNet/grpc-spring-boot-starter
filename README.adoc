@@ -34,7 +34,7 @@ Autoconfigures and runs the embedded gRPC server with @GRpcService-enabled beans
 [source,groovy]
 ----
 plugins {
-id "io.github.lognet.grpc-spring-boot" version '5.1.4'
+id "io.github.lognet.grpc-spring-boot" version '5.1.5'
 }
 ----
 
@@ -49,7 +49,7 @@ repositories {
   // maven { url "https://oss.sonatype.org/content/repositories/snapshots" } // for snapshot builds
 }
 dependencies {
-  implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.4'
+  implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
 }
 ----
 
@@ -57,10 +57,10 @@ By default, starter pulls `io.grpc:grpc-netty-shaded`   as transitive dependency
 
 [source,groovy]
 ----
-implementation ('io.github.lognet:grpc-spring-boot-starter:5.1.4') {
+implementation ('io.github.lognet:grpc-spring-boot-starter:5.1.5') {
   exclude group: 'io.grpc', module: 'grpc-netty-shaded'
 }
-implementation 'io.grpc:grpc-netty:1.57.0' // <1>
+implementation 'io.grpc:grpc-netty:1.58.0' // <1>
 ----
 <1> Make sure to pull the version that matches the release.
 
@@ -74,7 +74,7 @@ In  this case you'll need to forcibly and explicitly set the  `grpc` version to 
 configurations.all {
   resolutionStrategy.eachDependency { details ->
     if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
-      details.useVersion "1.57.0"
+      details.useVersion "1.58.0"
     }
   }
 }

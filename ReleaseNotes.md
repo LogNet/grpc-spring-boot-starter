@@ -1,6 +1,7 @@
 | Starter Version         | gRPC versions | Spring Boot version |
 |:------------------------|:-------------:|:-------------------:|
-| [5.1.4](#version-514)   |    1.57.0    |        3.1.1        |
+| [5.1.5](#version-515)   |    1.58.0     |        3.1.1        |
+| [5.1.4](#version-514)   |    1.57.0     |        3.1.1        |
 | [5.1.3](#version-513)   |    1.56.1     |        3.1.1        |
 | [5.1.2](#version-512)   |    1.55.1     |        3.0.6        |
 | [5.1.1](#version-511)   |    1.54.1     |        3.0.6        |
@@ -41,6 +42,20 @@
 | [4.1.0](#version-410)   |    1.32.2     |    2.3.3.RELEASE    |
 | [4.0.0](#version-400)   |    1.32.1     |    2.3.3.RELEASE    |
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
+
+# Version 5.1.5
+## :star: New Features
+
+- Allow order Interceptors by using `@Order` annotation in the `@Bean` definition [#379](https://github.com/LogNet/grpc-spring-boot-starter/issues/379)
+
+## :lady_beetle: Bug Fixes
+
+- 5.1.0 changes status exception behaviour [#371](https://github.com/LogNet/grpc-spring-boot-starter/issues/371)
+- GRpcExceptionHandler doesn't work [Kotlin] [#268](https://github.com/LogNet/grpc-spring-boot-starter/issues/268)
+
+## :hammer: Dependency Upgrades
+
+- Upgrade grpc to 1.58 [#375](https://github.com/LogNet/grpc-spring-boot-starter/issues/375)
 
 # Version 5.1.4
 ## :lady_beetle: Bug Fixes
