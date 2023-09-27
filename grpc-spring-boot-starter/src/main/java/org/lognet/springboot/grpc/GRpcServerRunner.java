@@ -18,13 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -80,23 +79,23 @@ public class GRpcServerRunner implements SmartLifecycle {
             List<String> serviceNames = new ArrayList<>();
 
             registry.getBeanNameToServiceBeanMap()
-                    .forEach((name,srv) -> {
+                    .forEach((name, srv) -> {
                         ServerServiceDefinition serviceDefinition = srv.bindService();
                         GRpcService gRpcServiceAnn = applicationContext.findAnnotationOnBean(name, GRpcService.class);
                         serviceDefinition = bindInterceptors(serviceDefinition, gRpcServiceAnn, globalInterceptors);
                         serverBuilder.addService(serviceDefinition);
 
                         if (srv instanceof HealthGrpc.HealthImplBase) {
-                            if(!(srv instanceof ManagedHealthStatusService)){
+                            if (!(srv instanceof ManagedHealthStatusService)) {
                                 throw new FatalBeanException(String.format("Please inherit %s from %s rather than directly from %s",
                                         srv.getClass().getName(),
                                         ManagedHealthStatusService.class.getName(),
                                         HealthGrpc.HealthImplBase.class.getName()
-                                        ));
+                                ));
                             }
-                            if(healthStatusManager.isPresent()){
-                                throw new FatalBeanException(String.format("Only 1 single %s service instance is allowed",ManagedHealthStatusService.class.getName()));
-                            }else {
+                            if (healthStatusManager.isPresent()) {
+                                throw new FatalBeanException(String.format("Only 1 single %s service instance is allowed", ManagedHealthStatusService.class.getName()));
+                            } else {
                                 healthStatusManager = Optional.of((ManagedHealthStatusService) srv);
                             }
                         } else {
@@ -156,18 +155,30 @@ public class GRpcServerRunner implements SmartLifecycle {
         return new AnnotationAwareOrderComparator()
                 .withSourceProvider(o -> {
                     List<Object> sources = new ArrayList<>(2);
+
                     final Optional<RootBeanDefinition> rootBeanDefinition = Stream.of(applicationContext.getBeanNamesForType(o.getClass()))
+                            .filter(n -> applicationContext.getBean(n) == o)
                             .findFirst()
                             .map(name -> applicationContext.getBeanFactory().getBeanDefinition(name))
                             .filter(RootBeanDefinition.class::isInstance)
                             .map(RootBeanDefinition.class::cast);
 
+
                     rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod)
                             .ifPresent(sources::add);
-
                     rootBeanDefinition.map(RootBeanDefinition::getTargetType)
                             .filter(t -> t != o.getClass())
                             .ifPresent(sources::add);
+
+                    // make order with @Order(or @Order(LOWEST_PRECEDENCE) higher than bean definition without @Order annotation)
+                    Stream.of(rootBeanDefinition.map(RootBeanDefinition::getResolvedFactoryMethod),
+                                    Optional.of(o.getClass()))
+                            .filter(Optional::isPresent)
+                            .map(opt -> opt.get().getAnnotation(Order.class))
+                            .filter(Objects::nonNull)
+                            .filter(order -> Ordered.LOWEST_PRECEDENCE == order.value())
+                            .forEach(order -> sources.add((Ordered) () -> Ordered.LOWEST_PRECEDENCE - 1)
+                            );
 
                     return sources.toArray();
                 })
@@ -214,8 +225,6 @@ public class GRpcServerRunner implements SmartLifecycle {
         });
 
     }
-
-
 
 
     @Override

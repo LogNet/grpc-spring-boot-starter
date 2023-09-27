@@ -31,193 +31,183 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class, TheConfiguration.class},
-    webEnvironment = WebEnvironment.NONE, properties = {"grpc.port=7778","grpc.shutdownGrace=-1"})
+        webEnvironment = WebEnvironment.NONE, properties = {"grpc.port=7778", "grpc.shutdownGrace=-1"})
 @ActiveProfiles("disable-security")
-public class OrderedInterceptorsTest extends GrpcServerTestBase{
+public class OrderedInterceptorsTest extends GrpcServerTestBase {
 
 
-
-  private static List<Integer> calledInterceptors = new ArrayList<>();
-
-
-  @Before
-  public void setup() {
-
-    calledInterceptors.clear();
-  }
-
-  @Override
-  protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
-    Assert.assertEquals(7778, runningPort);
-    Assert.assertEquals(getPort(), runningPort);
-    return stub;
-  }
-
-  @Override
-  protected void afterGreeting() {
-    assertThat(calledInterceptors).containsExactly(1, 2, 3, 4,5,6, 7,8,10,10, 100);
-  }
+    private static List<Integer> calledInterceptors = new ArrayList<>();
 
 
+    @Before
+    public void setup() {
 
-  @TestConfiguration
-  public static class TheConfiguration {
-
-
-    @Bean
-    @GRpcGlobalInterceptor
-    public  ServerInterceptor mySixthInterceptor(){
-      return new MySixthInterceptor();
+        calledInterceptors.clear();
     }
 
-    class MySixthInterceptor implements ServerInterceptor,Ordered {
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(getOrder());
-        return next.startCall(call, headers);
-      }
-
-      @Override
-      public int getOrder() {
-        return 6;
-      }
+    @Override
+    protected GreeterGrpc.GreeterFutureStub beforeGreeting(GreeterGrpc.GreeterFutureStub stub) {
+        Assert.assertEquals(7778, runningPort);
+        Assert.assertEquals(getPort(), runningPort);
+        return stub;
     }
 
-    @GRpcGlobalInterceptor
-    @Order(2)
-    static class SecondInterceptor implements ServerInterceptor {
-
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-          ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(2);
-        return next.startCall(call, headers);
-      }
+    @Override
+    protected void afterGreeting() {
+        assertThat(calledInterceptors).containsExactly(1, 2, 3, 4, 5, 6, 7, 8, 10, 10, 100,100);
     }
 
-    @GRpcGlobalInterceptor
-    @Order(4)
-    static class FourthInterceptor implements ServerInterceptor {
 
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-          ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(4);
-        return next.startCall(call, headers);
-      }
-    }
+    @TestConfiguration
+    public static class TheConfiguration {
+        static class OrderAwareInterceptor implements ServerInterceptor {
+            private final int order;
 
-    @GRpcGlobalInterceptor
-    @Order(3)
-    static class ThirdInterceptor implements ServerInterceptor {
+            public OrderAwareInterceptor(int order) {
+                this.order = order;
+            }
 
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-          ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(3);
-        return next.startCall(call, headers);
-      }
-    }
+            @Override
+            public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+                calledInterceptors.add(order);
+                return next.startCall(call, headers);
+            }
+        }
 
-    @GRpcGlobalInterceptor
-    @Order(1)
-    static class FirstInterceptor implements ServerInterceptor {
+        @Bean
+        @GRpcGlobalInterceptor
+        public ServerInterceptor mySixthInterceptor() {
+            return new MySixthInterceptor();
+        }
 
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-          ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(1);
-        return next.startCall(call, headers);
-      }
-    }
+        class MySixthInterceptor implements ServerInterceptor, Ordered {
+            @Override
+            public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+                calledInterceptors.add(getOrder());
+                return next.startCall(call, headers);
+            }
 
-    @GRpcGlobalInterceptor
-    @Order // no value means lowest priority amongst all @Ordered, but higher priority than interceptors without the annotation
-    static class DefaultOrderedInterceptor implements ServerInterceptor {
+            @Override
+            public int getOrder() {
+                return 6;
+            }
+        }
 
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-                                                        ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(10);
-        return next.startCall(call, headers);
-      }
-    }
+        @GRpcGlobalInterceptor
+        @Order(2)
+        static class SecondInterceptor extends OrderAwareInterceptor {
 
-    // interceptors without any annotation will always be executed last, losing to any defined @Order
-    @GRpcGlobalInterceptor
-    static class UnorderedInterceptor implements ServerInterceptor {
-
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
-          ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(100);
-        return next.startCall(call, headers);
-      }
-    }
-
-    @Bean
-    @GRpcGlobalInterceptor
-    @Order(7)
-    public  ServerInterceptor mySeventhInterceptor(){
-      return  new ServerInterceptor() {
-        @Override
-        public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-            calledInterceptors.add(7);
-            return next.startCall(call, headers);
+            public SecondInterceptor() {
+                super(2);
+            }
 
         }
-      };
-    }
 
-    @Bean
-    @GRpcGlobalInterceptor
-    @Order
-    public  ServerInterceptor myOrderedMethodFactoryBeanInterceptor(){
-      return  new ServerInterceptor() {
-        @Override
-        public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-          calledInterceptors.add(10);
-          return next.startCall(call, headers);
+        @GRpcGlobalInterceptor
+        @Order(4)
+        static class FourthInterceptor extends OrderAwareInterceptor {
+
+            public FourthInterceptor() {
+                super(4);
+            }
 
         }
-      };
+
+        @GRpcGlobalInterceptor
+        @Order(3)
+        static class ThirdInterceptor extends OrderAwareInterceptor {
+
+            public ThirdInterceptor() {
+                super(3);
+            }
+
+        }
+
+        @GRpcGlobalInterceptor
+        @Order(1)
+        static class FirstInterceptor extends OrderAwareInterceptor {
+
+            public FirstInterceptor() {
+                super(1);
+            }
+
+        }
+
+        @GRpcGlobalInterceptor
+        @Order
+        // no value means lowest priority amongst all @Ordered, but higher priority than interceptors without the annotation
+        static class DefaultOrderedInterceptor extends OrderAwareInterceptor {
+
+            public DefaultOrderedInterceptor() {
+                super(10);
+            }
+
+        }
+
+        // interceptors without any annotation will always be executed last, losing to any defined @Order
+        @GRpcGlobalInterceptor
+        static class UnorderedInterceptor extends OrderAwareInterceptor {
+
+            public UnorderedInterceptor() {
+                super(100);
+            }
+
+        }
+
+        @Bean
+        @GRpcGlobalInterceptor
+        @Order(7)
+        public ServerInterceptor mySeventhInterceptor() {
+            return new OrderAwareInterceptor(7);
+        }
+
+        @Bean
+        @GRpcGlobalInterceptor
+        @Order
+        public ServerInterceptor myOrderedMethodFactoryBeanInterceptor() {
+            return new OrderAwareInterceptor(10);
+        }
+
+        @Bean
+        @GRpcGlobalInterceptor
+        public ServerInterceptor myUnOrderedMethodFactoryBeanInterceptor() {
+            return new OrderAwareInterceptor(100);
+        }
+
+        @Bean
+        @GRpcGlobalInterceptor
+        public ServerInterceptor myInterceptor() {
+            return new MyInterceptor();
+        }
+
+        class MyInterceptor implements ServerInterceptor, Ordered {
+            @Override
+            public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+                calledInterceptors.add(5);
+                return next.startCall(call, headers);
+            }
+
+            @Override
+            public int getOrder() {
+                return 5;
+            }
+        }
+
+
+        @Bean
+        @Order(8)
+        @GRpcGlobalInterceptor
+        public ServerInterceptor my8thInterceptor() {
+            return new My8Interceptor();
+        }
+
+        static class My8Interceptor implements ServerInterceptor {
+            @Override
+            public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+                calledInterceptors.add(8);
+                return next.startCall(call, headers);
+            }
+        }
+
     }
-
-    @Bean
-    @GRpcGlobalInterceptor
-    public  ServerInterceptor myInterceptor(){
-      return new MyInterceptor();
-    }
-
-     class MyInterceptor implements ServerInterceptor,Ordered {
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(5);
-        return next.startCall(call, headers);
-      }
-
-       @Override
-       public int getOrder() {
-         return 5;
-       }
-     }
-
-
-
-    @Bean
-    @Order(8)
-    @GRpcGlobalInterceptor
-    public  ServerInterceptor my8thInterceptor(){
-      return new My8Interceptor();
-    }
-
-    static class My8Interceptor implements ServerInterceptor {
-      @Override
-      public <ReqT, RespT> Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        calledInterceptors.add(8);
-        return next.startCall(call, headers);
-      }
-    }
-
-  }
 }
