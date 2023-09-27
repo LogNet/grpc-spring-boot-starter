@@ -44,12 +44,8 @@
 | [3.5.7](#version-357)   |    1.31.1     |   1.5.13.RELEASE    |
 
 # Version 5.1.5
-## :star: New Features
-
-- Allow order Interceptors by using `@Order` annotation in the `@Bean` definition [#379](https://github.com/LogNet/grpc-spring-boot-starter/issues/379)
-
 ## :lady_beetle: Bug Fixes
-
+- Buggy interceptors `@Order` annotation processing  [#379](https://github.com/LogNet/grpc-spring-boot-starter/issues/379)
 - 5.1.0 changes status exception behaviour [#371](https://github.com/LogNet/grpc-spring-boot-starter/issues/371)
 - GRpcExceptionHandler doesn't work [Kotlin] [#268](https://github.com/LogNet/grpc-spring-boot-starter/issues/268)
 
