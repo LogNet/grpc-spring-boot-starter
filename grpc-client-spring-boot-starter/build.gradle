@@ -29,12 +29,12 @@ task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
 }
 
 task sourceJar(type: Jar) {
-    classifier "sources"
+    archiveClassifier.set("sources")
     from delombok
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier "javadoc"
+    archiveClassifier.set("javadoc")
     from javadoc.destinationDir
 }
 

@@ -96,7 +96,7 @@ tasks.googleJavaFormat {
 }
 task sourceJar(type: Jar) {
     dependsOn(tasks.googleJavaFormat)
-    classifier "sources"
+    archiveClassifier.set("sources")
     from delombokOutputDir
 }
 javadoc {
@@ -104,7 +104,7 @@ javadoc {
     source = delombokOutputDir
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier "javadoc"
+    archiveClassifier.set("javadoc")
     from javadoc.destinationDir
 }
 

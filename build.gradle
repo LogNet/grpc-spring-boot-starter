@@ -90,10 +90,10 @@ task codeCoverageReport(type: JacocoReport) {
             ,project('grpc-client-spring-boot-starter').sourceSets.main)
 
     reports {
-        xml.enabled true
+        xml.required.set(true)
         xml.destination  = new File(buildDir,"reports/jacoco/report.xml")
-        html.enabled true
-        csv.enabled false
+        html.required.set(true)
+        csv.required.set(true)
     }
 }
 
