@@ -42,6 +42,9 @@
     {
       "id": "835a36c5-d647-49a2-b794-2f128ebed7c0",
       "username": "keycloak-test",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@gmail.com",
       "enabled": true,
       "credentials": [
         {
@@ -57,5 +60,5 @@
       }
     }
   ],
-  "keycloakVersion": "8.0.1"
+  "keycloakVersion": "9.0.0"
 }

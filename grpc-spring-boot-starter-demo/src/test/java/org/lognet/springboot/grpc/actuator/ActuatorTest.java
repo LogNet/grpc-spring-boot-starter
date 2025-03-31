@@ -8,7 +8,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.Test;

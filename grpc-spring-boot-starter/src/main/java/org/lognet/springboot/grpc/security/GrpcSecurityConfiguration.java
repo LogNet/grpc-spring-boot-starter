@@ -16,14 +16,20 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -129,6 +135,13 @@ public class GrpcSecurityConfiguration {
     public BearerTokenAuthSchemeSelector bearerTokenAuthSchemeSelector() {
         return new BearerTokenAuthSchemeSelector();
     }
+
+    @Configuration
+    @ConditionalOnClass(AuthenticationManager.class)
+    @ConditionalOnBean(ObjectPostProcessor.class)
+    @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
+            AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
+    static class DefaultUserDetailsServiceAutoConfiguration extends UserDetailsServiceAutoConfiguration {}
 
     @Autowired(required = false)
     @SuppressWarnings({ "rawtypes", "unchecked" })

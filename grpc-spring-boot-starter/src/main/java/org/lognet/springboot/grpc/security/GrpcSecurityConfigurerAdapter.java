@@ -5,7 +5,7 @@ import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.lognet.springboot.grpc.security.jwt.JwtAuthProviderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -26,7 +26,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     public void setApplicationContext(ApplicationContext context) throws Exception {
 
 
-        ObjectPostProcessor<Object> objectPostProcessor = context.getBean(ObjectPostProcessor.class);
+        ObjectPostProcessor<Object> objectPostProcessor = context.getBean("objectPostProcessor", ObjectPostProcessor.class);
         this.authenticationConfiguration = context.getBean(AuthenticationConfiguration.class);
 
         authenticationManagerBuilder = authenticationConfiguration
