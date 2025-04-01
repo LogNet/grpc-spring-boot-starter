@@ -22,7 +22,7 @@ after_success:
   - ./publish.sh
   - bash <(curl -s https://codecov.io/bash)
 script:
- - ./gradlew build codeCoverageReport
+ - ./gradlew build codeCoverageReport -S
 
 
 

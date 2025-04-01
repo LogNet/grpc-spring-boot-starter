@@ -113,9 +113,7 @@ artifacts {
     archives sourceJar
     archives javadocJar
 }
-signing {
-    sign configurations.archives
-}
+
 test {
     useJUnitPlatform {
 //        includeTags 'fast'
@@ -260,7 +258,7 @@ publishing {
 
 
 signing {
-    required {
+    setRequired {
         // signing is required if this is a release version and the artifacts are to be published
         !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
             gradle.taskGraph.hasTask it

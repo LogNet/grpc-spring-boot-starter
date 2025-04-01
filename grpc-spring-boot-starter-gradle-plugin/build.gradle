@@ -74,9 +74,7 @@ artifacts {
     archives sourceJar
     archives javadocJar
 }
-signing {
-    sign configurations.archives
-}
+
 
 
 nexusPublishing {
@@ -141,7 +139,7 @@ publishing {
 }
 
 signing {
-    required {
+    setRequired  {
         // signing is required if this is a release version and the artifacts are to be published
         !version.toString().endsWith('-SNAPSHOT') && (
                 tasks.withType(PublishToMavenRepository).find {
