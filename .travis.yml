@@ -13,10 +13,10 @@ services:
   - docker
 before_install:
   - chmod +x ./publish.sh
-  - ls /home/travis/.gnupg
+  - ls -la /home/travis/.gnupg
   - openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in ./codesigning.asc.enc -out ./codesigning.asc -d
   - gpg2 --batch --import ./codesigning.asc
-  - ls /home/travis/.gnupg
+  - ls -la /home/travis/.gnupg
 install: true # disables default "./gradlew assemble"  install script
 after_success:
   - ./publish.sh
