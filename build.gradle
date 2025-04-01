@@ -16,7 +16,6 @@ buildscript {
 }
 
 
-
 allprojects { pr ->
     pr['signing.keyId'] = System.getenv('GPG_ID')
     pr['signing.password'] = System.getenv('GPG_PASSWORD')
@@ -48,8 +47,7 @@ subprojects {
     apply plugin: 'net.ltgt.errorprone'
 
 
-
-    tasks.withType(JavaCompile,{
+    tasks.withType(JavaCompile, {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     })
@@ -59,7 +57,7 @@ subprojects {
         //forkEvery = 1
         testLogging {
             exceptionFormat = 'full'
-          //  showStandardStreams = true
+            //  showStandardStreams = true
         }
     }
 
@@ -69,11 +67,12 @@ subprojects {
             add(conf, "org.projectlombok:lombok:${lombokVersion}")
         }
         errorprone("com.google.errorprone:error_prone_core:${errorProneVersion}")
-   }
+    }
     tasks.withType(JavaCompile).configureEach {
         options.errorprone.disableWarningsInGeneratedCode = true
 
-        options.errorprone.enabled  = false // (it.name.startsWith("compile") && it.name.endsWith("TestJava") ) ? false:(null != System.getenv("CI"))
+        options.errorprone.enabled = false
+        // (it.name.startsWith("compile") && it.name.endsWith("TestJava") ) ? false:(null != System.getenv("CI"))
 
 
     }
@@ -86,8 +85,8 @@ subprojects {
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
-    sourceSets (project('grpc-spring-boot-starter').sourceSets.main
-            ,project('grpc-client-spring-boot-starter').sourceSets.main)
+    sourceSets(project('grpc-spring-boot-starter').sourceSets.main
+            , project('grpc-client-spring-boot-starter').sourceSets.main)
 
     reports {
         xml.required.set(true)
@@ -97,12 +96,15 @@ task codeCoverageReport(type: JacocoReport) {
     }
 }
 
-codeCoverageReport.dependsOn {
-    subprojects*.test+project('grpc-spring-boot-starter').tasks.delombok
+codeCoverageReport {
+    dependsOn {
+        subprojects*.test
+    }
+    mustRunAfter ( project('grpc-spring-boot-starter').tasks.delombok )
 }
 subprojects {
-    tasks.withType(Test,{t->
-        t.environment.put("TESTCONTAINERS_REUSE_ENABLE","true")
+    tasks.withType(Test, { t ->
+        t.environment.put("TESTCONTAINERS_REUSE_ENABLE", "true")
     })
 }
 
