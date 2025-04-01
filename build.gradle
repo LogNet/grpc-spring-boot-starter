@@ -20,7 +20,7 @@ buildscript {
 allprojects { pr ->
     pr['signing.keyId'] = System.getenv('GPG_ID')
     pr['signing.password'] = System.getenv('GPG_PASSWORD')
-    pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/pubring.kbx'
+    pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/secring.gpg'
 
 
 }
@@ -91,14 +91,14 @@ task codeCoverageReport(type: JacocoReport) {
 
     reports {
         xml.required.set(true)
-        xml.destination  = new File(buildDir,"reports/jacoco/report.xml")
+        xml.getOutputLocation().set(getLayout().getBuildDirectory().file("reports/jacoco/report.xml"))
         html.required.set(true)
         csv.required.set(true)
     }
 }
 
 codeCoverageReport.dependsOn {
-    subprojects*.test
+    subprojects*.test+project('grpc-spring-boot-starter').tasks.delombok
 }
 subprojects {
     tasks.withType(Test,{t->
