@@ -95,17 +95,7 @@ task codeCoverageReport(type: JacocoReport) {
         csv.required.set(true)
     }
     dependsOn {
-        subprojects.collectMany { subproject ->
-            def tasksToDependOn = []
-            tasksToDependOn.add(subproject.tasks.test)
-            if (subproject.tasks.findByName("delombok")) {
-                tasksToDependOn.add(subproject.tasks.delombok)
-            }
-            if (subproject.tasks.findByName("javadoc")) {
-                tasksToDependOn.add(subproject.tasks.javadoc)
-            }
-            return tasksToDependOn
-        }
+        [subprojects*.test, subprojects*.delombok, subprojects*.javadoc]
     }
 }
 
