@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath "com.netflix.nebula:nebula-project-plugin:9.4.0"
+        classpath "com.netflix.nebula:nebula-project-plugin:11.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -20,7 +20,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: "nebula.facet"
+apply plugin: "com.netflix.nebula.facet"
 
 facets {
     pureNettyTest
@@ -55,17 +55,16 @@ configurations.findAll { cfg ->
         cfg.exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-consul-discovery'
 
     }
-
-
 }
 
-
-extensions.facets.each {
+facets.each {
     if (it.name.endsWith("Test")) {
         configurations.getByName("${it.name}Implementation").extendsFrom(configurations.testImplementation)
         configurations.getByName("${it.name}RuntimeOnly").extendsFrom(configurations.testRuntimeOnly)
 
         dependencies.add("${it.name}Implementation", sourceSets.test.output)
+
+        tasks.test.dependsOn it.name
     }
 }
 
