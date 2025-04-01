@@ -94,14 +94,12 @@ task codeCoverageReport(type: JacocoReport) {
         html.required.set(true)
         csv.required.set(true)
     }
+    dependsOn {
+        [subprojects*.test, project('grpc-spring-boot-starter').getTasks().named("delombok")]
+    }
 }
 
-codeCoverageReport {
-    dependsOn {
-        subprojects*.test
-    }
-    mustRunAfter ( project('grpc-spring-boot-starter').tasks.delombok )
-}
+
 subprojects {
     tasks.withType(Test, { t ->
         t.environment.put("TESTCONTAINERS_REUSE_ENABLE", "true")
