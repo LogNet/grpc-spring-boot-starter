@@ -100,12 +100,7 @@ publishing {
 }
 
 signing {
-    setRequired {
-        // signing is required if this is a release version and the artifacts are to be published
-        !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
-            gradle.taskGraph.hasTask it
-        }
-    }
+    required = { !version.toString().endsWith('-SNAPSHOT') && gradle.taskGraph.hasTask("publishToSonatype") }
     sign publishing.publications
 }
 

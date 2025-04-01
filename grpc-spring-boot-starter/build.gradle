@@ -18,7 +18,7 @@ plugins {
 
 }
 grpcSpringBoot {
-    grpcSpringBootStarterVersion.set((String)null)
+    grpcSpringBootStarterVersion.set((String) null)
 }
 
 apply plugin: 'org.springframework.boot'
@@ -28,7 +28,7 @@ apply plugin: 'signing'
 apply plugin: "de.marcphilipp.nexus-publish"
 apply plugin: 'io.franzbecker.gradle-lombok'
 
-configurations{
+configurations {
     testImplementation {
         exclude group: 'io.netty', module: 'netty-tcnative-boringssl-static'
         exclude group: 'io.grpc', module: 'grpc-netty-shaded'
@@ -73,7 +73,7 @@ def delombokOutputDir = file("$buildDir/delombok")
 task delombok(type: io.franzbecker.gradle.lombok.task.DelombokTask) {
     outputs.dir(delombokOutputDir)
     for (srcDir in project.sourceSets.main.java.srcDirs) {
-        if(srcDir.exists()) {
+        if (srcDir.exists()) {
             inputs.dir(srcDir)
             args(srcDir, "-d", delombokOutputDir)
         }
@@ -132,8 +132,8 @@ configurations.testImplementation.setCanBeResolved(true)
 
 task testDependencyFatJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar) {
     targetJavaVersion = JavaVersion.VERSION_17
-    dependsOn testClasses,classes
-    mainClass =  'org.lognet.grpc.demo.DemoApp'
+    dependsOn testClasses, classes
+    mainClass = 'org.lognet.grpc.demo.DemoApp'
     setClasspath(configurations.testImplementation)
     doFirst {
         classpath sourceSets.getByName("test").java.classesDirectory
@@ -191,9 +191,9 @@ jar {
                         .findAll { it.pattern.contains("org/lognet/springboot/grpc") }
 
                 def finalJson = new groovy.json.JsonBuilder()
-                finalJson{
-                    resources{
-                        includes (filtered)
+                finalJson {
+                    resources {
+                        includes(filtered)
                     }
                 }
                 finalJson.writeTo(w)
@@ -204,7 +204,6 @@ jar {
     }
 
 }
-
 
 
 bootJar {
@@ -258,12 +257,7 @@ publishing {
 
 
 signing {
-    setRequired {
-        // signing is required if this is a release version and the artifacts are to be published
-        !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
-            gradle.taskGraph.hasTask it
-        }
-    }
+    required = { !version.toString().endsWith('-SNAPSHOT') && gradle.taskGraph.hasTask("publishToSonatype") }
     sign publishing.publications
 }
 
