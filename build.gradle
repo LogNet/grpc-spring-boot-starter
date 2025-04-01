@@ -103,7 +103,7 @@ task codeCoverageReport(type: JacocoReport) {
                      .getAsMap()
                      .entrySet()
                      .stream()
-                     .filter {["test","delombok","javadoc"].contains(it.key) }
+                     .filter {[ "delombok","javadoc"].contains(it.key) || it.value instanceof Test }
                      .map {it.value}
         }.collect(Collectors.toList())
     }
