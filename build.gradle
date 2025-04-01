@@ -1,3 +1,6 @@
+import java.util.stream.Collector
+import java.util.stream.Collectors
+
 buildscript {
     repositories {
         mavenCentral()
@@ -95,7 +98,14 @@ task codeCoverageReport(type: JacocoReport) {
         csv.required.set(true)
     }
     dependsOn {
-        [subprojects*.test, subprojects*.delombok, subprojects*.javadoc]
+        subprojects.stream().flatMap { p ->
+            p.getTasks()
+                     .getAsMap()
+                     .entrySet()
+                     .stream()
+                     .filter {["test","delombok","javadoc"].contains(it.key) }
+                     .map {it.value}
+        }.collect(Collectors.toList())
     }
 }
 
