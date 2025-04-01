@@ -20,7 +20,7 @@ buildscript {
 allprojects { pr ->
     pr['signing.keyId'] = System.getenv('GPG_ID')
     pr['signing.password'] = System.getenv('GPG_PASSWORD')
-    pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/secring.gpg'
+    pr['signing.secretKeyRingFile'] = '/home/travis/.gnupg/pubring.kbx'
 
 
 }
