@@ -95,7 +95,7 @@ task codeCoverageReport(type: JacocoReport) {
         csv.required.set(true)
     }
     dependsOn {
-        [subprojects*.test, project('grpc-spring-boot-starter').getTasks().named("delombok")]
+        [subprojects*.test, subprojects*.delombok, subprojects*.javadoc]
     }
 }
 
