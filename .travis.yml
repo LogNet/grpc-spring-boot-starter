@@ -18,6 +18,7 @@ before_install:
   - gpg --batch --import ./codesigning.asc
   - ls -la /home/travis/.gnupg
   - gpg --export-secret-keys > ~/.gnupg/secring.gpg
+  - gpg --export-secret-keys > /home/travis/.gnupg/secring.gpg
   - ls -la /home/travis/.gnupg
 install: true # disables default "./gradlew assemble"  install script
 after_success:
