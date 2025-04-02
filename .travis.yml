@@ -17,8 +17,6 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_12c8071d2874_key -iv $encrypted_12c8071d2874_iv -in ./codesigning.asc.enc -out ./codesigning.asc -d
   - gpg --batch --import ./codesigning.asc
   - ls -la /home/travis/.gnupg
-  - gpg --batch --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg
-  - ls -la /home/travis/.gnupg
 install: true # disables default "./gradlew assemble"  install script
 after_success:
   - ./publish.sh
