@@ -24,13 +24,13 @@ switch (grpcSpringBoot.reactiveFeature.get().name()) {
     case "REACTOR":
         dependencies {
             implementation("com.salesforce.servicelibs:reactor-grpc-stub:${grpcSpringBoot.reactiveProtocVersion.get()}")
-            implementation("io.projectreactor:reactor-core:3.5.4")
+            implementation("io.projectreactor:reactor-core:3.6.11")
         }
         break;
     case "RX":
         dependencies {
             implementation("com.salesforce.servicelibs:rx3grpc-stub:${grpcSpringBoot.reactiveProtocVersion.get()}")
-            implementation 'io.reactivex.rxjava3:rxjava:3.1.6'
+            implementation 'io.reactivex.rxjava3:rxjava:3.1.8'
         }
         break;
 }
@@ -63,7 +63,7 @@ protobuf {
     }
 
     generateProtoTasks {
-        all().each { task ->
+        all().configureEach  { task ->
             task.builtins {
                 java {
                     option "annotate_code"

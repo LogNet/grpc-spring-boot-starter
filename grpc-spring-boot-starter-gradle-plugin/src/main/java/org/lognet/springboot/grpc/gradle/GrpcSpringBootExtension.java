@@ -21,7 +21,7 @@ public class GrpcSpringBootExtension {
 
 
         protocVersion = this.project.getObjects().property(String.class);
-        protocVersion.set("3.21.7");
+        protocVersion.set("3.25.5");
 
         reactiveProtocVersion = this.project.getObjects().property(String.class);
         reactiveProtocVersion.set("1.2.4");

@@ -146,63 +146,6 @@ jar {
     enabled = true
     archiveClassifier.convention("")
 
-
-    // generate native config by executing test app in graalvm docker image
-    // then grab generated json files and filter to include class from `org.lognet.springboot.grpc` package only
-    dependsOn testDependencyFatJar
-    File aotDir = new File(buildDir, "native-configs");
-    File transformed = new File(aotDir, "transformed")
-    transformed.mkdirs()
-    from(transformed) {
-        into("META-INF/native-image/io.github.lognet/grpc-spring-boot-starter")
-        include "*.*"
-    }
-    doFirst {
-
-        exec {
-            commandLine("docker",
-                    "run", "--rm",
-                    "-v", "${tasks.testDependencyFatJar.archiveFile.get().getAsFile().parent}:/tmp",
-                    "-v", "${aotDir}:/out",
-                    "findepi/graalvm:java17-native",
-                    "java",
-                    "-agentlib:native-image-agent=config-output-dir=/out/",
-                    "-jar", "/tmp/${tasks.testDependencyFatJar.archiveFileName.get()}",
-                    "--auto-close=true",
-                    "--spring.cloud.consul.discovery.enabled=false",
-                    "--spring.cloud.consul.enabled=false",
-                    "--spring.cloud.service-registry.auto-registration.enabled=false"
-            )
-        }
-        new File(transformed, "reflection-config.json").withWriter { w ->
-            new File(aotDir, "reflect-config.json").withInputStream { is ->
-                def filtered = new JsonSlurper().parse(is)
-                        .findAll { it.name.contains("org.lognet.springboot.grpc") }
-                def finalJson = new groovy.json.JsonBuilder()
-                finalJson.call(filtered)
-                finalJson.writeTo(w)
-            }
-        }
-        new File(transformed, "resource-config.json").withWriter { w ->
-            new File(aotDir, "resource-config.json").withInputStream { is ->
-                def obj = new JsonSlurper().parse(is)
-
-                def filtered = obj.resources.includes
-                        .findAll { it.pattern.contains("org/lognet/springboot/grpc") }
-
-                def finalJson = new groovy.json.JsonBuilder()
-                finalJson {
-                    resources {
-                        includes(filtered)
-                    }
-                }
-                finalJson.writeTo(w)
-
-            }
-        }
-
-    }
-
 }
 
 
@@ -266,6 +209,7 @@ dependencies {
     compileOnly "io.grpc:grpc-netty:${grpcVersion}"
     api "io.grpc:grpc-netty-shaded:${grpcVersion}"
     api "io.grpc:grpc-services:${grpcVersion}"
+    api "io.grpc:grpc-protobuf:${grpcVersion}"
     api "io.grpc:grpc-inprocess:${grpcVersion}"
     api "org.springframework.boot:spring-boot-starter"
     api 'io.netty:netty-tcnative-boringssl-static:2.0.47.Final'
