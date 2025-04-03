@@ -22,7 +22,7 @@ Bootstraps the project with  `com.google.protobuf` gradle plugin (including `grp
 ----
 plugins {
     id 'java'
-    id "io.github.lognet.grpc-spring-boot" version '5.1.5'
+    id "io.github.lognet.grpc-spring-boot" version '5.2.0'
 }
 
 ----
@@ -55,9 +55,9 @@ grpcSpringBoot {
 ----
 <1> `io.github.lognet:grpc-spring-boot-starter` version to use, defaults to the same version as this plugin.
 <2> `grpc` version to use, defaults to the version the `io.github.lognet:grpc-spring-boot-starter` was compiled with (see version matrix https://github.com/LogNet/grpc-spring-boot-starter/blob/master/ReleaseNotes.md[here])
-<3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.21.7`)
+<3> Version of `com.google.protobuf:protoc` protocol compiler  to use (defaults to `3.25.5`)
 <4> Enables https://github.com/salesforce/reactive-grpc[salesforce's reactive-grpc] protoc plugin, defaults to `ReactiveFeature.OFF` (supports `ReactiveFeature.REACTOR` and `ReactiveFeature.RX`)
-<5> `reactive-grpc` version to use, defaults to `1.2.3`
+<5> `reactive-grpc` version to use, defaults to `1.2.4`
 
 
 The version of `com.google.protobuf` can be controlled via `pluginManagement` block :
@@ -71,7 +71,7 @@ pluginManagement {
     }
 }
 ----
-<1> Defaults to `0.9.1`.
+<1> Defaults to `0.9.4`.
 
 
 == License

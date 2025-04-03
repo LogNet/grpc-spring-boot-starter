@@ -48,6 +48,10 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
         milestoneLabel = m.group(1)
     }
 
+    if (project.hasProperty("jvmArgs")) {
+        getJvmArguments().addAll (project.getProperty("jvmArgs").split(' '))
+    }
+
     def generator = file("changelog/github-changelog-generator.jar")
     classpath(generator.absolutePath)
     args(
@@ -57,7 +61,7 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
     )
     doFirst {
         download {
-            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.8/github-changelog-generator.jar'
+            src 'https://github.com/spring-io/github-changelog-generator/releases/download/v0.0.11/github-changelog-generator.jar'
             dest generator
             onlyIfModified true
         }
