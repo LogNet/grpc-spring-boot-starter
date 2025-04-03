@@ -47,17 +47,20 @@ task generateReleaseNotes(type: JavaExec, group: "documentation") {
     if (m.find()) {
         milestoneLabel = m.group(1)
     }
-
     if (project.hasProperty("jvmArgs")) {
         getJvmArguments().addAll (project.getProperty("jvmArgs").split(' '))
     }
 
     def generator = file("changelog/github-changelog-generator.jar")
     classpath(generator.absolutePath)
+    def token=System.getenv('TOKEN')
+
     args(
-            milestoneLabel
-            , "changelog/changelog.md"
-            , "--changelog.repository=LogNet/grpc-spring-boot-starter"
+            milestoneLabel,
+            "changelog/changelog.md",
+            "--changelog.repository=LogNet/grpc-spring-boot-starter",
+            "--github-token=$token",
+            "--changelog.github.password=$token"
     )
     doFirst {
         download {
