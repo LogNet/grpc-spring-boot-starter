@@ -89,7 +89,7 @@ dependencies {
     implementation project(':grpc-spring-boot-starter')
     implementation project(':grpc-client-spring-boot-starter')
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-aop'
+    testImplementation 'org.springframework.boot:spring-boot-starter-aop:4.0.0-M2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.github.stefanbirkner:system-rules:1.18.0'
     testImplementation('org.springframework.cloud:spring-cloud-starter-consul-discovery')

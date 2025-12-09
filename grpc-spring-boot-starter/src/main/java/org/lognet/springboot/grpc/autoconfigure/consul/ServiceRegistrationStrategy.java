@@ -1,8 +1,8 @@
 package org.lognet.springboot.grpc.autoconfigure.consul;
 
 import com.ecwid.consul.json.GsonFactory;
-import com.ecwid.consul.v1.agent.model.NewService;
 import io.grpc.Server;
+import org.springframework.cloud.consul.model.http.agent.NewService;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Collection;

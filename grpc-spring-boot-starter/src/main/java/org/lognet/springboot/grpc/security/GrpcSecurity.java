@@ -45,8 +45,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
 
     }
 
-    public GrpcServiceAuthorizationConfigurer.Registry authorizeRequests()
-            throws Exception {
+    public GrpcServiceAuthorizationConfigurer.Registry authorizeRequests() {
 
         return getOrApply(new GrpcServiceAuthorizationConfigurer (applicationContext.getBean(GRpcServicesRegistry.class)))
                 .getRegistry();
@@ -77,12 +76,12 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
     }
 
     @Override
-    protected void beforeConfigure() throws Exception {
+    protected void beforeConfigure() {
 
     }
 
     @Override
-    protected ServerInterceptor performBuild() throws Exception {
+    protected ServerInterceptor performBuild() {
 
 
 
@@ -132,7 +131,7 @@ public class GrpcSecurity extends AbstractConfiguredSecurityBuilder<ServerInterc
         return securityInterceptor;
     }
     @SuppressWarnings("unchecked")
-    private <C extends SecurityConfigurerAdapter<ServerInterceptor, GrpcSecurity>> C getOrApply(C configurer) throws Exception {
+    private <C extends SecurityConfigurerAdapter<ServerInterceptor, GrpcSecurity>> C getOrApply(C configurer) {
         C existingConfig = (C) getConfigurer(configurer.getClass());
         if (existingConfig != null) {
             return existingConfig;

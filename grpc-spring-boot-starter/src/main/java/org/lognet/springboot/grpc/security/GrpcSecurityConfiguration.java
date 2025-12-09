@@ -19,9 +19,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -141,7 +142,8 @@ public class GrpcSecurityConfiguration {
     @ConditionalOnBean(ObjectPostProcessor.class)
     @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
             AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
-    static class DefaultUserDetailsServiceAutoConfiguration extends UserDetailsServiceAutoConfiguration {}
+    @Import(UserDetailsServiceAutoConfiguration.class)
+    static class DefaultUserDetailsServiceAutoConfiguration {}
 
     @Autowired(required = false)
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -30,7 +30,7 @@ public class GrpcServiceAuthorizationConfigurer
     }
 
     @Override
-    public void configure(GrpcSecurity builder) throws Exception {
+    public void configure(GrpcSecurity builder) {
         registry.processSecuredAnnotation();
         builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.servicesRegistry, registry.securedMethods));
     }
@@ -221,7 +221,7 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcSecurity and() {
-            return GrpcServiceAuthorizationConfigurer.this.and();
+            return GrpcServiceAuthorizationConfigurer.this.getBuilder();
         }
     }
 }

@@ -1,11 +1,11 @@
 package org.lognet.springboot.grpc.autoconfigure.consul;
 
-import com.ecwid.consul.v1.agent.model.NewService;
 import io.grpc.Server;
 import io.grpc.ServerServiceDefinition;
 import io.grpc.health.v1.HealthGrpc;
 import org.lognet.springboot.grpc.autoconfigure.GRpcServerProperties;
 import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
+import org.springframework.cloud.consul.model.http.agent.NewService;
 import org.springframework.cloud.consul.serviceregistry.ConsulAutoRegistration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.CollectionUtils;
