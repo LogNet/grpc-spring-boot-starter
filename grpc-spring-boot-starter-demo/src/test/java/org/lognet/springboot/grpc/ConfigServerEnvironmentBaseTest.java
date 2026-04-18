@@ -4,13 +4,10 @@ import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration;
-import org.lognet.springboot.grpc.autoconfigure.security.SecurityAutoConfiguration;
+import org.lognet.springboot.grpc.configserver.ConfigServerTestApplication;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -61,14 +58,12 @@ public abstract class ConfigServerEnvironmentBaseTest extends GrpcServerTestBase
         }
 
 
-        server = SpringApplication.run(org.springframework.cloud.config.server.ConfigServerApplication.class,
+        server = SpringApplication.run(ConfigServerTestApplication.class,
                 "--server.port=" + configPort,
-                "--spring.autoconfigure.exclude="+Stream.of(GRpcAutoConfiguration.class,
-                        OAuth2ResourceServerAutoConfiguration.class,
-                        ManagementWebSecurityAutoConfiguration.class,
-                                SecurityAutoConfiguration.class
-                )
-                        .map(Class::getName).collect(Collectors.joining(",")),
+                "--spring.autoconfigure.exclude="+Stream.of(
+                        "org.springframework.boot.security.oauth2.server.resource.autoconfigure.OAuth2ResourceServerAutoConfiguration",
+                        "org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration"
+                ).collect(Collectors.joining(",")),
                 "--spring.cloud.consul.discovery.enabled=false",
                 "--spring.cloud.service-registry.enabled=false",
                 "--spring.cloud.service-registry.auto-registration.enabled=false",

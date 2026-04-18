@@ -83,7 +83,7 @@ public class ExcludeMethodAuthTest extends GrpcServerTestBase {
 
 
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder
                     .authorizeRequests()
                     .methods(CustomServiceGrpc.getCustomMethod()).hasAnyRole("admin")

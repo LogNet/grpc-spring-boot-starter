@@ -37,8 +37,9 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
     }
 
     @Override
-    public void init(GrpcSecurity builder) throws Exception {
-        builder.apply(new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext().getBean(GRpcServicesRegistry.class)));
+    public void init(GrpcSecurity builder) {
+        GrpcServiceAuthorizationConfigurer authConfigurer = new GrpcServiceAuthorizationConfigurer(builder.getApplicationContext().getBean(GRpcServicesRegistry.class));
+        builder.with(authConfigurer);
         builder.setSharedObject(AuthenticationManagerBuilder.class, authenticationManagerBuilder);
         final AuthenticationSchemeService authenticationSchemeService = new AuthenticationSchemeService();
 
@@ -54,7 +55,7 @@ public abstract class GrpcSecurityConfigurerAdapter extends GrpcSecurityConfigur
 
 
     @Override
-    public void configure(GrpcSecurity builder) throws Exception {
+    public void configure(GrpcSecurity builder) {
         try {
             final Class<?> jwtDecoderClass = Class.forName("org.springframework.security.oauth2.jwt.JwtDecoder");
             final String[] beanNames = context.getBeanNamesForType(jwtDecoderClass);

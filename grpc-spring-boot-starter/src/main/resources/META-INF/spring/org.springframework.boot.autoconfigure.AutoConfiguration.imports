@@ -2,4 +2,5 @@ org.lognet.springboot.grpc.autoconfigure.GRpcAutoConfiguration
 org.lognet.springboot.grpc.autoconfigure.metrics.GRpcMetricsAutoConfiguration
 org.lognet.springboot.grpc.autoconfigure.consul.ConsulGrpcAutoConfiguration
 org.lognet.springboot.grpc.autoconfigure.security.SecurityAutoConfiguration
+org.lognet.springboot.grpc.autoconfigure.security.BearerTokenSecurityAutoConfiguration
 org.lognet.springboot.grpc.autoconfigure.actuate.GRpcActuateAutoConfiguration

@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,10 +46,15 @@ public class ValidationTest extends GrpcServerTestBase {
                 }
             };
         }
+
+        @Bean
+        public HalfCloseInterceptor halfCloseInterceptor() {
+            return new HalfCloseInterceptor();
+        }
     }
     private  GreeterGrpc.GreeterBlockingStub stub;
 
-    @SpyBean
+    @MockitoSpyBean
     HalfCloseInterceptor halfCloseInterceptor;
 
     private static Locale systemDefaultLocale;

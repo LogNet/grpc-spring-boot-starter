@@ -10,7 +10,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 public class FailedAuthGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
     @Override
-    public void configure(GrpcSecurity builder) throws Exception {
+    public void configure(GrpcSecurity builder) {
 
         builder.authorizeRequests()
                 .anyMethod().authenticated()

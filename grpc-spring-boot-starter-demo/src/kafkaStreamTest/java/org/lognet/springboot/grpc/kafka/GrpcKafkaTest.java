@@ -14,7 +14,8 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,7 +24,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE;
@@ -32,7 +32,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {DemoApp.class}, webEnvironment = NONE)
 @ActiveProfiles({"disable-security", "kafka-test"})
-@Import({GrpcKafkaTest.TestConfig.class})
+@Import({GrpcKafkaTest.TestConfig.class, GrpcKafkaTest.ConsumerConfig.class})
 public class GrpcKafkaTest extends GrpcServerTestBase {
 
     @Configuration
@@ -60,10 +60,12 @@ public class GrpcKafkaTest extends GrpcServerTestBase {
                         ).join();
             }
         }
+    }
 
-
-        @MockBean
-        public Consumer<String> consumerMock;
+    @TestConfiguration
+    public static class ConsumerConfig {
+        @Autowired
+        private Consumer<String> consumerMock;
 
         @Bean
         public Consumer<String> consumer() {
@@ -71,7 +73,7 @@ public class GrpcKafkaTest extends GrpcServerTestBase {
         }
     }
 
-    @Autowired
+    @MockitoBean
     public Consumer<String> consumerMock;
 
     @Test

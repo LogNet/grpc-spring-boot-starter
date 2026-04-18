@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
  * Created by 310242212 on 01-Nov-16.
  */
 
+@Slf4j
 @Aspect
 @Component
 @Profile(value = {"aopTest"})
-@Slf4j
 public class AopServiceMonitor {
 
     public AopServiceMonitor() {

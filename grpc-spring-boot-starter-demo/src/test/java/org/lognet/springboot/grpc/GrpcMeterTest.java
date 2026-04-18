@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
@@ -100,7 +100,7 @@ public class GrpcMeterTest extends GrpcServerTestBase {
         }
     }
 
-    @SpyBean
+    @MockitoSpyBean
     private RequestAwareGRpcMetricsTagsContributor<GreeterOuterClass.Person> shouldNotBeInvoked;
 
     @Autowired

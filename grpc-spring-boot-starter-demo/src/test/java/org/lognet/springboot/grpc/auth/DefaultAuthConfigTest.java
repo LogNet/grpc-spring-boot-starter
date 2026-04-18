@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 public class DefaultAuthConfigTest extends JwtAuthBaseTest {
 
 

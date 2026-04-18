@@ -1,10 +1,11 @@
 package org.lognet.springboot.grpc.security;
 
-import org.springframework.security.access.ConfigAttribute;
-
-class AuthenticatedConfigAttribute implements ConfigAttribute {
-    @Override
-    public String getAttribute() {
-        return null;
-    }
+/**
+ * @deprecated No longer used. Retained for binary compatibility only.
+ *             Was removed when migrating from Spring Security legacy access-control
+ *             ({@code ConfigAttribute}/{@code AccessDecisionVoter}) to
+ *             {@code AuthorizationManager}-based infrastructure in Spring Security 6+/7.
+ */
+@Deprecated
+class AuthenticatedConfigAttribute {
 }

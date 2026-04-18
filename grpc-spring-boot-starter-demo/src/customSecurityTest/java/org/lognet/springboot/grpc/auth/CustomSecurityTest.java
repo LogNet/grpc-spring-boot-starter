@@ -40,7 +40,7 @@ public class CustomSecurityTest extends GrpcServerTestBase {
     public static class DemoGrpcSecurityConfig extends GrpcSecurityConfigurerAdapter {
 
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder.authorizeRequests()
                     .withSecuredAnnotation()
                     .authenticationSchemeSelector(scheme ->

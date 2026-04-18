@@ -26,8 +26,8 @@ import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -110,7 +110,7 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
         }
 
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder.authorizeRequests()
                     .withSecuredAnnotation()
                     .userDetailsService(new InMemoryUserDetailsManager(
@@ -150,10 +150,10 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
             .setDescription("Keep the ring")
             .build();
 
-    @MockBean
+    @MockitoBean
     private ITaskService service;
 
-    @SpyBean
+    @MockitoSpyBean
     private PermissionService permissionService;
 
     @Test
@@ -299,7 +299,7 @@ public class PrePostSecurityAuthTest extends GrpcServerTestBase {
             observer.get(Duration.ofSeconds(10));
         });
         assertThat(statusRuntimeException.getStatus().getCode(), Matchers.is(Status.Code.PERMISSION_DENIED));
-        Mockito.verifyZeroInteractions(service);
+        Mockito.verifyNoInteractions(service);
 
     }
 

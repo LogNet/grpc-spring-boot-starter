@@ -26,7 +26,7 @@ public class DisabledSecuredAnnTest extends JwtAuthBaseTest {
     @TestConfiguration
     static class TestCfg  extends GrpcSecurityConfigurerAdapter {
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder.authorizeRequests().withoutSecuredAnnotation();
         }
     }

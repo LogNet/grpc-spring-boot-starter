@@ -12,7 +12,8 @@ import io.grpc.stub.StreamObserver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
-import org.junit.Rule;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.GRpcService;
@@ -21,7 +22,7 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.cloud.commons.util.InetUtilsProperties;
 import org.springframework.test.annotation.DirtiesContext;
@@ -52,8 +53,17 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Slf4j
 public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
 
-    @Rule
     public GrpcHealthProbeContainer grpcHealthProbe = new GrpcHealthProbeContainer();
+
+    @Before
+    public void startHealthProbeContainer() {
+        grpcHealthProbe.start();
+    }
+
+    @After
+    public void stopHealthProbeContainer() {
+        grpcHealthProbe.stop();
+    }
 
     @TestConfiguration
     static class Cfg {
@@ -76,7 +86,7 @@ public class CustomManagedHealthStatusServiceTest extends GrpcServerTestBase {
 
     }
 
-    @SpyBean
+    @MockitoSpyBean
     private ManagedHealthStatusService healthStatusManager;
 
     @Test

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.auth.JwtAuthBaseTest;
+import org.lognet.springboot.grpc.auth.KeycloakContainerInitializer;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.rules.ExpectedStartupExceptionWithInspector;
 import org.lognet.springboot.rules.SpringRunnerWithGlobalExpectedExceptionInspected;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.function.Predicate;
 
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringRunnerWithGlobalExpectedExceptionInspected.class)
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles({"keycloack-test", "r2dbc-test", "reactive-buggy-security"})
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 @DirtiesContext
 @ExpectedStartupExceptionWithInspector(BaggyReactiveSecurityTest.ExceptionInspector.class)
 public class BaggyReactiveSecurityTest extends JwtAuthBaseTest {

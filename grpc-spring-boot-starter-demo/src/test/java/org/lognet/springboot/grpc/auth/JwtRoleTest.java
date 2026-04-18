@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -44,6 +45,7 @@ import static org.junit.Assert.assertThrows;
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
 @Import({JwtRoleTest.TestCfg.class})
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 public class JwtRoleTest extends JwtAuthBaseTest {
 
 
@@ -70,7 +72,7 @@ public class JwtRoleTest extends JwtAuthBaseTest {
             private JwtDecoder jwtDecoder;
 
             @Override
-            public void configure(GrpcSecurity builder) throws Exception {
+            public void configure(GrpcSecurity builder) {
                 builder.authorizeRequests()
                         .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                         .methods(CalculatorGrpc.getCalculateMethod()).hasAnyRole("anotherRole")

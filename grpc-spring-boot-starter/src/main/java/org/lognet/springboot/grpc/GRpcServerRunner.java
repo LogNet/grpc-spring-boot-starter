@@ -206,6 +206,7 @@ public class GRpcServerRunner implements SmartLifecycle {
         Optional.ofNullable(server).ifPresent(s -> {
             log.info("Shutting down gRPC server ...");
             healthStatusManager.ifPresent(ManagedHealthStatusService::onShutdown);
+            healthStatusManager = Optional.empty();
 
             s.shutdown();
             int shutdownGrace = gRpcServerProperties.getShutdownGrace();

@@ -4,15 +4,18 @@ import io.grpc.*;
 import org.lognet.springboot.grpc.GRpcServicesRegistry;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManagers;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,9 +33,10 @@ public class GrpcServiceAuthorizationConfigurer
     }
 
     @Override
-    public void configure(GrpcSecurity builder) throws Exception {
+    public void configure(GrpcSecurity builder) {
         registry.processSecuredAnnotation();
-        builder.setSharedObject(GrpcSecurityMetadataSource.class, new GrpcSecurityMetadataSource(registry.servicesRegistry, registry.securedMethods));
+        builder.setSharedObject(GrpcSecurityMetadataSource.class,
+                new GrpcSecurityMetadataSource(registry.servicesRegistry, registry.methodManagers));
     }
 
 
@@ -50,7 +54,7 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry authenticated() {
-            GrpcServiceAuthorizationConfigurer.this.registry.map(methods);
+            GrpcServiceAuthorizationConfigurer.this.registry.mapAuthenticated(methods);
             return GrpcServiceAuthorizationConfigurer.this.registry;
         }
 
@@ -67,9 +71,7 @@ public class GrpcServiceAuthorizationConfigurer
         }
 
         public GrpcServiceAuthorizationConfigurer.Registry hasAnyAuthority(String... authorities) {
-            for (String auth : authorities) {
-                GrpcServiceAuthorizationConfigurer.this.registry.map(auth, methods);
-            }
+            GrpcServiceAuthorizationConfigurer.this.registry.mapAuthorities(authorities, methods);
             return GrpcServiceAuthorizationConfigurer.this.registry;
         }
 
@@ -78,7 +80,21 @@ public class GrpcServiceAuthorizationConfigurer
 
     public class Registry {
 
-        private MultiValueMap<MethodDescriptor<?, ?>, ConfigAttribute> securedMethods = new LinkedMultiValueMap<>();
+        /**
+         * Map from gRPC MethodDescriptor to the combined AuthorizationManager for that method.
+         * Multiple rules for the same method are combined with anyOf (same semantics as the
+         * old AffirmativeBased: grant if any voter grants).
+         */
+        private Map<MethodDescriptor<?, ?>, List<AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>>>> methodManagerLists
+                = new LinkedHashMap<>();
+
+        /**
+         * Flattened/combined view built lazily in {@code configure()} via
+         * {@link #buildMethodManagers()}.
+         */
+        Map<MethodDescriptor<?, ?>, AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>>> methodManagers
+                = new LinkedHashMap<>();
+
         GRpcServicesRegistry servicesRegistry;
         private boolean withSecuredAnnotation = true;
 
@@ -200,6 +216,7 @@ public class GrpcServiceAuthorizationConfigurer
                 }
             }
 
+            buildMethodManagers();
         }
 
         public AuthorizedMethod methods(MethodDescriptor<?, ?>... methodDescriptor) {
@@ -210,18 +227,35 @@ public class GrpcServiceAuthorizationConfigurer
             return new AuthorizedMethod(serviceDescriptor);
         }
 
-        void map(List<MethodDescriptor<?, ?>> methods) {
-            methods.forEach(m -> securedMethods.addAll(m, Collections.singletonList(new AuthenticatedConfigAttribute())));
-
+        void mapAuthenticated(List<MethodDescriptor<?, ?>> methods) {
+            AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>> manager =
+                    AuthenticatedAuthorizationManager.authenticated();
+            methods.forEach(m -> methodManagerLists.computeIfAbsent(m, k -> new ArrayList<>()).add(manager));
         }
 
-        void map(String attribute, List<MethodDescriptor<?, ?>> methods) {
-            methods.forEach(m -> securedMethods.addAll(m, SecurityConfig.createList(attribute)));
+        void mapAuthorities(String[] authorities, List<MethodDescriptor<?, ?>> methods) {
+            AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>> manager =
+                    AuthorityAuthorizationManager.hasAnyAuthority(authorities);
+            methods.forEach(m -> methodManagerLists.computeIfAbsent(m, k -> new ArrayList<>()).add(manager));
+        }
 
+        @SuppressWarnings("unchecked")
+        private void buildMethodManagers() {
+            for (Map.Entry<MethodDescriptor<?, ?>, List<AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>>>> entry
+                    : methodManagerLists.entrySet()) {
+                List<AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>>> managers = entry.getValue();
+                AuthorizationManager<SecurityInterceptor.GrpcMethodInvocation<?, ?>> combined;
+                if (managers.size() == 1) {
+                    combined = managers.get(0);
+                } else {
+                    combined = AuthorizationManagers.anyOf(managers.toArray(new AuthorizationManager[0]));
+                }
+                methodManagers.put(entry.getKey(), combined);
+            }
         }
 
         public GrpcSecurity and() {
-            return GrpcServiceAuthorizationConfigurer.this.and();
+            return GrpcServiceAuthorizationConfigurer.this.getBuilder();
         }
     }
 }

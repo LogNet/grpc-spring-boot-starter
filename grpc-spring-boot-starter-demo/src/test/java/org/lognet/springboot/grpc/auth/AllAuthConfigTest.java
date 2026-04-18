@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -24,12 +25,13 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
 @Import({AllAuthConfigTest.TestCfg.class})
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 public class AllAuthConfigTest extends JwtAuthBaseTest {
 
     @TestConfiguration
     static class TestCfg extends GrpcSecurityConfigurerAdapter {
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
 
             builder.authorizeRequests()
                     .anyMethod().authenticated()

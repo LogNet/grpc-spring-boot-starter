@@ -147,7 +147,7 @@ public class CustomInterceptorsOrderTest extends GrpcServerTestBase {
 
 
             @Override
-            public void configure(GrpcSecurity builder) throws Exception {
+            public void configure(GrpcSecurity builder) {
 
 
                 final UserDetails user = builder.getApplicationContext().getBean(UserDetails.class);

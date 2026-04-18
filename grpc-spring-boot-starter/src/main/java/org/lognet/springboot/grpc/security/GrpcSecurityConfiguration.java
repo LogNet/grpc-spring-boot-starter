@@ -19,11 +19,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor;
+import org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -54,12 +55,13 @@ public class GrpcSecurityConfiguration {
         return new BeanPostProcessor() {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if(bean instanceof MethodSecurityInterceptor){
+                if(bean instanceof AuthorizationManagerBeforeMethodInterceptor){
+                    final AuthorizationManagerBeforeMethodInterceptor interceptor = (AuthorizationManagerBeforeMethodInterceptor) bean;
                     return (MethodInterceptor) invocation -> {
                         if (BindableService.class.isAssignableFrom(invocation.getMethod().getDeclaringClass())){
                             return invocation.proceed();
                         }
-                        return ((MethodSecurityInterceptor) bean).invoke(invocation);
+                        return interceptor.invoke(invocation);
                     };
                 }
                 return bean;
@@ -128,20 +130,13 @@ public class GrpcSecurityConfiguration {
         return new BasicAuthSchemeSelector();
     }
 
-    @Bean
-    @ConditionalOnClass(name = {
-            "org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken",
-            "org.springframework.security.oauth2.core.OAuth2AuthenticationException"})
-    public BearerTokenAuthSchemeSelector bearerTokenAuthSchemeSelector() {
-        return new BearerTokenAuthSchemeSelector();
-    }
-
     @Configuration
-    @ConditionalOnClass(AuthenticationManager.class)
+    @ConditionalOnClass(UserDetailsServiceAutoConfiguration.class)
     @ConditionalOnBean(ObjectPostProcessor.class)
     @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
             AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
-    static class DefaultUserDetailsServiceAutoConfiguration extends UserDetailsServiceAutoConfiguration {}
+    @Import(UserDetailsServiceAutoConfiguration.class)
+    static class DefaultUserDetailsServiceAutoConfiguration {}
 
     @Autowired(required = false)
     @SuppressWarnings({ "rawtypes", "unchecked" })

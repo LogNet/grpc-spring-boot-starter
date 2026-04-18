@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.auth.JwtAuthBaseTest;
 import org.lognet.springboot.grpc.auth.JwtRoleTest;
+import org.lognet.springboot.grpc.auth.KeycloakContainerInitializer;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
@@ -21,6 +22,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
 
@@ -38,6 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles({"keycloack-test", "r2dbc-test"})
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 @DirtiesContext
 public class ReactiveDemoTest extends JwtAuthBaseTest {
 

@@ -1,7 +1,5 @@
 package org.lognet.springboot.grpc.actuator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -17,23 +15,23 @@ import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.TestConfig;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.contributor.Status;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -51,6 +49,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         , "spring.main.web-application-type=servlet"
 })
 @ActiveProfiles({"disable-security", "measure"})
+@AutoConfigureTestRestTemplate
 public class ActuatorTest extends GrpcServerTestBase {
 
     @Autowired
@@ -112,8 +111,8 @@ public class ActuatorTest extends GrpcServerTestBase {
         ResponseEntity<ObjectNode> metricsResponse = restTemplate.getForEntity("/actuator/metrics", ObjectNode.class);
         assertEquals(HttpStatus.OK, metricsResponse.getStatusCode());
         final String metricName = "grpc.server.calls";
-        final Optional<String> containsGrpcServerCallsMetric = StreamSupport.stream(Spliterators.spliteratorUnknownSize(metricsResponse.getBody().withArray("names")
-                        .elements(), Spliterator.NONNULL), false)
+        final Optional<String> containsGrpcServerCallsMetric = metricsResponse.getBody().withArray("names")
+                .elements().stream()
                 .map(JsonNode::asText)
                 .filter(metricName::equals)
                 .findFirst();

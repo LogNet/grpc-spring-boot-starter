@@ -12,7 +12,7 @@ import org.lognet.springboot.grpc.demo.DemoApp;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.test.system.OutputCaptureRule;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,7 +37,7 @@ public class GRpcServerBuilderConfigurerTest {
     @Autowired
     private GRpcServerBuilderConfigurer customGrpcServerBuilderConfigurer;
 
-    @MockBean(name = "anotherConfigurer")
+    @MockitoBean(name = "anotherConfigurer")
     private GRpcServerBuilderConfigurer anotherConfigurer;
 
     @Rule

@@ -1,10 +1,8 @@
 package org.lognet.springboot.grpc.consul;
 
 
-import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.QueryParams;
-import com.ecwid.consul.v1.health.HealthServicesRequest;
-import com.ecwid.consul.v1.health.model.HealthService;
+import org.springframework.cloud.consul.ConsulClient;
+import org.springframework.cloud.consul.model.http.health.HealthService;
 import io.grpc.BindableService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -106,11 +104,8 @@ public abstract class ConsulRegistrationBaseTest {
         final List<HealthService> healthServices = Awaitility.await()
                 .atMost(Duration.ofMinutes(1))
                 .pollInterval(Duration.ofSeconds(3))
-                .until(() -> consulClient.getHealthServices(serviceId, HealthServicesRequest.newBuilder()
-                                        .setPassing(true)
-                                        .setQueryParams(QueryParams.DEFAULT)
-                                        .build())
-                                .getValue()
+                .until(() -> consulClient.getHealthServices(serviceId, true, null, null, ConsulClient.QueryParams.DEFAULT)
+                                .getBody()
 
                         , Matchers.hasSize(Matchers.greaterThanOrEqualTo(minExpectedRegistrations)));
 

@@ -55,10 +55,9 @@ public class ConcurrentAuthConfigTest extends GrpcServerTestBase {
     static class TestCfg  extends GrpcSecurityConfigurerAdapter {
 
             @Override
-            public void configure(GrpcSecurity builder) throws Exception {
-                DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+            public void configure(GrpcSecurity builder) {
                 UserDetailsService users = new InMemoryUserDetailsManager(user1, user2);
-                provider.setUserDetailsService(users);
+                DaoAuthenticationProvider provider = new DaoAuthenticationProvider(users);
                 provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 
                 builder

@@ -81,7 +81,7 @@ public class UserDetailsAuthTest extends GrpcServerTestBase {
 
 
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder.authorizeRequests()
                     .methods(GreeterGrpc.getSayHelloMethod()).hasAnyRole("reader")
                     .methods(GreeterGrpc.getSayAuthOnlyHelloMethod()).hasAnyRole("reader")

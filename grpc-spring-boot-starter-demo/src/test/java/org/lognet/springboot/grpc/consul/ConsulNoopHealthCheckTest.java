@@ -1,6 +1,6 @@
 package org.lognet.springboot.grpc.consul;
 
-import com.ecwid.consul.v1.health.model.HealthService;
+import org.springframework.cloud.consul.model.http.health.HealthService;
 import org.hamcrest.Matchers;
 import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.demo.DemoApp;

@@ -12,6 +12,7 @@ import org.lognet.springboot.grpc.security.AuthCallCredentials;
 import org.lognet.springboot.grpc.security.AuthHeader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = DemoApp.class)
 @ActiveProfiles("keycloack-test")
 @RunWith(SpringRunner.class)
-
+@ContextConfiguration(initializers = KeycloakContainerInitializer.class)
 public class PerCallDefaultAuthConfigTest extends JwtAuthBaseTest {
 
     private AuthCallCredentials callCredentials;

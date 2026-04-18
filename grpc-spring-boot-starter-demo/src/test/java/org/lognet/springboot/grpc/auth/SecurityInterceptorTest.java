@@ -23,7 +23,6 @@ import org.lognet.springboot.grpc.security.GrpcSecurity;
 import org.lognet.springboot.grpc.security.GrpcSecurityConfigurerAdapter;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.User;
@@ -37,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @SpringBootTest(classes = DemoApp.class)
 @RunWith(SpringRunner.class)
@@ -47,7 +46,7 @@ public class SecurityInterceptorTest extends GrpcServerTestBase {
     @TestConfiguration
     static class TestCfg   extends GrpcSecurityConfigurerAdapter {
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
+        public void configure(GrpcSecurity builder) {
             builder.authorizeRequests()
                    .withSecuredAnnotation()
                     .userDetailsService(new InMemoryUserDetailsManager(

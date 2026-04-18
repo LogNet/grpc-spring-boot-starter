@@ -13,7 +13,7 @@ import org.lognet.springboot.grpc.security.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.User;
@@ -72,10 +72,9 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
     @TestConfiguration
     static class Cfg extends GrpcSecurityConfigurerAdapter {
         @Override
-        public void configure(GrpcSecurity builder) throws Exception {
-            DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        public void configure(GrpcSecurity builder) {
             UserDetailsService users = new InMemoryUserDetailsManager(user1);
-            provider.setUserDetailsService(users);
+            DaoAuthenticationProvider provider = new DaoAuthenticationProvider(users);
             provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 
             builder
@@ -168,10 +167,10 @@ public class GRpcRecoveryTest extends GrpcServerTestBase {
 
     }
 
-    @SpyBean
+    @MockitoSpyBean
     private Cfg.CustomService srv;
 
-    @SpyBean
+    @MockitoSpyBean
     private Cfg.CustomErrorHandler handler;
 
 

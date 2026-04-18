@@ -17,7 +17,10 @@ import org.lognet.springboot.grpc.GrpcServerTestBase;
 import org.lognet.springboot.grpc.HalfCloseInterceptor;
 import org.lognet.springboot.grpc.demo.DemoApp;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest(
@@ -25,8 +28,18 @@ import org.springframework.test.context.junit4.SpringRunner;
     properties = "grpc.security.auth.fail-fast=false"
 )
 @RunWith(SpringRunner.class)
+@Import(FailLateSecurityInterceptorTest.TestCfg.class)
 public class FailLateSecurityInterceptorTest extends GrpcServerTestBase {
-    @SpyBean
+
+    @TestConfiguration
+    static class TestCfg {
+        @Bean
+        public HalfCloseInterceptor halfCloseInterceptor() {
+            return new HalfCloseInterceptor();
+        }
+    }
+
+    @MockitoSpyBean
     HalfCloseInterceptor halfCloseInterceptor;
 
     @Test
