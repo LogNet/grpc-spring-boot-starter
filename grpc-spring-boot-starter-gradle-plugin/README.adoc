@@ -35,7 +35,7 @@ Your project is configured to :
 +
 by applying `com.google.protobuf` gradle plugin.
 
-. All generated source files are added to your project's source sets (find them under `$buildDir/protoGen` folder )
+. All generated source files are added to your project's source sets (find them under `com.google.protobuf` plugin's default output folder, `$buildDir/generated/sources/proto` since `0.10.0`; with older `com.google.protobuf` versions a copy is also placed under `$buildDir/protoGen` folder)
 . `io.github.lognet:grpc-spring-boot-starter` is added to `implementation` configuration dependencies.
 
 

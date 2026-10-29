@@ -86,7 +86,10 @@ protobuf {
         }
     }
 
-    generatedFilesBaseDir = "${project.buildDir}/protoGen"
+    // generatedFilesBaseDir is read-only since com.google.protobuf 0.10.0
+    if (delegate.metaClass.respondsTo(delegate, 'setGeneratedFilesBaseDir', String)) {
+        generatedFilesBaseDir = "${project.buildDir}/protoGen"
+    }
 }
 
 
