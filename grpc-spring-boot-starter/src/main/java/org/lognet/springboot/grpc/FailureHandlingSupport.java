@@ -45,7 +45,7 @@ public class FailureHandlingSupport {
                 log.warn("Closing call with {}", status);
                 call.close(status, Optional.ofNullable(metadata).orElseGet(Metadata::new));
             } else {
-                log.warn("Closing call with {}", Status.INTERNAL);
+                log.warn("Closing call with {}", Status.INTERNAL, unwrapped);
                 call.close(Status.INTERNAL, new Metadata());
             }
         }
